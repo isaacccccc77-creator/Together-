@@ -1,0 +1,2025 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1, user-scalable=no">
+<title>Us, Between Time Zones</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,500;0,9..144,600;1,9..144,500&family=Libre+Franklin:wght@400;500;600;700&family=Caveat:wght@500;600&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --paper:#F5EDE6;
+    --paper-soft:#FBF6F1;
+    --card:#FFFDFB;
+    --ink:#2E2A3D;
+    --ink-soft:#7A7386;
+    --ink-faint:#B4ACBE;
+    --rose:#C1666B;
+    --rose-deep:#A2494F;
+    --rose-wash:#F1DBDA;
+    --honey:#E3A24C;
+    --dusk:#5B6B8C;
+    --night:#2B2440;
+    --line:#E6D9CB;
+    --good:#8A9A7E;
+    --shadow-sm: 0 3px 8px rgba(46,42,61,0.14), 0 1px 3px rgba(46,42,61,0.10);
+    --shadow-md: 0 8px 20px rgba(46,42,61,0.18), 0 3px 8px rgba(46,42,61,0.10);
+    --shadow-lg: 0 16px 36px rgba(46,42,61,0.22), 0 5px 12px rgba(46,42,61,0.12);
+    --shadow-rose: 0 8px 18px rgba(193,102,107,0.4);
+    --radius:20px;
+    --font-display:'Fraunces', serif;
+    --font-body:'Libre Franklin', sans-serif;
+    --font-hand:'Caveat', cursive;
+  }
+  *{box-sizing:border-box; -webkit-tap-highlight-color:transparent;}
+  html,body{margin:0;padding:0;}
+  body{
+    background:var(--paper);
+    font-family:var(--font-body);
+    color:var(--ink);
+    min-height:100vh;
+    display:flex;
+    justify-content:center;
+  }
+  #app{
+    width:100%;
+    max-width:460px;
+    min-height:100vh;
+    background:var(--paper);
+    position:relative;
+    display:flex;
+    flex-direction:column;
+    transition:background 1.4s ease;
+  }
+  ::selection{ background:var(--rose-wash); }
+  a{color:inherit;}
+  button{font-family:inherit; cursor:pointer;}
+  input, select{font-family:inherit;}
+  :focus-visible{ outline:2px solid var(--rose); outline-offset:2px; }
+
+  /* ---------- Top bar ---------- */
+  .topbar{
+    padding:22px 22px 14px 22px;
+    display:flex;
+    align-items:baseline;
+    justify-content:space-between;
+  }
+  .topbar .wordmark{
+    font-family:var(--font-display);
+    font-weight:500;
+    font-size:20px;
+    letter-spacing:0.2px;
+  }
+  .topbar .wordmark .amp{
+    font-style:italic;
+    color:var(--rose);
+  }
+  .topbar .code-pill{
+    font-size:11px;
+    letter-spacing:0.06em;
+    color:var(--ink-soft);
+    background:var(--card);
+    border:1px solid var(--line);
+    padding:5px 10px;
+    border-radius:999px;
+    box-shadow:var(--shadow-sm);
+    transition:transform .15s ease, box-shadow .15s ease;
+  }
+  .topbar .code-pill:hover{ transform:translateY(-1px); box-shadow:var(--shadow-md); }
+
+  /* ---------- Screens ---------- */
+  .screen{ display:none; flex:1; padding:4px 20px 100px 20px; animation:fade .25s ease; }
+  .screen.active{ display:block; }
+  @keyframes fade{ from{opacity:0; transform:translateY(4px);} to{opacity:1; transform:none;} }
+
+  .eyebrow{
+    font-size:11px;
+    text-transform:uppercase;
+    letter-spacing:0.12em;
+    color:var(--ink-soft);
+    font-weight:600;
+    margin:0 0 6px 2px;
+  }
+  h1.page-title{
+    font-family:var(--font-display);
+    font-weight:500;
+    font-size:26px;
+    margin:0 0 18px 2px;
+    line-height:1.2;
+  }
+
+  /* ---------- Card ---------- */
+  .card{
+    background:var(--card);
+    border:1px solid var(--line);
+    border-radius:var(--radius);
+    padding:18px;
+    margin-bottom:14px;
+    box-shadow:var(--shadow-sm);
+    transition:transform .18s ease, box-shadow .18s ease;
+  }
+  .card:hover{
+    transform:translateY(-3px);
+    box-shadow:var(--shadow-md);
+  }
+  .card:active{ transform:translateY(0); box-shadow:var(--shadow-sm); }
+  .card-title{
+    font-family:var(--font-display);
+    font-size:17px;
+    font-weight:500;
+    margin:0 0 12px 0;
+  }
+
+  /* ---------- Sky bar (signature element) ---------- */
+  .sky-wrap{ margin-bottom:6px; }
+  .sky-bar{
+    position:relative;
+    height:54px;
+    border-radius:14px;
+    background:linear-gradient(90deg,
+      var(--night) 0%, var(--night) 20%,
+      #7A6B95 26%, var(--honey) 33%,
+      #FCEBC9 46%, #FCEBC9 58%,
+      var(--honey) 70%, #8A5B6B 78%,
+      var(--night) 84%, var(--night) 100%);
+    overflow:visible;
+    box-shadow:inset 0 1px 3px rgba(0,0,0,0.15), var(--shadow-sm);
+  }
+  .sky-marker{
+    position:absolute;
+    top:50%;
+    transform:translate(-50%,-50%);
+    width:30px; height:30px;
+    border-radius:50%;
+    background:var(--card);
+    border:2px solid var(--ink);
+    display:flex; align-items:center; justify-content:center;
+    font-size:14px;
+    transition:left 1s ease;
+    box-shadow:0 2px 6px rgba(43,36,64,0.25);
+  }
+  .sky-marker.me{ border-color:var(--rose); }
+  .sky-marker.them{ border-color:var(--dusk); }
+  .sky-labels{
+    display:flex; justify-content:space-between;
+    margin-top:12px;
+  }
+  .sky-person{ text-align:left; }
+  .sky-person.them{ text-align:right; }
+  .sky-person .name{
+    font-size:12px; font-weight:600; color:var(--ink-soft);
+    text-transform:uppercase; letter-spacing:0.06em;
+  }
+  .sky-person .time{
+    font-family:var(--font-display); font-size:22px; margin-top:2px;
+  }
+  .sky-person .part{ font-size:12px; color:var(--ink-faint); }
+
+  /* ---------- Buttons ---------- */
+  .btn{
+    border:none; border-radius:14px; padding:14px 18px;
+    font-weight:600; font-size:15px;
+    display:flex; align-items:center; justify-content:center; gap:8px;
+    width:100%;
+    transition:transform .15s ease, box-shadow .15s ease, background .15s ease, border-color .15s ease;
+  }
+  .btn-primary{ background:var(--rose); color:#fff; box-shadow:var(--shadow-rose); }
+  .btn-primary:hover{ background:var(--rose-deep); transform:translateY(-2px); box-shadow:0 10px 22px rgba(193,102,107,0.4); }
+  .btn-primary:active{ background:var(--rose-deep); transform:translateY(1px); box-shadow:0 3px 8px rgba(193,102,107,0.35); }
+  .btn-ghost{ background:transparent; color:var(--ink); border:1px solid var(--line); box-shadow:var(--shadow-sm); }
+  .btn-ghost:hover{ background:var(--paper-soft); border-color:var(--rose); transform:translateY(-2px); box-shadow:var(--shadow-md); }
+  .btn-ghost:active{ transform:translateY(1px); box-shadow:0 1px 3px rgba(46,42,61,0.1); }
+  .btn-soft{ background:var(--paper-soft); color:var(--ink); border:1px solid var(--line); box-shadow:var(--shadow-sm); }
+  .btn-soft:hover{ background:var(--card); border-color:var(--rose); transform:translateY(-2px); box-shadow:var(--shadow-md); }
+  .btn-soft:active{ transform:translateY(1px); box-shadow:0 1px 3px rgba(46,42,61,0.1); }
+  .btn-sm{ padding:9px 14px; font-size:13px; width:auto; }
+  .btn-row{ display:flex; gap:10px; }
+
+  /* ---------- Ping ---------- */
+  .ping-feed{ margin-top:10px; display:flex; flex-direction:column; gap:8px; }
+  .ping-item{
+    font-size:13px; color:var(--ink-soft);
+    display:flex; justify-content:space-between;
+  }
+  .ping-item b{ color:var(--ink); font-weight:600; }
+  .pulse{ animation:pulse .5s ease; }
+  @keyframes pulse{ 0%{transform:scale(1);} 40%{transform:scale(1.04);} 100%{transform:scale(1);} }
+
+  /* ---------- Stat row ---------- */
+  .stat-row{ display:flex; gap:12px; }
+  .stat{
+    flex:1; background:var(--card); border:1px solid var(--line);
+    border-radius:var(--radius); padding:16px; text-align:center;
+    box-shadow:var(--shadow-sm);
+    transition:transform .18s ease, box-shadow .18s ease;
+  }
+  .stat:hover{ transform:translateY(-3px); box-shadow:var(--shadow-md); }
+  .stat .num{ font-family:var(--font-display); font-size:28px; }
+  .stat .label{ font-size:11px; color:var(--ink-soft); text-transform:uppercase; letter-spacing:0.06em; margin-top:2px; }
+
+  /* ---------- Prompt ---------- */
+  .prompt-q{ font-family:var(--font-hand); font-size:24px; line-height:1.3; color:var(--ink); margin:0 0 12px 0; }
+  .answer-block{ margin-top:10px; padding-top:10px; border-top:1px solid var(--line); }
+  .answer-who{ font-size:11px; text-transform:uppercase; letter-spacing:0.06em; color:var(--ink-soft); font-weight:600; margin-bottom:4px;}
+  .answer-text{ font-size:14px; line-height:1.5; }
+  .answer-empty{ font-size:14px; color:var(--ink-faint); font-style:italic; }
+
+  textarea, input[type=text], input[type=date], select{
+    width:100%; border:1px solid var(--line); border-radius:12px;
+    padding:11px 12px; font-size:14px; background:var(--paper-soft); color:var(--ink);
+  }
+  textarea{ resize:vertical; min-height:64px; }
+  label.field-label{ font-size:12px; font-weight:600; color:var(--ink-soft); display:block; margin:14px 0 6px 2px; }
+  label.field-label:first-child{ margin-top:0; }
+
+  /* ---------- Notes ---------- */
+  .note{
+    background:var(--card); border:1px solid var(--line); border-radius:16px;
+    padding:14px 16px; margin-bottom:10px;
+    box-shadow:var(--shadow-sm);
+    transition:transform .18s ease, box-shadow .18s ease;
+  }
+  .note:hover{ transform:translateY(-2px); box-shadow:var(--shadow-md); }
+  .note.me{ border-color:var(--rose-wash); }
+  .note-meta{ display:flex; justify-content:space-between; margin-bottom:6px; }
+  .note-who{ font-size:11px; font-weight:700; text-transform:uppercase; letter-spacing:0.05em; color:var(--rose-deep); }
+  .note.them .note-who{ color:var(--dusk); }
+  .note-time{ font-size:11px; color:var(--ink-faint); }
+  .note-text{ font-size:15px; line-height:1.5; }
+  .compose{ display:flex; gap:8px; align-items:flex-end; margin-top:6px; }
+  .compose textarea{ flex:1; }
+
+  /* ---------- Mood ---------- */
+  .mood-grid{ display:flex; flex-wrap:wrap; gap:8px; margin-top:4px; }
+  .mood-chip{
+    border:1px solid var(--line); background:var(--paper-soft);
+    border-radius:999px; padding:8px 14px; font-size:13px; font-weight:600; color:var(--ink-soft);
+    transition:transform .15s ease, box-shadow .15s ease, background .15s ease;
+  }
+  .mood-chip:hover{ transform:translateY(-2px); box-shadow:var(--shadow-sm); background:var(--card); }
+  .mood-chip.selected{ background:var(--rose); border-color:var(--rose); color:#fff; box-shadow:var(--shadow-rose); }
+  .mood-chip.selected:hover{ background:var(--rose-deep); }
+  .mood-current{ display:flex; justify-content:space-between; margin-top:14px; padding-top:12px; border-top:1px solid var(--line); }
+  .mood-current .who{ font-size:12px; color:var(--ink-soft); font-weight:600; }
+  .mood-current .val{ font-family:var(--font-display); font-size:16px; margin-top:2px; }
+
+  /* ---------- Bucket list ---------- */
+  .bucket-item{
+    display:flex; align-items:center; gap:10px;
+    padding:10px 0; border-bottom:1px solid var(--line);
+  }
+  .bucket-item:last-child{ border-bottom:none; }
+  .bucket-check{
+    width:20px; height:20px; border-radius:6px; border:1.5px solid var(--ink-faint);
+    display:flex; align-items:center; justify-content:center; flex-shrink:0; font-size:12px; color:#fff;
+    transition:transform .15s ease, box-shadow .15s ease, border-color .15s ease;
+  }
+  .bucket-check:hover{ transform:scale(1.1); box-shadow:0 0 0 4px var(--rose-wash); border-color:var(--rose); }
+  .bucket-check.done{ background:var(--good); border-color:var(--good); }
+  .bucket-text{ flex:1; font-size:14px; }
+  .bucket-text.done{ text-decoration:line-through; color:var(--ink-faint); }
+  .bucket-del{ color:var(--ink-faint); font-size:16px; background:none; border:none; padding:4px; }
+
+  /* ---------- Onboarding ---------- */
+  .onboard{ min-height:100vh; display:flex; flex-direction:column; justify-content:center; padding:32px 26px; }
+  .onboard .mark{ font-family:var(--font-display); font-size:34px; font-weight:500; line-height:1.15; margin-bottom:6px; }
+  .onboard .mark .amp{ font-style:italic; color:var(--rose); }
+  .onboard .sub{ color:var(--ink-soft); font-size:14px; margin-bottom:30px; line-height:1.5; }
+  .onboard .card{ margin-bottom:16px; }
+  .code-display{
+    font-family:var(--font-display); font-size:30px; letter-spacing:0.12em;
+    text-align:center; padding:14px 0; color:var(--rose-deep);
+  }
+  .divider-word{ text-align:center; color:var(--ink-faint); font-size:12px; margin:18px 0; text-transform:uppercase; letter-spacing:0.1em;}
+
+  /* ---------- Bottom nav ---------- */
+  .navbar{
+    position:sticky; bottom:0; left:0; right:0;
+    background:var(--paper-soft);
+    border-top:1px solid var(--line);
+    display:flex;
+    padding:8px 6px calc(8px + env(safe-area-inset-bottom)) 6px;
+    max-width:460px;
+    margin:0 auto;
+    width:100%;
+  }
+  .nav-btn{
+    flex:1; background:none; border:none; display:flex; flex-direction:column;
+    align-items:center; gap:4px; padding:6px 2px; color:var(--ink-faint);
+    transition:color .15s ease, transform .15s ease;
+  }
+  .nav-btn:hover{ color:var(--rose-deep); transform:translateY(-2px); }
+  .nav-btn svg{ width:20px; height:20px; transition:transform .15s ease; }
+  .nav-btn:hover svg{ transform:scale(1.1); }
+  .nav-btn .lab{ font-size:10px; font-weight:600; letter-spacing:0.02em; }
+  .nav-btn.active{ color:var(--rose-deep); }
+
+  .empty-state{ text-align:center; padding:30px 10px; color:var(--ink-faint); font-size:13px; }
+  .toast{
+    position:fixed; bottom:90px; left:50%; transform:translateX(-50%) translateY(20px);
+    background:var(--ink); color:#fff; padding:10px 18px; border-radius:999px;
+    font-size:13px; opacity:0; pointer-events:none; transition:all .3s ease; z-index:50;
+    max-width:80%; text-align:center;
+  }
+  .toast.show{ opacity:1; transform:translateX(-50%) translateY(0); }
+  .link-btn{ background:none; border:none; color:var(--rose-deep); font-weight:600; font-size:13px; padding:4px; }
+  code{ background:var(--paper-soft); border:1px solid var(--line); border-radius:5px; padding:1px 5px; font-size:12px; }
+  .nav-btn{ position:relative; }
+  .nav-dot{
+    display:none;
+    position:absolute; top:2px; right:calc(50% - 16px);
+    width:8px; height:8px; border-radius:50%;
+    background:var(--rose); border:1.5px solid var(--paper-soft);
+  }
+  .notif-row{ display:flex; align-items:center; justify-content:space-between; gap:12px; }
+  .notif-status{ font-size:12px; color:var(--ink-soft); margin-top:4px; }
+
+  /* ---------- Streak ---------- */
+  .streak-pill{
+    display:inline-flex; align-items:center; gap:6px;
+    background:var(--card); border:1px solid var(--line); border-radius:999px;
+    padding:6px 12px; font-size:13px; font-weight:600; color:var(--ink-soft);
+    margin-bottom:14px;
+    box-shadow:var(--shadow-sm);
+  }
+  .streak-pill .flame{ font-size:15px; }
+  .streak-pill b{ color:var(--rose-deep); }
+
+  /* ---------- Love taps ---------- */
+  .tap-grid{ display:grid; grid-template-columns:repeat(3,1fr); gap:8px; margin-bottom:4px; }
+  .tap-btn{
+    display:flex; flex-direction:column; align-items:center; gap:4px;
+    background:var(--paper-soft); border:1px solid var(--line); border-radius:14px;
+    padding:12px 4px; font-size:11px; font-weight:600; color:var(--ink-soft);
+    box-shadow:var(--shadow-sm);
+    transition:transform .15s ease, box-shadow .15s ease, background .15s ease, border-color .15s ease;
+  }
+  .tap-btn .em{ font-size:20px; transition:transform .15s ease; }
+  .tap-btn:hover{ transform:translateY(-3px); box-shadow:var(--shadow-md); background:var(--card); border-color:var(--rose); }
+  .tap-btn:hover .em{ transform:scale(1.15); }
+  .tap-btn:active{ background:var(--rose-wash); transform:translateY(1px) scale(0.97); box-shadow:0 1px 3px rgba(46,42,61,0.1); }
+
+  /* ---------- Vibe ---------- */
+  .vibe-grid{ display:flex; flex-wrap:wrap; gap:8px; margin-bottom:2px; }
+  .vibe-chip{
+    display:flex; align-items:center; gap:6px;
+    border:1.5px solid var(--line); background:var(--paper-soft);
+    border-radius:999px; padding:7px 12px 7px 8px; font-size:13px; font-weight:600; color:var(--ink-soft);
+    transition:transform .15s ease, box-shadow .15s ease, border-color .15s ease;
+  }
+  .vibe-chip .dot{ width:14px; height:14px; border-radius:50%; flex-shrink:0; box-shadow:inset 0 0 0 1.5px rgba(0,0,0,0.08); }
+  .vibe-chip:hover{ transform:translateY(-2px); box-shadow:var(--shadow-sm); }
+  .vibe-chip.selected{
+    border-color:var(--vibe-chip-color, var(--rose)); color:var(--ink); background:var(--card);
+    box-shadow:var(--shadow-sm), inset 0 0 0 1px var(--vibe-chip-color, var(--rose));
+    font-weight:700;
+  }
+  .vibe-chip.selected .dot{ box-shadow:inset 0 0 0 1.5px rgba(0,0,0,0.08), 0 0 0 3px color-mix(in srgb, var(--vibe-chip-color, var(--rose)) 30%, transparent); }
+  .vibe-current{ display:flex; justify-content:space-between; margin-top:14px; padding-top:12px; border-top:1px solid var(--line); }
+  .vibe-current .who{ font-size:12px; color:var(--ink-soft); font-weight:600; }
+  .vibe-current .val{ display:flex; align-items:center; gap:6px; font-family:var(--font-display); font-size:15px; margin-top:3px; }
+  .vibe-current .dot{ width:11px; height:11px; border-radius:50%; flex-shrink:0; }
+  .vibe-current.them .val{ justify-content:flex-end; }
+
+  /* ---------- Overlap card ---------- */
+  .overlap-line{ font-size:14px; line-height:1.5; }
+  .overlap-line b{ color:var(--rose-deep); }
+
+  /* ---------- Together Now session ---------- */
+  .session-ring{
+    width:110px; height:110px; border-radius:50%;
+    border:5px solid var(--rose-wash);
+    display:flex; align-items:center; justify-content:center;
+    margin:6px auto 12px auto; position:relative;
+    box-shadow:var(--shadow-md);
+  }
+  .session-ring .time{ font-family:var(--font-display); font-size:22px; }
+  .session-waiting{ text-align:center; color:var(--ink-soft); font-size:13px; }
+
+  /* ---------- Photo note ---------- */
+  .note-img{ width:100%; border-radius:12px; margin-top:8px; display:block; }
+  .photo-add{
+    display:flex; align-items:center; gap:6px; font-size:12px; color:var(--ink-soft);
+    font-weight:600; padding:8px 0 2px 0; cursor:pointer;
+  }
+  .photo-preview{ position:relative; margin-top:8px; }
+  .photo-preview img{ width:100%; border-radius:12px; display:block; }
+  .photo-preview button{
+    position:absolute; top:6px; right:6px; background:rgba(46,42,61,0.7); color:#fff;
+    border:none; border-radius:50%; width:24px; height:24px; font-size:14px; line-height:1;
+  }
+
+  /* ---------- Voice recording ---------- */
+  .voice-add-row{ display:flex; gap:16px; padding:8px 0 2px 0; }
+  .voice-add{
+    display:flex; align-items:center; gap:6px; font-size:12px; color:var(--ink-soft);
+    font-weight:600; background:none; border:none; padding:0;
+  }
+  .recording-ui{
+    display:flex; align-items:center; gap:10px; background:var(--rose-wash);
+    border-radius:12px; padding:10px 12px; margin-top:8px;
+  }
+  .rec-dot{
+    width:10px; height:10px; border-radius:50%; background:var(--rose-deep);
+    animation:recPulse 1s ease-in-out infinite;
+    flex-shrink:0;
+  }
+  @keyframes recPulse{ 0%,100%{opacity:1;} 50%{opacity:0.35;} }
+  .rec-timer{ font-family:var(--font-display); font-size:16px; flex:1; }
+  .rec-stop{
+    background:var(--rose-deep); color:#fff; border:none; border-radius:999px;
+    padding:6px 14px; font-size:12px; font-weight:700;
+  }
+  .rec-cancel{ background:none; border:none; color:var(--ink-soft); font-size:13px; font-weight:600; }
+
+  .voice-preview{
+    display:flex; align-items:center; gap:10px; background:var(--paper-soft);
+    border:1px solid var(--line); border-radius:12px; padding:10px 12px; margin-top:8px;
+  }
+  .voice-preview button.voice-del{
+    margin-left:auto; background:none; border:none; color:var(--ink-faint); font-size:16px;
+  }
+
+  .voice-note{
+    display:flex; align-items:center; gap:10px;
+    background:var(--paper-soft); border-radius:12px; padding:10px 12px; margin-top:8px;
+  }
+  .voice-play{
+    width:34px; height:34px; border-radius:50%; border:none; background:var(--rose);
+    color:#fff; font-size:13px; flex-shrink:0; display:flex; align-items:center; justify-content:center;
+    box-shadow:var(--shadow-rose);
+  }
+  .voice-play:active{ transform:scale(0.94); }
+  .voice-meta{ flex:1; }
+  .voice-bar{ height:4px; background:var(--line); border-radius:99px; overflow:hidden; }
+  .voice-fill{ height:100%; width:0%; background:var(--rose); transition:width .1s linear; }
+  .voice-time{ font-size:11px; color:var(--ink-soft); margin-top:4px; display:block; }
+
+  /* ---------- Notes segmented control + gallery ---------- */
+  .seg-control{
+    display:flex; background:var(--paper-soft); border:1px solid var(--line);
+    border-radius:12px; padding:3px; margin-bottom:14px;
+  }
+  .seg-btn{
+    flex:1; background:none; border:none; padding:9px 4px; font-size:13px; font-weight:600;
+    color:var(--ink-soft); border-radius:9px;
+    transition:color .15s ease, background .15s ease;
+  }
+  .seg-btn:hover{ color:var(--ink); background:rgba(255,255,255,0.5); }
+  .seg-btn.active{ background:var(--card); color:var(--ink); box-shadow:var(--shadow-sm); }
+  .gallery-count{ font-size:12px; color:var(--ink-soft); margin-bottom:10px; }
+  .gallery-grid{ display:grid; grid-template-columns:repeat(3,1fr); gap:6px; }
+  .gallery-thumb{
+    position:relative; aspect-ratio:1; border-radius:10px; overflow:hidden; background:var(--line);
+    box-shadow:var(--shadow-sm);
+    transition:transform .18s ease, box-shadow .18s ease;
+  }
+  .gallery-thumb:hover{ transform:scale(1.04) translateY(-2px); box-shadow:var(--shadow-md); }
+  .gallery-thumb:active{ transform:scale(0.98); box-shadow:var(--shadow-sm); }
+  .gallery-thumb img{ width:100%; height:100%; object-fit:cover; display:block; }
+  .gallery-thumb .who-dot{
+    position:absolute; bottom:5px; right:5px; width:9px; height:9px; border-radius:50%;
+    border:1.5px solid #fff;
+  }
+  .gallery-thumb .who-dot.me{ background:var(--rose); }
+  .gallery-thumb .who-dot.them{ background:var(--dusk); }
+
+  /* ---------- Lightbox ---------- */
+  .lightbox{
+    position:fixed; inset:0; background:rgba(30,26,42,0.94); z-index:100;
+    display:none; flex-direction:column; align-items:center; justify-content:center;
+    padding:24px; backdrop-filter: blur(2px);
+  }
+  .lightbox.show{ display:flex; }
+  .lightbox img{ max-width:100%; max-height:65vh; border-radius:14px; object-fit:contain; box-shadow:0 20px 50px rgba(0,0,0,0.4); }
+  .lightbox .lb-caption{ color:#fff; text-align:center; margin-top:14px; font-size:14px; max-width:340px; }
+  .lightbox .lb-meta{ color:rgba(255,255,255,0.55); font-size:12px; margin-top:4px; }
+  .lightbox .lb-close{
+    position:absolute; top:22px; right:22px; background:none; border:none; color:#fff; font-size:26px;
+  }
+  .lightbox .lb-nav{
+    position:absolute; top:50%; transform:translateY(-50%); background:rgba(255,255,255,0.12);
+    border:none; color:#fff; width:38px; height:38px; border-radius:50%; font-size:18px;
+  }
+  .lightbox .lb-prev{ left:14px; }
+  .lightbox .lb-next{ right:14px; }
+</style>
+</head>
+<body>
+<div id="app">
+
+  <!-- SETUP GATE (shown until FIREBASE_CONFIG is filled in) -->
+  <div id="setupGate" class="onboard" style="display:none;">
+    <div class="mark">One step<br>left.</div>
+    <div class="sub">This copy of the app needs its own free database before it can save anything. Open the file, find <code>FIREBASE_CONFIG</code> near the top of the script, and paste in your Firebase project's config — full steps are in the chat where this file was built.</div>
+    <div class="card">
+      <div class="card-title">Quick checklist</div>
+      <div class="notif-status">1. Create a free project at firebase.google.com<br>
+      2. Enable <b>Firestore Database</b> (start in test mode)<br>
+      3. Add a Web App, copy its config object<br>
+      4. Paste it into <code>FIREBASE_CONFIG</code> in this file, save, redeploy</div>
+    </div>
+  </div>
+
+  <!-- ONBOARDING -->
+  <div id="onboardScreen" class="onboard" style="display:none;">
+    <div class="mark">Us,<br>between<span class="amp">&nbsp;time zones</span>.</div>
+    <div class="sub">A quiet little space just for the two of you &mdash; so the distance feels smaller and the day feels shared.</div>
+
+    <div class="card">
+      <div class="card-title">Start a new space</div>
+      <label class="field-label">Your name</label>
+      <input type="text" id="createName" placeholder="What should we call you?">
+      <label class="field-label">Your time zone</label>
+      <select id="createTz"></select>
+      <div style="height:14px;"></div>
+      <button class="btn btn-primary" onclick="createSpace()">Create our space</button>
+    </div>
+
+    <div class="divider-word">or</div>
+
+    <div class="card">
+      <div class="card-title">Join their space</div>
+      <label class="field-label">The code they sent you</label>
+      <input type="text" id="joinCode" placeholder="e.g. PEACH-42" style="text-transform:uppercase;">
+      <label class="field-label">Your name</label>
+      <input type="text" id="joinName" placeholder="What should we call you?">
+      <label class="field-label">Your time zone</label>
+      <select id="joinTz"></select>
+      <div style="height:14px;"></div>
+      <button class="btn btn-soft" onclick="joinSpace()">Join our space</button>
+    </div>
+  </div>
+
+  <!-- MAIN APP -->
+  <div id="mainApp" style="display:none;">
+    <div class="topbar">
+      <div class="wordmark">Us<span class="amp">,</span> apart</div>
+      <div class="code-pill" id="codePill" onclick="copyCode()">···</div>
+    </div>
+
+    <!-- HOME -->
+    <div class="screen" id="screen-home">
+      <div class="eyebrow" id="homeDate">Today</div>
+      <h1 class="page-title">Same sky, different hour.</h1>
+      <div class="streak-pill" id="streakPill"><span class="flame">🔥</span> <span>Start today's streak</span></div>
+
+      <div class="card sky-wrap">
+        <div class="sky-bar" id="skyBar">
+          <div class="sky-marker me" id="markerMe">🌤️</div>
+          <div class="sky-marker them" id="markerThem">🌙</div>
+        </div>
+        <div class="sky-labels">
+          <div class="sky-person me">
+            <div class="name" id="meName">You</div>
+            <div class="time" id="meTime">--:--</div>
+            <div class="part" id="mePart">&nbsp;</div>
+          </div>
+          <div class="sky-person them">
+            <div class="name" id="themName">Them</div>
+            <div class="time" id="themTime">--:--</div>
+            <div class="part" id="themPart">&nbsp;</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-title">Vibe check</div>
+        <div class="vibe-grid" id="vibeGrid"></div>
+        <div class="vibe-current me">
+          <div class="who" id="vibeMeLabel">You</div>
+          <div class="val" id="vibeMeVal">&mdash;</div>
+        </div>
+        <div class="vibe-current them">
+          <div class="who" id="vibeThemLabel">Them</div>
+          <div class="val" id="vibeThemVal">&mdash;</div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-title">Best time to talk</div>
+        <div class="overlap-line" id="overlapLine">Add wake/sleep times in Settings to see your overlap.</div>
+      </div>
+
+      <div class="card" id="sessionCard">
+        <div class="card-title">Together now</div>
+        <div id="sessionBody">
+          <button class="btn btn-primary" onclick="startSession()">Start a virtual coffee date ☕</button>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-title">Send a little something</div>
+        <div class="tap-grid" id="tapGrid"></div>
+        <div class="ping-feed" id="pingFeed"></div>
+      </div>
+
+      <div class="stat-row">
+        <div class="stat">
+          <div class="num" id="daysTogetherNum">0</div>
+          <div class="label">Days together</div>
+        </div>
+        <div class="stat">
+          <div class="num" id="daysApartNum">0</div>
+          <div class="label">Until we meet</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- NOTES -->
+    <div class="screen" id="screen-notes">
+      <div class="eyebrow">Little notes</div>
+      <h1 class="page-title">Say the small things.</h1>
+
+      <div class="seg-control">
+        <button class="seg-btn active" id="segTimeline" onclick="setNotesView('timeline')">Timeline</button>
+        <button class="seg-btn" id="segGallery" onclick="setNotesView('gallery')">Gallery</button>
+      </div>
+
+      <div id="timelineView">
+        <div class="card">
+          <div class="compose">
+            <textarea id="noteInput" placeholder="Write something for them to find..."></textarea>
+          </div>
+          <div class="voice-add-row">
+            <label class="photo-add" for="notePhoto">📷 Attach a photo</label>
+            <button class="voice-add" id="recordBtn" onclick="startRecording()">🎙️ Record a voice note</button>
+          </div>
+          <input type="file" id="notePhoto" accept="image/*" style="display:none;" onchange="onPhotoChosen(event)">
+          <div id="photoPreviewWrap"></div>
+
+          <div class="recording-ui" id="recordingUI" style="display:none;">
+            <span class="rec-dot"></span>
+            <span class="rec-timer" id="recTimer">0:00</span>
+            <button class="rec-cancel" onclick="cancelRecording()">Discard</button>
+            <button class="rec-stop" onclick="stopRecording()">Stop</button>
+          </div>
+          <div id="voicePreviewWrap"></div>
+
+          <div style="height:10px;"></div>
+          <button class="btn btn-primary btn-sm" onclick="sendNote()">Leave note</button>
+        </div>
+        <div id="notesList"></div>
+      </div>
+
+      <div id="galleryView" style="display:none;">
+        <div class="gallery-count" id="galleryCount">0 photos</div>
+        <div class="gallery-grid" id="galleryGrid"></div>
+      </div>
+    </div>
+
+    <!-- TOGETHER -->
+    <div class="screen" id="screen-together">
+      <div class="eyebrow">Check in</div>
+      <h1 class="page-title">How are you, really?</h1>
+
+      <div class="card">
+        <div class="card-title">Today's mood</div>
+        <div class="mood-grid" id="moodGrid"></div>
+        <div class="mood-current">
+          <div>
+            <div class="who" id="moodMeLabel">You</div>
+            <div class="val" id="moodMeVal">&mdash;</div>
+          </div>
+          <div style="text-align:right;">
+            <div class="who" id="moodThemLabel">Them</div>
+            <div class="val" id="moodThemVal">&mdash;</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-title">Today's question</div>
+        <p class="prompt-q" id="promptQ">&nbsp;</p>
+        <textarea id="promptInput" placeholder="Your answer..."></textarea>
+        <div style="height:10px;"></div>
+        <button class="btn btn-soft btn-sm" onclick="answerPrompt()">Save answer</button>
+        <div class="answer-block">
+          <div class="answer-who" id="ansMeLabel">You</div>
+          <div id="ansMe" class="answer-empty">Not answered yet</div>
+        </div>
+        <div class="answer-block">
+          <div class="answer-who" id="ansThemLabel">Them</div>
+          <div id="ansThem" class="answer-empty">Not answered yet</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- PLANS -->
+    <div class="screen" id="screen-plans">
+      <div class="eyebrow">Looking ahead</div>
+      <h1 class="page-title">What we're counting toward.</h1>
+
+      <div class="card">
+        <div class="card-title">Next time together</div>
+        <label class="field-label">Date</label>
+        <input type="date" id="nextVisitInput" onchange="saveNextVisit()">
+        <div style="height:6px;"></div>
+        <div class="stat" style="margin-top:10px;">
+          <div class="num" id="visitCountdown">&mdash;</div>
+          <div class="label">days to go</div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-title">Someday list</div>
+        <div class="compose">
+          <input type="text" id="bucketInput" placeholder="Add something to look forward to...">
+        </div>
+        <div style="height:10px;"></div>
+        <button class="btn btn-soft btn-sm" onclick="addBucket()">Add</button>
+        <div id="bucketList" style="margin-top:8px;"></div>
+      </div>
+    </div>
+
+    <!-- SETTINGS -->
+    <div class="screen" id="screen-settings">
+      <div class="eyebrow">Our space</div>
+      <h1 class="page-title">Details</h1>
+
+      <div class="card">
+        <div class="card-title">Your details</div>
+        <label class="field-label">Your name</label>
+        <input type="text" id="settingsName">
+        <label class="field-label">Your time zone</label>
+        <select id="settingsTz"></select>
+        <label class="field-label">Usually awake from</label>
+        <div class="btn-row">
+          <select id="settingsWake"></select>
+          <select id="settingsSleep"></select>
+        </div>
+        <div style="height:12px;"></div>
+        <button class="btn btn-soft btn-sm" onclick="saveProfile()">Save</button>
+      </div>
+
+      <div class="card">
+        <div class="card-title">Together since</div>
+        <input type="date" id="startDateInput" onchange="saveStartDate()">
+      </div>
+
+      <div class="card">
+        <div class="card-title">Notifications (in-app)</div>
+        <div class="notif-row">
+          <div>
+            <div style="font-size:13px;">Popup while this is open in your browser</div>
+            <div class="notif-status" id="notifStatus">Off</div>
+          </div>
+          <button class="btn btn-soft btn-sm" onclick="requestNotifPermission()">Turn on</button>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-title">Phone notifications, even when closed</div>
+        <div class="notif-status">1. Install the free <b>ntfy</b> app (App Store / Play Store).<br>
+        2. Tap the + button in ntfy and subscribe to this exact topic:</div>
+        <div class="code-display" id="ntfyTopicDisplay" style="font-size:16px; word-break:break-all;">···</div>
+        <div class="btn-row">
+          <button class="btn btn-ghost btn-sm" onclick="copyTopic()">Copy topic</button>
+          <button class="btn btn-ghost btn-sm" onclick="testPush()">Send test</button>
+        </div>
+        <div class="notif-status" style="margin-top:10px;">Do this on both phones, using the same topic. After that, pings and notes will buzz your phone even with the app fully closed. Keep this topic private — it's not encrypted, just hard to guess.</div>
+      </div>
+
+      <div class="card">
+        <div class="card-title">Invite code</div>
+        <div class="code-display" id="settingsCode">····</div>
+        <button class="btn btn-ghost btn-sm" onclick="copyCode()" style="margin:auto; display:flex;">Copy code</button>
+      </div>
+
+      <button class="link-btn" onclick="leaveSpace()">Leave this space</button>
+    </div>
+  </div>
+
+  <div class="navbar" id="navbar" style="display:none;">
+    <button class="nav-btn active" data-screen="home" onclick="showScreen('home')">
+      <span class="nav-dot" id="dotHome"></span>
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M3 11.5L12 4l9 7.5"/><path d="M5.5 10v9.5h13V10"/></svg>
+      <span class="lab">Home</span>
+    </button>
+    <button class="nav-btn" data-screen="notes" onclick="showScreen('notes')">
+      <span class="nav-dot" id="dotNotes"></span>
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M4 4h16v13H8l-4 4V4z"/></svg>
+      <span class="lab">Notes</span>
+    </button>
+    <button class="nav-btn" data-screen="together" onclick="showScreen('together')">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 20s-7.5-4.6-9.5-9.1C1.2 7.6 3 4.5 6.3 4.5c2 0 3.3 1.1 5.7 3.6 2.4-2.5 3.7-3.6 5.7-3.6 3.3 0 5.1 3.1 3.8 6.4C19.5 15.4 12 20 12 20z"/></svg>
+      <span class="lab">Us</span>
+    </button>
+    <button class="nav-btn" data-screen="plans" onclick="showScreen('plans')">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3.5" y="5" width="17" height="15" rx="2"/><path d="M8 3v4M16 3v4M3.5 9.5h17"/></svg>
+      <span class="lab">Plans</span>
+    </button>
+    <button class="nav-btn" data-screen="settings" onclick="showScreen('settings')">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="12" r="3"/><path d="M19.4 13a7.9 7.9 0 000-2l2-1.5-2-3.5-2.4 1a8 8 0 00-1.7-1L15 3h-4l-.3 2.6a8 8 0 00-1.7 1l-2.4-1-2 3.5L6.6 11a7.9 7.9 0 000 2l-2 1.5 2 3.5 2.4-1a8 8 0 001.7 1L11 21h4l.3-2.6a8 8 0 001.7-1l2.4 1 2-3.5-2-1.5z"/></svg>
+      <span class="lab">Us & you</span>
+    </button>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<div class="lightbox" id="lightbox">
+  <button class="lb-close" onclick="closeLightbox()">×</button>
+  <button class="lb-nav lb-prev" onclick="navLightbox(-1)">‹</button>
+  <img id="lbImg" src="">
+  <div class="lb-caption" id="lbCaption"></div>
+  <div class="lb-meta" id="lbMeta"></div>
+  <button class="lb-nav lb-next" onclick="navLightbox(1)">›</button>
+</div>
+
+<script>
+/* ---------------------------------------------------------
+   DATA MODEL
+   shared "space-{CODE}-core"  -> profiles, dates, pings, mood, prompt answers, bucket list
+   shared "space-{CODE}-notes" -> array of love notes
+   personal "my-role"          -> { code, role: 'a' | 'b' }
+--------------------------------------------------------- */
+
+const TIMEZONES = [
+  "Pacific/Honolulu","America/Anchorage","America/Los_Angeles","America/Denver",
+  "America/Chicago","America/New_York","America/Sao_Paulo","Atlantic/Azores",
+  "Europe/London","Europe/Paris","Europe/Berlin","Europe/Athens",
+  "Europe/Moscow","Africa/Cairo","Africa/Johannesburg","Asia/Dubai",
+  "Asia/Karachi","Asia/Kolkata","Asia/Dhaka","Asia/Bangkok",
+  "Asia/Shanghai","Asia/Singapore","Asia/Tokyo","Asia/Seoul",
+  "Australia/Perth","Australia/Sydney","Pacific/Auckland"
+];
+
+const MOODS = ["Good","Missing you","Tired","Excited","Anxious","Peaceful","Busy","Lonely","Grateful"];
+
+const TAPS = [
+  { type:"thinking", emoji:"💛", label:"Thinking of you" },
+  { type:"hug",      emoji:"🫂", label:"Sending a hug" },
+  { type:"morning",  emoji:"☀️", label:"Good morning" },
+  { type:"night",    emoji:"🌙", label:"Goodnight" },
+  { type:"miss",     emoji:"😘", label:"Miss your face" },
+  { type:"excited",  emoji:"🎉", label:"Can't wait for you" }
+];
+
+const VIBES = [
+  { key:"cozy",    label:"Cozy",    emoji:"🕯️", color:"#E3A24C" },
+  { key:"dreamy",  label:"Dreamy",  emoji:"🌌", color:"#5B6B8C" },
+  { key:"playful", label:"Playful", emoji:"✨", color:"#C1666B" },
+  { key:"calm",    label:"Calm",    emoji:"🍃", color:"#8A9A7E" },
+  { key:"sunny",   label:"Sunny",   emoji:"🌻", color:"#F2C14E" },
+  { key:"moody",   label:"Moody",   emoji:"🌧️", color:"#2B2440" },
+  { key:"lovey",   label:"Lovey",   emoji:"💗", color:"#D98A9E" },
+  { key:"sleepy",  label:"Sleepy",  emoji:"😴", color:"#9C8AA5" }
+];
+
+const PROMPTS = [
+  "What's one small thing that made you smile today?",
+  "If we were in the same city right now, what would we be doing?",
+  "What's a song that reminds you of us lately?",
+  "What are you looking forward to this week?",
+  "Describe your day in exactly five words.",
+  "What's something you want to tell me but keep forgetting to?",
+  "What's your favorite memory of us so far?",
+  "What do you need more of from me this week?",
+  "What's a smell or taste that reminded you of home today?",
+  "If you could send me one thing right now, what would it be?",
+  "What's something you're proud of yourself for this week?",
+  "What does 'home' feel like to you right now?",
+  "What's a tiny detail about me you miss the most today?",
+  "What's the last thing that made you laugh out loud?",
+  "What's on your mind that you haven't said out loud yet?"
+];
+
+let state = {
+  code: null,
+  role: null, // 'a' or 'b'
+  core: null,
+  notes: []
+};
+
+let lastSeen = { pingTs: 0, noteTs: 0 };
+let unseenPing = false;
+let unseenNote = false;
+
+function notifSupported(){ return typeof Notification !== "undefined"; }
+
+function loadLastSeen(){
+  const raw = localGet(`last-seen-${state.code}`);
+  if (raw){
+    lastSeen = JSON.parse(raw);
+  } else {
+    // first time in this space on this device: don't notify for history, only from now on
+    lastSeen = { pingTs: Date.now(), noteTs: Date.now() };
+    localSet(`last-seen-${state.code}`, JSON.stringify(lastSeen));
+  }
+}
+function saveLastSeen(){
+  localSet(`last-seen-${state.code}`, JSON.stringify(lastSeen));
+}
+
+async function requestNotifPermission(){
+  if (!notifSupported()){ showToast("Notifications aren't supported here"); return; }
+  const perm = await Notification.requestPermission();
+  renderNotifStatus();
+  if (perm === "granted") showToast("Notifications on");
+  else if (perm === "denied") showToast("Blocked — enable in browser settings");
+}
+
+function renderNotifStatus(){
+  const el = document.getElementById("notifStatus");
+  if (!el) return;
+  if (!notifSupported()){ el.textContent = "Not supported in this browser"; return; }
+  if (Notification.permission === "granted") el.textContent = "On, while this tab is open";
+  else if (Notification.permission === "denied") el.textContent = "Blocked — enable in browser settings";
+  else el.textContent = "Off";
+}
+
+function fireNotification(title, body){
+  if (notifSupported() && Notification.permission === "granted"){
+    try{ new Notification(title, { body }); }catch(e){}
+  }
+}
+
+async function pushExternal(title, body, tags){
+  const topic = state.core?.ntfyTopic;
+  if (!topic) return;
+  try{
+    await fetch(`https://ntfy.sh/${topic}`, {
+      method: "POST",
+      headers: { "Title": title, "Tags": tags || "heart" },
+      body: body
+    });
+  }catch(e){ /* best effort — offline or blocked, ignore */ }
+}
+
+function checkForNew(){
+  if (!state.core) return;
+  const pings = state.core.pings || [];
+  const latestPartnerPing = pings.find(p => p.from === theirKey());
+  if (latestPartnerPing && latestPartnerPing.ts > lastSeen.pingTs){
+    const nm = them()?.name || "They";
+    const tap = TAPS.find(t => t.type === latestPartnerPing.type) || TAPS[0];
+    fireNotification(`${tap.label} ${tap.emoji}`, `${nm} sent: ${tap.label.toLowerCase()}`);
+    showToast(`${nm}: ${tap.label} ${tap.emoji}`);
+    unseenPing = true;
+    lastSeen.pingTs = latestPartnerPing.ts;
+    saveLastSeen();
+  }
+  const notes = state.notes || [];
+  const latestPartnerNote = notes.find(n => n.from === theirKey());
+  if (latestPartnerNote && latestPartnerNote.ts > lastSeen.noteTs){
+    const nm = them()?.name || "They";
+    const kind = latestPartnerNote.voice ? { t:"New voice note 🎙️", b:`${nm} recorded you a message.` }
+                : latestPartnerNote.img ? { t:"New photo 📷", b:`${nm} left you a photo.` }
+                : { t:"New note 💌", b:`${nm} left you a note.` };
+    fireNotification(kind.t, kind.b);
+    unseenNote = true;
+    lastSeen.noteTs = latestPartnerNote.ts;
+    saveLastSeen();
+  }
+  document.getElementById("dotHome").style.display = unseenPing ? "block" : "none";
+  document.getElementById("dotNotes").style.display = unseenNote ? "block" : "none";
+}
+
+function fillTzSelect(sel){
+  sel.innerHTML = TIMEZONES.map(tz => {
+    let label = tz.split("/").pop().replace(/_/g," ");
+    return `<option value="${tz}">${label}</option>`;
+  }).join("");
+}
+function fillHourSelect(sel, def){
+  const fmt = h => { const ampm = h>=12?'PM':'AM'; let hh=h%12; if(hh===0) hh=12; return `${hh}:00 ${ampm}`; };
+  sel.innerHTML = Array.from({length:24}, (_,h) => `<option value="${h}">${fmt(h)}</option>`).join("");
+  sel.value = def;
+}
+
+function showToast(msg){
+  const t = document.getElementById("toast");
+  t.textContent = msg;
+  t.classList.add("show");
+  setTimeout(()=>t.classList.remove("show"), 1800);
+}
+
+function genCode(){
+  const words = ["PEACH","MAPLE","AMBER","CORAL","OLIVE","BASIL","CEDAR","IVORY","SIENA","PLUME","HAZEL","BLOOM"];
+  const w = words[Math.floor(Math.random()*words.length)];
+  const n = Math.floor(10 + Math.random()*89);
+  return `${w}-${n}`;
+}
+
+/* ---------------- Firebase (shared data) + localStorage (personal data) ---------------- */
+
+// PASTE YOUR FIREBASE CONFIG HERE (see setup steps) — leave as-is until you have one.
+const FIREBASE_CONFIG = {
+  apiKey: "AIzaSyBmXrSstQbHhSprIbl8Nahtoc3uM_0PnbA",
+  authDomain: "together-432b0.firebaseapp.com",
+  projectId: "together-432b0",
+  storageBucket: "together-432b0.firebasestorage.app",
+  messagingSenderId: "942098730464",
+  appId: "1:942098730464:web:860a5d794aaef0f5dd2f85"
+};
+
+let db = null;
+let fb = null; // holds the Firestore function references we need
+
+function firebaseConfigured(){
+  return FIREBASE_CONFIG.apiKey && FIREBASE_CONFIG.apiKey !== "YOUR_API_KEY";
+}
+
+async function loadFirebase(){
+  const [{ initializeApp }, fsMod, authMod] = await Promise.all([
+    import("https://www.gstatic.com/firebasejs/10.13.0/firebase-app.js"),
+    import("https://www.gstatic.com/firebasejs/10.13.0/firebase-firestore.js"),
+    import("https://www.gstatic.com/firebasejs/10.13.0/firebase-auth.js")
+  ]);
+  const app = initializeApp(FIREBASE_CONFIG);
+  db = fsMod.getFirestore(app);
+  fb = fsMod;
+  // Anonymous auth so Firestore rules can require request.auth != null —
+  // this keeps random bots/scanners from reading every couple's space,
+  // even though the room code itself still acts as the real "password".
+  const auth = authMod.getAuth(app);
+  await authMod.signInAnonymously(auth);
+}
+
+function localGet(key){
+  try{ return localStorage.getItem(key); }catch(e){ return null; }
+}
+function localSet(key, value){
+  try{ localStorage.setItem(key, value); }catch(e){}
+}
+function localRemove(key){
+  try{ localStorage.removeItem(key); }catch(e){}
+}
+
+function defaultCore(){
+  return {
+    a: { name:"", tz:"", wake:8, sleep:23 },
+    b: { name:"", tz:"", wake:8, sleep:23 },
+    startDate: "",
+    nextVisit: "",
+    pings: [],
+    mood: {},
+    prompt: { date:"", answers:{} },
+    bucket: [],
+    ntfyTopic: "",
+    streak: { count:0, lastDate:"" },
+    session: null,
+    vibe: {}
+  };
+}
+
+async function updateCore(mutator){
+  const previous = state.core;
+  let core = state.core ? JSON.parse(JSON.stringify(state.core)) : defaultCore();
+  mutator(core);
+  recalcStreak(core, state.notes);
+  state.core = core;
+  try{
+    await fb.setDoc(fb.doc(db, "spaces", state.code), core);
+  }catch(e){
+    state.core = previous;
+    renderAll();
+    showToast("Couldn't save — check your connection and try again");
+    throw e;
+  }
+}
+
+/* ---------------- INIT / ONBOARDING ---------------- */
+
+async function init(){
+  fillTzSelect(document.getElementById("createTz"));
+  fillTzSelect(document.getElementById("joinTz"));
+  fillTzSelect(document.getElementById("settingsTz"));
+  fillHourSelect(document.getElementById("settingsWake"), 8);
+  fillHourSelect(document.getElementById("settingsSleep"), 23);
+
+  // guess default tz
+  try{
+    const guess = Intl.DateTimeFormat().resolvedOptions().timeZone;
+    if (TIMEZONES.includes(guess)){
+      document.getElementById("createTz").value = guess;
+      document.getElementById("joinTz").value = guess;
+    }
+  }catch(e){}
+
+  if (!firebaseConfigured()){
+    document.getElementById("setupGate").style.display = "flex";
+    return;
+  }
+  try{
+    await loadFirebase();
+  }catch(e){
+    console.error("Firebase init failed", e);
+    showToast("Couldn't connect — enable Anonymous auth in your Firebase console (see firestore.rules)");
+  }
+
+  const myRoleRaw = localGet("my-role");
+  if (myRoleRaw){
+    const mr = JSON.parse(myRoleRaw);
+    state.code = mr.code;
+    state.role = mr.role;
+    await enterApp();
+  } else {
+    document.getElementById("onboardScreen").style.display = "flex";
+  }
+}
+
+async function createSpace(){
+  const name = document.getElementById("createName").value.trim();
+  const tz = document.getElementById("createTz").value;
+  if (!name){ showToast("Add your name first"); return; }
+  const code = genCode();
+  state.role = "a";
+  localSet("my-role", JSON.stringify({code, role:"a"}));
+  const ntfyTopic = `us-apart-${code.toLowerCase()}-${Math.random().toString(36).slice(2,8)}`;
+  const core = defaultCore();
+  core.a = { name, tz, wake:8, sleep:23 };
+  core.ntfyTopic = ntfyTopic;
+  await fb.setDoc(fb.doc(db, "spaces", code), core);
+  state.code = code;
+  state.core = core;
+  showToast(`Space created: ${code}`);
+  await enterApp();
+}
+
+async function joinSpace(){
+  const codeInput = document.getElementById("joinCode").value.trim().toUpperCase();
+  const name = document.getElementById("joinName").value.trim();
+  const tz = document.getElementById("joinTz").value;
+  if (!codeInput || !name){ showToast("Fill in the code and your name"); return; }
+  const snap = await fb.getDoc(fb.doc(db, "spaces", codeInput));
+  if (!snap.exists()){ showToast("Couldn't find that space — check the code"); return; }
+  state.role = "b";
+  localSet("my-role", JSON.stringify({code:codeInput, role:"b"}));
+  const core = snap.data();
+  core.b = { name, tz, wake:8, sleep:23 };
+  await fb.setDoc(fb.doc(db, "spaces", codeInput), core);
+  state.code = codeInput;
+  state.core = core;
+  showToast("You're in 💛");
+  await enterApp();
+}
+
+async function leaveSpace(){
+  if (!confirm("Leave this space on this device? You can rejoin later with the code.")) return;
+  localRemove("my-role");
+  if (unsubCore) unsubCore();
+  if (unsubNotes) unsubNotes();
+  state = { code:null, role:null, core:null, notes:[] };
+  document.getElementById("mainApp").style.display = "none";
+  document.getElementById("navbar").style.display = "none";
+  document.getElementById("onboardScreen").style.display = "flex";
+}
+
+function copyCode(){
+  if (!state.code) return;
+  navigator.clipboard?.writeText(state.code).catch(()=>{});
+  showToast(`Code copied: ${state.code}`);
+}
+
+/* ---------------- MAIN APP ---------------- */
+
+let unsubCore = null, unsubNotes = null;
+
+async function enterApp(){
+  document.getElementById("onboardScreen").style.display = "none";
+  document.getElementById("mainApp").style.display = "block";
+  document.getElementById("navbar").style.display = "flex";
+  document.getElementById("codePill").textContent = state.code;
+  document.getElementById("settingsCode").textContent = state.code;
+  renderTapGrid();
+  renderVibeGrid();
+
+  loadLastSeen();
+  renderNotifStatus();
+  subscribeSpace();
+  tickClock();
+  setInterval(tickClock, 30000);
+  renderMoodGrid();
+}
+
+function subscribeSpace(){
+  if (unsubCore) unsubCore();
+  if (unsubNotes) unsubNotes();
+
+  unsubCore = fb.onSnapshot(fb.doc(db, "spaces", state.code), snap => {
+    state.core = snap.exists() ? snap.data() : defaultCore();
+    checkForNew();
+    renderAll();
+  });
+
+  const notesQ = fb.query(
+    fb.collection(db, "spaces", state.code, "notes"),
+    fb.orderBy("ts", "desc"),
+    fb.limit(200)
+  );
+  unsubNotes = fb.onSnapshot(notesQ, snap => {
+    state.notes = snap.docs.map(d => ({ id: d.id, ...d.data() }));
+    checkForNew();
+    renderAll();
+  });
+}
+
+function me(){ return state.role === "a" ? state.core.a : state.core.b; }
+function them(){ return state.role === "a" ? state.core.b : state.core.a; }
+function myKey(){ return state.role; }
+function theirKey(){ return state.role === "a" ? "b" : "a"; }
+
+function renderAll(){
+  renderHome();
+  renderNotes();
+  renderTogether();
+  renderPlans();
+  renderSettings();
+}
+
+function showScreen(name){
+  document.querySelectorAll(".screen").forEach(s => s.classList.remove("active"));
+  document.getElementById("screen-"+name).classList.add("active");
+  document.querySelectorAll(".nav-btn").forEach(b => b.classList.toggle("active", b.dataset.screen===name));
+  if (name === "home"){ unseenPing = false; document.getElementById("dotHome").style.display = "none"; }
+  if (name === "notes"){ unseenNote = false; document.getElementById("dotNotes").style.display = "none"; }
+  renderAll();
+}
+
+/* ---- Clock / sky ---- */
+function partOfDay(hour){
+  if (hour < 5) return "Late night";
+  if (hour < 8) return "Early morning";
+  if (hour < 12) return "Morning";
+  if (hour < 17) return "Afternoon";
+  if (hour < 20) return "Evening";
+  return "Night";
+}
+function iconFor(hour){
+  if (hour < 6 || hour >= 20) return "🌙";
+  if (hour < 8) return "🌅";
+  if (hour < 18) return "☀️";
+  return "🌆";
+}
+function getHourIn(tz){
+  if (!tz) return null;
+  try{
+    const fmt = new Intl.DateTimeFormat("en-US", { timeZone: tz, hour:"numeric", hour12:false });
+    return parseInt(fmt.format(new Date()));
+  }catch(e){ return null; }
+}
+function getTimeIn(tz){
+  if (!tz) return "--:--";
+  try{
+    return new Intl.DateTimeFormat("en-US", { timeZone: tz, hour:"numeric", minute:"2-digit", hour12:true }).format(new Date());
+  }catch(e){ return "--:--"; }
+}
+
+function tickClock(){
+  if (!state.core) return;
+  const m = me(), t = them();
+  document.getElementById("meName").textContent = m?.name || "You";
+  document.getElementById("themName").textContent = t?.name || "Them";
+  document.getElementById("meTime").textContent = getTimeIn(m?.tz);
+  document.getElementById("themTime").textContent = getTimeIn(t?.tz);
+  const mh = getHourIn(m?.tz), th = getHourIn(t?.tz);
+  document.getElementById("mePart").textContent = mh!==null ? partOfDay(mh) : "Set your time zone";
+  document.getElementById("themPart").textContent = th!==null ? partOfDay(th) : "Waiting for them to join";
+  document.getElementById("markerMe").textContent = mh!==null ? iconFor(mh) : "•";
+  document.getElementById("markerThem").textContent = th!==null ? iconFor(th) : "•";
+  document.getElementById("markerMe").style.left = (mh!==null ? (mh/24*100) : 25) + "%";
+  document.getElementById("markerThem").style.left = (th!==null ? (th/24*100) : 75) + "%";
+  document.getElementById("homeDate").textContent = new Date().toLocaleDateString("en-US", { weekday:"long", month:"long", day:"numeric" });
+}
+
+/* ---- Home: ping + stats ---- */
+function renderTapGrid(){
+  const grid = document.getElementById("tapGrid");
+  grid.innerHTML = TAPS.map(t => `<button class="tap-btn" onclick="sendTap('${t.type}')"><span class="em">${t.emoji}</span>${t.label}</button>`).join("");
+}
+
+/* ---- Vibe: live shared ambient mood ---- */
+function renderVibeGrid(){
+  const grid = document.getElementById("vibeGrid");
+  grid.innerHTML = VIBES.map(v => `<button class="vibe-chip" style="--vibe-chip-color:${v.color}" onclick="setVibe('${v.key}')"><span class="dot" style="background:${v.color}"></span>${v.emoji} ${v.label}</button>`).join("");
+}
+
+async function setVibe(key){
+  const v = VIBES.find(x => x.key === key);
+  if (!v) return;
+  try{
+    await updateCore(core => {
+      core.vibe = core.vibe || {};
+      core.vibe[myKey()] = { key, ts: Date.now() };
+    });
+  }catch(e){ return; }
+  showToast(`Vibe set to ${v.emoji} ${v.label}`);
+  const myName = me()?.name || "Someone";
+  pushExternal(`Vibe shift ${v.emoji}`, `${myName}'s vibe is now ${v.label.toLowerCase()}.`, "sparkles");
+  renderHome();
+}
+
+function hexToRgba(hex, alpha){
+  const h = hex.replace("#","");
+  const r = parseInt(h.substring(0,2),16), g = parseInt(h.substring(2,4),16), b = parseInt(h.substring(4,6),16);
+  return `rgba(${r},${g},${b},${alpha})`;
+}
+
+function renderVibe(){
+  if (!state.core) return;
+  const vibes = state.core.vibe || {};
+  const myVibe = VIBES.find(v => v.key === vibes[myKey()]?.key);
+  const theirVibe = VIBES.find(v => v.key === vibes[theirKey()]?.key);
+
+  document.getElementById("vibeMeLabel").textContent = me()?.name || "You";
+  document.getElementById("vibeThemLabel").textContent = them()?.name || "Them";
+  document.getElementById("vibeMeVal").innerHTML = myVibe ? `<span class="dot" style="background:${myVibe.color}"></span>${myVibe.emoji} ${myVibe.label}` : "&mdash;";
+  document.getElementById("vibeThemVal").innerHTML = theirVibe ? `<span class="dot" style="background:${theirVibe.color}"></span>${theirVibe.emoji} ${theirVibe.label}` : "&mdash;";
+  document.querySelectorAll("#vibeGrid .vibe-chip").forEach((chip, i) => {
+    chip.classList.toggle("selected", VIBES[i].key === myVibe?.key);
+  });
+
+  const app = document.getElementById("app");
+  if (myVibe || theirVibe){
+    const left = myVibe ? hexToRgba(myVibe.color, 0.16) : "transparent";
+    const right = theirVibe ? hexToRgba(theirVibe.color, 0.16) : "transparent";
+    app.style.background = `linear-gradient(155deg, ${left} 0%, var(--paper) 42%, var(--paper) 58%, ${right} 100%)`;
+  } else {
+    app.style.background = "var(--paper)";
+  }
+}
+
+async function sendTap(type){
+  const tap = TAPS.find(t => t.type===type) || TAPS[0];
+  await updateCore(core => {
+    core.pings = core.pings || [];
+    core.pings.unshift({ from: myKey(), type: tap.type, ts: Date.now() });
+    core.pings = core.pings.slice(0, 10);
+  });
+  showToast(`Sent ${tap.emoji}`);
+  const myName = me()?.name || "Someone";
+  pushExternal(`${tap.label} ${tap.emoji}`, `${myName}: ${tap.label.toLowerCase()}`, "heart");
+  renderHome();
+}
+
+function timeAgo(ts){
+  const s = Math.floor((Date.now()-ts)/1000);
+  if (s < 60) return "just now";
+  if (s < 3600) return Math.floor(s/60)+"m ago";
+  if (s < 86400) return Math.floor(s/3600)+"h ago";
+  return Math.floor(s/86400)+"d ago";
+}
+
+function renderHome(){
+  if (!state.core) return;
+  tickClock();
+  const feed = document.getElementById("pingFeed");
+  const pings = state.core.pings || [];
+  if (!pings.length){
+    feed.innerHTML = `<div class="empty-state" style="padding:14px 0;">Nothing sent yet — tap one above.</div>`;
+  } else {
+    feed.innerHTML = pings.map(p => {
+      const whoName = p.from === myKey() ? "You" : (them()?.name || "They");
+      const tap = TAPS.find(t => t.type === p.type) || TAPS[0];
+      return `<div class="ping-item"><span>${tap.emoji} <b>${whoName}</b> — ${tap.label.toLowerCase()}</span><span>${timeAgo(p.ts)}</span></div>`;
+    }).join("");
+  }
+
+  // stats
+  const start = state.core.startDate;
+  document.getElementById("daysTogetherNum").textContent = start ? daysBetween(new Date(start), new Date()) : "—";
+  const nv = state.core.nextVisit;
+  if (nv){
+    const d = daysBetween(new Date(), new Date(nv));
+    document.getElementById("daysApartNum").textContent = d >= 0 ? d : 0;
+  } else {
+    document.getElementById("daysApartNum").textContent = "—";
+  }
+
+  renderStreak();
+  renderVibe();
+  renderOverlap();
+  renderSession();
+}
+
+function renderStreak(){
+  const el = document.getElementById("streakPill");
+  const s = state.core.streak || { count:0 };
+  const bothToday = activeToday(state.core, state.notes, "a") && activeToday(state.core, state.notes, "b");
+  if (s.count > 0){
+    el.innerHTML = `<span class="flame">🔥</span> <span><b>${s.count}</b> day${s.count===1?'':'s'} in a row${bothToday ? '' : ' — keep it going today'}</span>`;
+  } else {
+    el.innerHTML = `<span class="flame">🔥</span> <span>Ping, note, or check in to start a streak</span>`;
+  }
+}
+
+/* ---- Best time to talk ---- */
+function computeOverlap(){
+  const m = me(), t = them();
+  if (!m?.tz || !t?.tz) return null;
+  const mw = m.wake ?? 8, ms = m.sleep ?? 23;
+  const tw = t.wake ?? 8, ts_ = t.sleep ?? 23;
+  const hits = [];
+  for (let h = 0; h < 24; h++){
+    // build a UTC instant at this hour today, then read local hour in each tz
+    const probe = new Date(Date.UTC(2020,0,1,h,0,0));
+    const mh = parseInt(new Intl.DateTimeFormat("en-US",{timeZone:m.tz,hour:"numeric",hour12:false}).format(probe));
+    const th = parseInt(new Intl.DateTimeFormat("en-US",{timeZone:t.tz,hour:"numeric",hour12:false}).format(probe));
+    const mAwake = mh >= mw && mh < ms;
+    const tAwake = th >= tw && th < ts_;
+    if (mAwake && tAwake) hits.push({ utc:h, mh, th });
+  }
+  if (!hits.length) return { none:true };
+  // find the longest contiguous run
+  let best = [hits[0]], cur = [hits[0]];
+  for (let i=1;i<hits.length;i++){
+    if (hits[i].utc === hits[i-1].utc+1){ cur.push(hits[i]); }
+    else { cur = [hits[i]]; }
+    if (cur.length > best.length) best = cur;
+  }
+  const fmt = h => { const ampm = h>=12?'PM':'AM'; let hh = h%12; if(hh===0) hh=12; return `${hh}${ampm}`; };
+  return {
+    none:false,
+    myStart: fmt(best[0].mh), myEnd: fmt((best[best.length-1].mh+1)%24),
+    theirStart: fmt(best[0].th), theirEnd: fmt((best[best.length-1].th+1)%24)
+  };
+}
+
+function renderOverlap(){
+  const el = document.getElementById("overlapLine");
+  const m = me(), t = them();
+  if (!m?.tz || !t?.tz){
+    el.textContent = "Once you're both set up with time zones, we'll find your best window to call.";
+    return;
+  }
+  const o = computeOverlap();
+  if (!o){ el.textContent = "Waiting on time zone info."; return; }
+  if (o.none){ el.innerHTML = "No natural overlap in your usual awake hours — one of you may need to stay up a little late, or wake up a little early."; return; }
+  el.innerHTML = `You're both usually awake around <b>${o.myStart}–${o.myEnd}</b> your time (<b>${o.theirStart}–${o.theirEnd}</b> theirs).`;
+}
+
+/* ---- Together Now: synced session ---- */
+let sessionTicker = null;
+async function startSession(){
+  await updateCore(core => {
+    core.session = { startedBy: myKey(), startedAt: Date.now(), duration: 600, joined:{ [myKey()]: true, [theirKey()]: false }, readyAt: null };
+  });
+  pushExternal("Coffee date ☕", `${me()?.name || "Your partner"} wants a virtual coffee date — open the app to join.`, "coffee");
+  renderSession();
+}
+async function joinSession(){
+  await updateCore(core => {
+    if (!core.session) return;
+    core.session.joined = core.session.joined || {};
+    core.session.joined[myKey()] = true;
+    if (core.session.joined.a && core.session.joined.b && !core.session.readyAt){
+      core.session.readyAt = Date.now();
+    }
+  });
+  renderSession();
+}
+async function endSession(){
+  await updateCore(core => { core.session = null; });
+  if (sessionTicker){ clearInterval(sessionTicker); sessionTicker = null; }
+  renderSession();
+}
+function renderSession(){
+  const body = document.getElementById("sessionBody");
+  const s = state.core?.session;
+  if (sessionTicker){ clearInterval(sessionTicker); sessionTicker = null; }
+  if (!s){
+    body.innerHTML = `<button class="btn btn-primary" onclick="startSession()">Start a virtual coffee date ☕</button>`;
+    return;
+  }
+  const iJoined = !!(s.joined && s.joined[myKey()]);
+  const bothJoined = !!(s.joined && s.joined.a && s.joined.b);
+  if (!bothJoined){
+    if (iJoined){
+      body.innerHTML = `<div class="session-waiting">Waiting for ${them()?.name || "them"} to join...</div>
+        <button class="btn btn-ghost btn-sm" style="margin-top:10px;" onclick="endSession()">Cancel</button>`;
+    } else {
+      body.innerHTML = `<div class="session-waiting">${(state.role===s.startedBy ? "You" : (them()?.name || "They"))} started a virtual coffee date ☕</div>
+        <button class="btn btn-primary" style="margin-top:10px;" onclick="joinSession()">Join now ☕</button>`;
+    }
+    return;
+  }
+  const render = () => {
+    const elapsed = Math.floor((Date.now() - s.readyAt)/1000);
+    const remaining = s.duration - elapsed;
+    if (remaining <= 0){ endSession(); return; }
+    const mm = String(Math.floor(remaining/60)).padStart(2,'0');
+    const ss = String(remaining%60).padStart(2,'0');
+    body.innerHTML = `
+      <div class="session-ring"><div class="time">${mm}:${ss}</div></div>
+      <div class="session-waiting" style="margin-bottom:10px;">You're both here right now ☕</div>
+      <button class="btn btn-ghost btn-sm" onclick="endSession()">End</button>`;
+  };
+  render();
+  sessionTicker = setInterval(render, 1000);
+}
+
+function daysBetween(d1, d2){
+  const a = new Date(d1.getFullYear(), d1.getMonth(), d1.getDate());
+  const b = new Date(d2.getFullYear(), d2.getMonth(), d2.getDate());
+  return Math.round((b-a)/86400000);
+}
+
+/* ---- Notes ---- */
+let pendingPhoto = null; // dataURL of a compressed image staged for the next note
+
+/* ---------------- Voice recording ---------------- */
+const MAX_VOICE_SECONDS = 60;
+let pendingVoice = null; // { dataUrl, mimeType, duration }
+let mediaRecorder = null;
+let recordedChunks = [];
+let recordingStartTime = null;
+let recordingTimerHandle = null;
+let recordingCancelled = false;
+let currentlyPlayingVoiceId = null;
+
+function pickAudioMime(){
+  const candidates = ["audio/webm;codecs=opus","audio/webm","audio/mp4","audio/aac","audio/ogg;codecs=opus"];
+  if (!window.MediaRecorder || !MediaRecorder.isTypeSupported) return "";
+  for (const c of candidates){
+    if (MediaRecorder.isTypeSupported(c)) return c;
+  }
+  return "";
+}
+
+function formatDuration(sec){
+  const m = Math.floor(sec/60);
+  const s = Math.floor(sec%60);
+  return `${m}:${String(s).padStart(2,'0')}`;
+}
+
+async function startRecording(){
+  if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia){
+    showToast("Voice recording isn't supported in this browser");
+    return;
+  }
+  try{
+    const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+    const mimeType = pickAudioMime();
+    const opts = { audioBitsPerSecond: 32000 };
+    if (mimeType) opts.mimeType = mimeType;
+    mediaRecorder = new MediaRecorder(stream, opts);
+    recordedChunks = [];
+    recordingCancelled = false;
+    mediaRecorder.ondataavailable = e => { if (e.data && e.data.size > 0) recordedChunks.push(e.data); };
+    mediaRecorder.onstop = () => {
+      stream.getTracks().forEach(t => t.stop());
+      if (!recordingCancelled) finalizeRecording(mediaRecorder.mimeType || mimeType || "audio/webm");
+      recordedChunks = [];
+    };
+    mediaRecorder.start();
+    recordingStartTime = Date.now();
+    clearPendingVoice();
+    document.getElementById("recordingUI").style.display = "flex";
+    document.getElementById("recordBtn").style.display = "none";
+    tickRecordingTimer();
+    recordingTimerHandle = setInterval(tickRecordingTimer, 250);
+  }catch(e){
+    showToast("Microphone access denied — check your browser settings for this site");
+  }
+}
+
+function tickRecordingTimer(){
+  if (!recordingStartTime) return;
+  const elapsed = (Date.now() - recordingStartTime) / 1000;
+  const el = document.getElementById("recTimer");
+  if (el) el.textContent = formatDuration(elapsed);
+  if (elapsed >= MAX_VOICE_SECONDS) stopRecording();
+}
+
+function stopRecording(){
+  if (mediaRecorder && mediaRecorder.state !== "inactive") mediaRecorder.stop();
+  clearInterval(recordingTimerHandle);
+  recordingTimerHandle = null;
+  document.getElementById("recordingUI").style.display = "none";
+  document.getElementById("recordBtn").style.display = "flex";
+}
+
+function cancelRecording(){
+  recordingCancelled = true;
+  stopRecording();
+}
+
+function finalizeRecording(mimeType){
+  const duration = Math.min(MAX_VOICE_SECONDS, (Date.now() - recordingStartTime) / 1000);
+  const blob = new Blob(recordedChunks, { type: mimeType });
+  const reader = new FileReader();
+  reader.onload = () => {
+    pendingVoice = { dataUrl: reader.result, mimeType, duration: Math.round(duration) };
+    renderVoicePreview();
+  };
+  reader.readAsDataURL(blob);
+}
+
+function clearPendingVoice(){
+  pendingVoice = null;
+  document.getElementById("voicePreviewWrap").innerHTML = "";
+}
+
+function renderVoicePreview(){
+  const wrap = document.getElementById("voicePreviewWrap");
+  if (!pendingVoice){ wrap.innerHTML = ""; return; }
+  wrap.innerHTML = `<div class="voice-preview">
+    <button class="voice-play" onclick="togglePreviewPlay()">▶</button>
+    <span style="font-size:13px; color:var(--ink-soft);">Voice note · ${formatDuration(pendingVoice.duration)}</span>
+    <button class="voice-del" onclick="clearPendingVoice()">×</button>
+    <audio id="previewAudio" src="${pendingVoice.dataUrl}"></audio>
+  </div>`;
+}
+
+function togglePreviewPlay(){
+  const audio = document.getElementById("previewAudio");
+  const btn = document.querySelector("#voicePreviewWrap .voice-play");
+  if (!audio) return;
+  if (audio.paused){ audio.play(); btn.textContent = "⏸"; audio.onended = () => { btn.textContent = "▶"; }; }
+  else { audio.pause(); btn.textContent = "▶"; }
+}
+
+function toggleVoice(id){
+  const audio = document.getElementById("audio-"+id);
+  if (!audio) return;
+  const btn = document.querySelector(`.voice-note[data-id="${id}"] .voice-play`);
+  if (currentlyPlayingVoiceId && currentlyPlayingVoiceId !== id){
+    const prevAudio = document.getElementById("audio-"+currentlyPlayingVoiceId);
+    const prevBtn = document.querySelector(`.voice-note[data-id="${currentlyPlayingVoiceId}"] .voice-play`);
+    if (prevAudio) prevAudio.pause();
+    if (prevBtn) prevBtn.textContent = "▶";
+  }
+  if (audio.paused){
+    audio.play();
+    btn.textContent = "⏸";
+    currentlyPlayingVoiceId = id;
+  } else {
+    audio.pause();
+    btn.textContent = "▶";
+    currentlyPlayingVoiceId = null;
+  }
+}
+function updateVoiceProgress(id){
+  const audio = document.getElementById("audio-"+id);
+  const fill = document.getElementById("fill-"+id);
+  const time = document.getElementById("time-"+id);
+  if (!audio || !fill || !time || !audio.duration) return;
+  fill.style.width = (audio.currentTime / audio.duration * 100) + "%";
+  time.textContent = formatDuration(audio.duration - audio.currentTime);
+}
+function onVoiceEnded(id){
+  const fill = document.getElementById("fill-"+id);
+  const btn = document.querySelector(`.voice-note[data-id="${id}"] .voice-play`);
+  const time = document.getElementById("time-"+id);
+  const audio = document.getElementById("audio-"+id);
+  if (fill) fill.style.width = "0%";
+  if (btn) btn.textContent = "▶";
+  if (time && audio) time.textContent = formatDuration(audio.duration || 0);
+  currentlyPlayingVoiceId = null;
+}
+
+function onPhotoChosen(evt){
+  const file = evt.target.files[0];
+  if (!file) return;
+  const reader = new FileReader();
+  reader.onload = () => {
+    const img = new Image();
+    img.onload = () => {
+      const maxW = 640;
+      const scale = Math.min(1, maxW / img.width);
+      const canvas = document.createElement("canvas");
+      canvas.width = Math.round(img.width * scale);
+      canvas.height = Math.round(img.height * scale);
+      const ctx = canvas.getContext("2d");
+      ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+      pendingPhoto = canvas.toDataURL("image/jpeg", 0.6);
+      renderPhotoPreview();
+    };
+    img.src = reader.result;
+  };
+  reader.readAsDataURL(file);
+}
+function clearPendingPhoto(){
+  pendingPhoto = null;
+  document.getElementById("notePhoto").value = "";
+  renderPhotoPreview();
+}
+function renderPhotoPreview(){
+  const wrap = document.getElementById("photoPreviewWrap");
+  if (!pendingPhoto){ wrap.innerHTML = ""; return; }
+  wrap.innerHTML = `<div class="photo-preview"><img src="${pendingPhoto}"><button onclick="clearPendingPhoto()">×</button></div>`;
+}
+
+async function sendNote(){
+  const input = document.getElementById("noteInput");
+  const text = input.value.trim();
+  if (!text && !pendingPhoto && !pendingVoice) return;
+  const note = {
+    from: myKey(),
+    text,
+    img: pendingPhoto || null,
+    voice: pendingVoice ? { dataUrl: pendingVoice.dataUrl, mimeType: pendingVoice.mimeType, duration: pendingVoice.duration } : null,
+    ts: Date.now()
+  };
+  const wasVoice = !!pendingVoice, wasPhoto = !!pendingPhoto;
+  try{
+    await fb.addDoc(fb.collection(db, "spaces", state.code, "notes"), note);
+  }catch(e){
+    const tooBig = wasVoice ? "That recording was too long to send — try a shorter one." : "Couldn't save that note — check your connection and try again.";
+    showToast(tooBig);
+    return;
+  }
+  input.value = "";
+  clearPendingPhoto();
+  clearPendingVoice();
+  const kind = wasVoice ? "Voice note" : (wasPhoto ? "Moment" : "Note");
+  showToast(`${kind} left for them`);
+  const myName = me()?.name || "Someone";
+  const pushTitle = note.voice ? "New voice note 🎙️" : (wasPhoto ? "New photo 📷" : "New note 💌");
+  const pushBody = note.voice ? `${myName} recorded you a goodnight message.` : `${myName} left you ${wasPhoto ? "a photo" : "a note"}.`;
+  pushExternal(pushTitle, pushBody, "love_letter");
+  try{
+    await updateCore(core => {}); // recompute streak now that a note landed
+  }catch(e){ /* note already saved; streak will catch up on next sync */ }
+}
+
+function renderNotes(){
+  const list = document.getElementById("notesList");
+  const notes = state.notes || [];
+  if (!notes.length){
+    list.innerHTML = `<div class="empty-state">Nothing here yet. Leave the first note.</div>`;
+  } else {
+    list.innerHTML = notes.map(n => {
+      const mine = n.from === myKey();
+      const whoName = mine ? "You" : (them()?.name || "Them");
+      const dt = new Date(n.ts).toLocaleString("en-US", { month:"short", day:"numeric", hour:"numeric", minute:"2-digit" });
+      const dur = n.voice ? formatDuration(n.voice.duration || 0) : "0:00";
+      return `<div class="note ${mine?'me':'them'}">
+        <div class="note-meta"><span class="note-who">${whoName}</span><span class="note-time">${dt}</span></div>
+        ${n.text ? `<div class="note-text">${escapeHtml(n.text)}</div>` : ""}
+        ${n.img ? `<img class="note-img" src="${n.img}">` : ""}
+        ${n.voice ? `<div class="voice-note" data-id="${n.id}">
+          <button class="voice-play" onclick="toggleVoice('${n.id}')">▶</button>
+          <div class="voice-meta">
+            <div class="voice-bar"><div class="voice-fill" id="fill-${n.id}"></div></div>
+            <span class="voice-time" id="time-${n.id}">${dur}</span>
+          </div>
+          <audio id="audio-${n.id}" src="${n.voice.dataUrl}" preload="none" ontimeupdate="updateVoiceProgress('${n.id}')" onended="onVoiceEnded('${n.id}')"></audio>
+        </div>` : ""}
+      </div>`;
+    }).join("");
+  }
+  if (notesView === "gallery") renderGallery();
+}
+
+function escapeHtml(s){
+  return s.replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;");
+}
+
+/* ---- Gallery ---- */
+let notesView = "timeline";
+let galleryPhotos = [];
+let lbIndex = 0;
+
+function setNotesView(v){
+  notesView = v;
+  document.getElementById("segTimeline").classList.toggle("active", v==="timeline");
+  document.getElementById("segGallery").classList.toggle("active", v==="gallery");
+  document.getElementById("timelineView").style.display = v==="timeline" ? "block" : "none";
+  document.getElementById("galleryView").style.display = v==="gallery" ? "block" : "none";
+  if (v === "gallery") renderGallery();
+}
+
+function renderGallery(){
+  galleryPhotos = (state.notes || []).filter(n => n.img);
+  const grid = document.getElementById("galleryGrid");
+  const count = document.getElementById("galleryCount");
+  count.textContent = `${galleryPhotos.length} photo${galleryPhotos.length===1?'':'s'}`;
+  if (!galleryPhotos.length){
+    grid.innerHTML = `<div class="empty-state" style="grid-column:1/-1;">No photos yet — attach one from the Timeline tab.</div>`;
+    return;
+  }
+  grid.innerHTML = galleryPhotos.map((n,i) => {
+    const mine = n.from === myKey();
+    return `<div class="gallery-thumb" onclick="openLightbox(${i})">
+      <img src="${n.img}" loading="lazy">
+      <span class="who-dot ${mine?'me':'them'}"></span>
+    </div>`;
+  }).join("");
+}
+
+function openLightbox(i){
+  lbIndex = i;
+  renderLightbox();
+  document.getElementById("lightbox").classList.add("show");
+}
+function closeLightbox(){
+  document.getElementById("lightbox").classList.remove("show");
+}
+function navLightbox(dir){
+  lbIndex = (lbIndex + dir + galleryPhotos.length) % galleryPhotos.length;
+  renderLightbox();
+}
+function renderLightbox(){
+  const n = galleryPhotos[lbIndex];
+  if (!n) return;
+  const mine = n.from === myKey();
+  const whoName = mine ? "You" : (them()?.name || "Them");
+  const dt = new Date(n.ts).toLocaleString("en-US", { month:"short", day:"numeric", year:"numeric", hour:"numeric", minute:"2-digit" });
+  document.getElementById("lbImg").src = n.img;
+  document.getElementById("lbCaption").textContent = n.text || "";
+  document.getElementById("lbMeta").textContent = `${whoName} · ${dt}`;
+}
+
+/* ---- Together: mood + prompt ---- */
+function renderMoodGrid(){
+  const grid = document.getElementById("moodGrid");
+  grid.innerHTML = MOODS.map(m => `<button class="mood-chip" onclick="setMood('${m}')">${m}</button>`).join("");
+}
+
+async function setMood(m){
+  await updateCore(core => {
+    core.mood = core.mood || {};
+    core.mood[myKey()] = { v:m, ts:Date.now() };
+  });
+  renderTogether();
+  showToast("Mood updated");
+}
+
+function todayKey(){
+  const d = new Date();
+  return `${d.getFullYear()}-${d.getMonth()+1}-${d.getDate()}`;
+}
+function dateKeyFromTs(ts){
+  const d = new Date(ts);
+  return `${d.getFullYear()}-${d.getMonth()+1}-${d.getDate()}`;
+}
+function yesterdayKey(){
+  const d = new Date();
+  d.setDate(d.getDate()-1);
+  return `${d.getFullYear()}-${d.getMonth()+1}-${d.getDate()}`;
+}
+function activeToday(core, notes, role){
+  const tk = todayKey();
+  const pinged = (core.pings||[]).some(p => p.from===role && dateKeyFromTs(p.ts)===tk);
+  const noted = (notes||[]).some(n => n.from===role && dateKeyFromTs(n.ts)===tk);
+  const moody = core.mood && core.mood[role] && dateKeyFromTs(core.mood[role].ts)===tk;
+  const vibed = core.vibe && core.vibe[role] && dateKeyFromTs(core.vibe[role].ts)===tk;
+  const answered = core.prompt && core.prompt.date===tk && core.prompt.answers && core.prompt.answers[role];
+  return !!(pinged || noted || moody || vibed || answered);
+}
+function recalcStreak(core, notes){
+  core.streak = core.streak || { count:0, lastDate:"" };
+  const bothToday = activeToday(core, notes, "a") && activeToday(core, notes, "b");
+  const tk = todayKey();
+  if (!bothToday) return;
+  if (core.streak.lastDate === tk) return;
+  if (core.streak.lastDate === yesterdayKey()) core.streak.count += 1;
+  else core.streak.count = 1;
+  core.streak.lastDate = tk;
+}
+
+function renderTogether(){
+  if (!state.core) return;
+  const mood = state.core.mood || {};
+  const myMood = mood[myKey()];
+  const theirMood = mood[theirKey()];
+  document.getElementById("moodMeLabel").textContent = me()?.name || "You";
+  document.getElementById("moodThemLabel").textContent = them()?.name || "Them";
+  document.getElementById("moodMeVal").textContent = myMood ? myMood.v : "—";
+  document.getElementById("moodThemVal").textContent = theirMood ? theirMood.v : "—";
+  document.querySelectorAll(".mood-chip").forEach(chip => {
+    chip.classList.toggle("selected", myMood && chip.textContent === myMood.v);
+  });
+
+  // prompt of the day, deterministic by date
+  const dayIndex = Math.floor(Date.now()/86400000) % PROMPTS.length;
+  const question = PROMPTS[dayIndex];
+  document.getElementById("promptQ").textContent = question;
+
+  const tk = todayKey();
+  let p = state.core.prompt;
+  if (!p || p.date !== tk){ p = { date: tk, answers:{} }; }
+  const myAns = p.answers[myKey()];
+  const theirAns = p.answers[theirKey()];
+
+  document.getElementById("ansMeLabel").textContent = me()?.name || "You";
+  document.getElementById("ansThemLabel").textContent = them()?.name || "Them";
+
+  const ansMeEl = document.getElementById("ansMe");
+  if (myAns){ ansMeEl.textContent = myAns; ansMeEl.className = "answer-text"; }
+  else { ansMeEl.textContent = "Not answered yet"; ansMeEl.className = "answer-empty"; }
+
+  const ansThemEl = document.getElementById("ansThem");
+  if (theirAns){ ansThemEl.textContent = theirAns; ansThemEl.className = "answer-text"; }
+  else { ansThemEl.textContent = "Not answered yet"; ansThemEl.className = "answer-empty"; }
+
+  document.getElementById("promptInput").value = myAns || "";
+}
+
+async function answerPrompt(){
+  const val = document.getElementById("promptInput").value.trim();
+  if (!val) return;
+  const tk = todayKey();
+  await updateCore(core => {
+    if (!core.prompt || core.prompt.date !== tk){ core.prompt = { date: tk, answers:{} }; }
+    core.prompt.answers[myKey()] = val;
+  });
+  showToast("Answer saved");
+  renderTogether();
+}
+
+/* ---- Plans ---- */
+function renderPlans(){
+  if (!state.core) return;
+  document.getElementById("nextVisitInput").value = state.core.nextVisit || "";
+  const nv = state.core.nextVisit;
+  if (nv){
+    const d = daysBetween(new Date(), new Date(nv));
+    document.getElementById("visitCountdown").textContent = d >= 0 ? d : "🎉";
+  } else {
+    document.getElementById("visitCountdown").textContent = "—";
+  }
+  const list = document.getElementById("bucketList");
+  const items = state.core.bucket || [];
+  if (!items.length){
+    list.innerHTML = `<div class="empty-state">Add the first thing you're looking forward to.</div>`;
+  } else {
+    list.innerHTML = items.map(it => `
+      <div class="bucket-item">
+        <button class="bucket-check ${it.done?'done':''}" onclick="toggleBucket('${it.id}')">${it.done?'✓':''}</button>
+        <div class="bucket-text ${it.done?'done':''}">${escapeHtml(it.text)}</div>
+        <button class="bucket-del" onclick="delBucket('${it.id}')">×</button>
+      </div>
+    `).join("");
+  }
+}
+
+async function saveNextVisit(){
+  const v = document.getElementById("nextVisitInput").value;
+  await updateCore(core => { core.nextVisit = v; });
+  renderPlans(); renderHome();
+}
+
+async function addBucket(){
+  const input = document.getElementById("bucketInput");
+  const text = input.value.trim();
+  if (!text) return;
+  await updateCore(core => {
+    core.bucket = core.bucket || [];
+    core.bucket.push({ id: String(Date.now()), text, done:false });
+  });
+  input.value = "";
+  renderPlans();
+}
+async function toggleBucket(id){
+  await updateCore(core => {
+    const it = (core.bucket||[]).find(b=>b.id===id);
+    if (it) it.done = !it.done;
+  });
+  renderPlans();
+}
+async function delBucket(id){
+  await updateCore(core => {
+    core.bucket = (core.bucket||[]).filter(b=>b.id!==id);
+  });
+  renderPlans();
+}
+
+/* ---- Settings ---- */
+function copyTopic(){
+  const topic = state.core?.ntfyTopic;
+  if (!topic) return;
+  navigator.clipboard?.writeText(topic).catch(()=>{});
+  showToast("Topic copied");
+}
+async function testPush(){
+  if (!state.core?.ntfyTopic){ showToast("No topic yet"); return; }
+  await pushExternal("Test 👋", "If you see this, phone notifications are working.", "wave");
+  showToast("Test sent");
+}
+
+function renderSettings(){
+  if (!state.core) return;
+  renderNotifStatus();
+  document.getElementById("ntfyTopicDisplay").textContent = state.core.ntfyTopic || "Not set yet";
+  const m = me();
+  document.getElementById("settingsName").value = m?.name || "";
+  document.getElementById("settingsTz").value = m?.tz || "";
+  document.getElementById("settingsWake").value = m?.wake ?? 8;
+  document.getElementById("settingsSleep").value = m?.sleep ?? 23;
+  document.getElementById("startDateInput").value = state.core.startDate || "";
+}
+
+async function saveProfile(){
+  const name = document.getElementById("settingsName").value.trim();
+  const tz = document.getElementById("settingsTz").value;
+  const wake = parseInt(document.getElementById("settingsWake").value);
+  const sleep = parseInt(document.getElementById("settingsSleep").value);
+  await updateCore(core => { core[myKey()] = { name, tz, wake, sleep }; });
+  showToast("Saved");
+  renderAll();
+}
+
+async function saveStartDate(){
+  const v = document.getElementById("startDateInput").value;
+  await updateCore(core => { core.startDate = v; });
+  renderHome();
+}
+
+init();
+</script>
+</body>
+</html>

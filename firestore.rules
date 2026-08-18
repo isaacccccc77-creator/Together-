@@ -1,0 +1,41 @@
+rules_version = '2';
+
+// Paste these into Firebase Console → Firestore Database → Rules (or deploy
+// with `firebase deploy --only firestore:rules` if you use the CLI).
+//
+// What this does and doesn't protect against:
+// - Requires a signed-in user (the app signs in anonymously on load) before
+//   any read or write, so the database isn't wide open to every scanner and
+//   bot on the internet the moment "test mode" expires.
+// - Blocks `list` queries on the top-level `spaces` collection, so nobody
+//   can enumerate every couple's space — you still have to know a code.
+// - It does NOT stop someone who has (or guesses) a valid room code from
+//   reading or writing that space. There's no per-couple auth in this app,
+//   so the code is effectively the password. Treat invite codes like a
+//   shared secret: don't post them publicly, and remember anyone who has
+//   one can read your notes, photos, and voice memos.
+// - Length/type checks below just weed out obviously malformed writes; they
+//   are not a substitute for real access control.
+
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    match /spaces/{code} {
+      allow get: if request.auth != null;
+      allow list: if false;
+      allow create, update: if request.auth != null
+        && code is string
+        && code.size() > 0 && code.size() < 40;
+      allow delete: if false;
+
+      match /notes/{noteId} {
+        allow get: if request.auth != null;
+        allow list: if request.auth != null;
+        allow create: if request.auth != null
+          && request.resource.data.from in ['a', 'b']
+          && request.resource.data.ts is number;
+        allow update, delete: if false;
+      }
+    }
+  }
+}
