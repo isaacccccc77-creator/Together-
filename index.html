@@ -317,7 +317,9 @@
   .empty-state{ text-align:center; padding:30px 10px; color:var(--ink-faint); font-size:13px; }
   .toast{
     position:fixed; bottom:90px; left:50%; transform:translateX(-50%) translateY(20px);
-    background:var(--ink); color:#fff; padding:10px 18px; border-radius:999px;
+    /* text tracks --paper so the toast stays readable when a dark theme
+       flips --ink light */
+    background:var(--ink); color:var(--paper); padding:10px 18px; border-radius:999px;
     font-size:13px; opacity:0; pointer-events:none; transition:all .3s ease; z-index:50;
     max-width:80%; text-align:center;
   }
@@ -367,18 +369,19 @@
     border-radius:999px; padding:7px 12px 7px 8px; font-size:13px; font-weight:600; color:var(--ink-soft);
     transition:transform .15s ease, box-shadow .15s ease, border-color .15s ease;
   }
-  .vibe-chip .dot{ width:14px; height:14px; border-radius:50%; flex-shrink:0; box-shadow:inset 0 0 0 1.5px rgba(0,0,0,0.08); }
+  /* neutral-grey ring so dark swatches stay visible on dark themes too */
+  .vibe-chip .dot{ width:14px; height:14px; border-radius:50%; flex-shrink:0; box-shadow:inset 0 0 0 1.5px rgba(128,128,128,0.4); }
   .vibe-chip:hover{ transform:translateY(-2px); box-shadow:var(--shadow-sm); }
   .vibe-chip.selected{
     border-color:var(--vibe-chip-color, var(--rose)); color:var(--ink); background:var(--card);
     box-shadow:var(--shadow-sm), inset 0 0 0 1px var(--vibe-chip-color, var(--rose));
     font-weight:700;
   }
-  .vibe-chip.selected .dot{ box-shadow:inset 0 0 0 1.5px rgba(0,0,0,0.08), 0 0 0 3px color-mix(in srgb, var(--vibe-chip-color, var(--rose)) 30%, transparent); }
+  .vibe-chip.selected .dot{ box-shadow:inset 0 0 0 1.5px rgba(128,128,128,0.4), 0 0 0 3px color-mix(in srgb, var(--vibe-chip-color, var(--rose)) 30%, transparent); }
   .vibe-current{ display:flex; justify-content:space-between; margin-top:14px; padding-top:12px; border-top:1px solid var(--line); }
   .vibe-current .who{ font-size:12px; color:var(--ink-soft); font-weight:600; }
   .vibe-current .val{ display:flex; align-items:center; gap:6px; font-family:var(--font-display); font-size:15px; margin-top:3px; }
-  .vibe-current .dot{ width:11px; height:11px; border-radius:50%; flex-shrink:0; }
+  .vibe-current .dot{ width:11px; height:11px; border-radius:50%; flex-shrink:0; box-shadow:inset 0 0 0 1.5px rgba(128,128,128,0.4); }
   .vibe-current.them .val{ justify-content:flex-end; }
 
   /* ---------- Overlap card ---------- */
@@ -483,6 +486,119 @@
   }
   .gallery-thumb .who-dot.me{ background:var(--rose); }
   .gallery-thumb .who-dot.them{ background:var(--dusk); }
+
+  /* ---------- Premium: badges, locks, sheets ---------- */
+  .pro-pill{
+    display:inline-flex; align-items:center; gap:3px;
+    background:linear-gradient(135deg, var(--honey), var(--rose));
+    color:#fff; font-size:9px; font-weight:800; letter-spacing:0.08em;
+    text-transform:uppercase; padding:3px 7px; border-radius:999px;
+    vertical-align:middle; margin-left:6px;
+  }
+  .locked-teaser{ filter:blur(5px) saturate(0.55); opacity:0.45; pointer-events:none; user-select:none; }
+  .locked-cta{ text-align:center; padding:4px 0 0; }
+  .locked-cta .why{ font-size:13px; color:var(--ink-soft); line-height:1.5; margin:0 0 12px; }
+
+  .sheet-backdrop{
+    position:fixed; inset:0; background:rgba(30,26,42,0.55);
+    z-index:90; display:none; backdrop-filter:blur(3px);
+  }
+  .sheet-backdrop.show{ display:block; }
+  .sheet{
+    position:fixed; left:50%; bottom:0; width:100%; max-width:460px;
+    transform:translateX(-50%) translateY(101%);
+    background:var(--paper-soft); border-radius:24px 24px 0 0; z-index:91;
+    padding:10px 20px calc(24px + env(safe-area-inset-bottom));
+    max-height:88vh; overflow-y:auto;
+    transition:transform .34s cubic-bezier(.22,.9,.3,1);
+    box-shadow:0 -12px 40px rgba(46,42,61,0.3);
+  }
+  .sheet.show{ transform:translateX(-50%) translateY(0); }
+  .sheet-grab{ width:38px; height:4px; border-radius:99px; background:var(--ink-faint); opacity:0.4; margin:0 auto 16px; }
+  .sheet h2{ font-family:var(--font-display); font-weight:500; font-size:24px; margin:0 0 6px; line-height:1.2; }
+  .sheet .sheet-sub{ font-size:14px; color:var(--ink-soft); line-height:1.5; margin:0 0 18px; }
+  .sheet-close{ background:none; border:none; color:var(--ink-soft); font-size:14px; font-weight:600; width:100%; padding:14px 0 2px; }
+
+  .perk{ display:flex; gap:12px; align-items:flex-start; padding:11px 0; border-bottom:1px solid var(--line); }
+  .perk:last-of-type{ border-bottom:none; }
+  .perk .em{ font-size:19px; line-height:1.3; flex-shrink:0; width:24px; text-align:center; }
+  .perk .t{ font-size:14px; font-weight:700; }
+  .perk .d{ font-size:12.5px; color:var(--ink-soft); line-height:1.45; margin-top:2px; }
+
+  .price-row{ display:flex; gap:10px; margin:16px 0 4px; }
+  .price-opt{
+    flex:1; border:1.5px solid var(--line); background:var(--card); border-radius:16px;
+    padding:14px 10px; text-align:center; position:relative;
+    transition:border-color .15s ease, transform .15s ease, box-shadow .15s ease;
+  }
+  .price-opt:hover{ transform:translateY(-2px); box-shadow:var(--shadow-sm); }
+  .price-opt.selected{ border-color:var(--rose); box-shadow:var(--shadow-sm), inset 0 0 0 1px var(--rose); }
+  .price-opt .per{ font-size:11px; color:var(--ink-soft); text-transform:uppercase; letter-spacing:0.06em; font-weight:700; }
+  .price-opt .amt{ font-family:var(--font-display); font-size:23px; margin-top:3px; }
+  .price-opt .note{ font-size:11px; color:var(--ink-faint); margin-top:2px; }
+  .price-opt .tag{
+    position:absolute; top:-8px; left:50%; transform:translateX(-50%);
+    background:var(--good); color:#fff; font-size:9px; font-weight:800; letter-spacing:0.06em;
+    text-transform:uppercase; padding:2px 8px; border-radius:999px; white-space:nowrap;
+  }
+  .couple-note{
+    font-size:12px; color:var(--ink-soft); text-align:center; line-height:1.5;
+    margin-top:12px; padding-top:12px; border-top:1px solid var(--line);
+  }
+
+  /* ---------- Time capsules ---------- */
+  .capsule{
+    border:1px solid var(--line); border-radius:16px; padding:14px 16px; margin-bottom:10px;
+    background:var(--card); box-shadow:var(--shadow-sm);
+  }
+  .capsule.sealed{
+    background:linear-gradient(140deg, var(--paper-soft), var(--rose-wash));
+    border-style:dashed; border-color:var(--rose);
+  }
+  .capsule-top{ display:flex; align-items:center; justify-content:space-between; gap:8px; margin-bottom:6px; }
+  .capsule-who{ font-size:11px; font-weight:700; text-transform:uppercase; letter-spacing:0.05em; color:var(--rose-deep); }
+  .capsule-when{ font-size:11px; color:var(--ink-soft); font-weight:600; }
+  .capsule-title{ font-family:var(--font-hand); font-size:19px; line-height:1.25; }
+  .capsule-body{ font-size:14.5px; line-height:1.55; margin-top:6px; white-space:pre-wrap; }
+  .capsule-locked{ font-size:13px; color:var(--ink-soft); line-height:1.5; margin-top:4px; }
+  .capsule-del{ background:none; border:none; color:var(--ink-faint); font-size:16px; padding:2px 4px; }
+
+  /* ---------- Memory (On this day) ---------- */
+  .memory-card{ background:linear-gradient(140deg, var(--card), var(--paper-soft)); }
+  .memory-when{ font-size:11px; text-transform:uppercase; letter-spacing:0.08em; color:var(--rose-deep); font-weight:700; margin-bottom:8px; }
+  .memory-text{ font-size:14.5px; line-height:1.55; }
+  .memory-img{ width:100%; border-radius:12px; margin-top:10px; display:block; }
+  .memory-meta{ font-size:12px; color:var(--ink-faint); margin-top:8px; }
+
+  /* ---------- Themes ---------- */
+  .theme-row{ display:flex; gap:10px; flex-wrap:wrap; }
+  .theme-opt{
+    border:1.5px solid var(--line); background:var(--card); border-radius:14px;
+    padding:9px 12px 9px 9px; display:flex; align-items:center; gap:8px;
+    font-size:13px; font-weight:600; color:var(--ink-soft);
+    transition:transform .15s ease, box-shadow .15s ease, border-color .15s ease;
+  }
+  .theme-opt:hover{ transform:translateY(-2px); box-shadow:var(--shadow-sm); }
+  .theme-opt.selected{ border-color:var(--rose); color:var(--ink); box-shadow:var(--shadow-sm), inset 0 0 0 1px var(--rose); }
+  .theme-swatch{ display:flex; border-radius:50%; overflow:hidden; width:20px; height:20px; flex-shrink:0; box-shadow:inset 0 0 0 1px rgba(0,0,0,0.1); }
+  .theme-swatch i{ flex:1; }
+
+  /* ---------- Wrapped stats ---------- */
+  .wrap-grid{ display:grid; grid-template-columns:repeat(2,1fr); gap:10px; }
+  .wrap-stat{ background:var(--card); border:1px solid var(--line); border-radius:16px; padding:14px 12px; text-align:center; box-shadow:var(--shadow-sm); }
+  .wrap-stat .n{ font-family:var(--font-display); font-size:25px; line-height:1.1; }
+  .wrap-stat .l{ font-size:10.5px; color:var(--ink-soft); text-transform:uppercase; letter-spacing:0.06em; margin-top:4px; }
+  .wrap-hero{
+    background:linear-gradient(140deg, var(--rose-wash), var(--paper-soft));
+    border:1px solid var(--line); border-radius:18px; padding:18px; text-align:center; margin-bottom:12px;
+  }
+  .wrap-hero .big{ font-family:var(--font-display); font-size:30px; }
+  .wrap-hero .cap{ font-size:12.5px; color:var(--ink-soft); margin-top:4px; line-height:1.45; }
+
+  /* ---------- Custom tap composer ---------- */
+  .tap-btn.add-tap{ border-style:dashed; color:var(--ink-faint); }
+  .custom-tap-row{ display:flex; gap:8px; margin-top:10px; }
+  .custom-tap-row input.emoji-in{ width:64px; text-align:center; }
 
   /* ---------- Lightbox ---------- */
   .lightbox{
@@ -611,8 +727,11 @@
       <div class="card">
         <div class="card-title">Send a little something</div>
         <div class="tap-grid" id="tapGrid"></div>
+        <div id="customTapWrap"></div>
         <div class="ping-feed" id="pingFeed"></div>
       </div>
+
+      <div class="card memory-card" id="memoryCard"></div>
 
       <div class="stat-row">
         <div class="stat">
@@ -722,6 +841,22 @@
       </div>
 
       <div class="card">
+        <div class="card-title">Time capsules<span class="pro-pill" id="capsulePro" style="display:none;">Forever</span></div>
+        <div style="font-size:13px; color:var(--ink-soft); line-height:1.5; margin-bottom:12px;">
+          Write something they can't read yet. It stays sealed until the date you pick.
+        </div>
+        <label class="field-label">A line to show on the sealed envelope</label>
+        <input type="text" id="capsuleTitle" placeholder="e.g. Open when you land ✈️" maxlength="60">
+        <label class="field-label">What's inside</label>
+        <textarea id="capsuleBody" placeholder="Say the thing you want them to read later..." maxlength="1200"></textarea>
+        <label class="field-label">Unlocks on</label>
+        <input type="date" id="capsuleDate">
+        <div style="height:12px;"></div>
+        <button class="btn btn-soft btn-sm" onclick="addCapsule()">Seal it</button>
+        <div id="capsuleList" style="margin-top:14px;"></div>
+      </div>
+
+      <div class="card">
         <div class="card-title">Someday list</div>
         <div class="compose">
           <input type="text" id="bucketInput" placeholder="Add something to look forward to...">
@@ -750,6 +885,24 @@
         </div>
         <div style="height:12px;"></div>
         <button class="btn btn-soft btn-sm" onclick="saveProfile()">Save</button>
+      </div>
+
+      <div class="card" id="planCard"></div>
+
+      <div class="card">
+        <div class="card-title">Our look<span class="pro-pill" id="themePro" style="display:none;">Forever</span></div>
+        <div style="font-size:13px; color:var(--ink-soft); line-height:1.5; margin-bottom:12px;">
+          Themes are shared — pick one and you'll both see it.
+        </div>
+        <div class="theme-row" id="themeRow"></div>
+      </div>
+
+      <div class="card">
+        <div class="card-title">Us, so far<span class="pro-pill" id="wrappedPro" style="display:none;">Forever</span></div>
+        <div style="font-size:13px; color:var(--ink-soft); line-height:1.5; margin-bottom:12px;">
+          Everything you two have built in here, counted up.
+        </div>
+        <button class="btn btn-soft btn-sm" onclick="openWrapped()">See our numbers</button>
       </div>
 
       <div class="card">
@@ -818,6 +971,49 @@
 
 <div class="toast" id="toast"></div>
 
+<div class="sheet-backdrop" id="sheetBackdrop" onclick="closeSheets()"></div>
+
+<!-- PAYWALL -->
+<div class="sheet" id="paywallSheet">
+  <div class="sheet-grab"></div>
+  <h2 id="paywallTitle">Keep every version of us.</h2>
+  <p class="sheet-sub" id="paywallSub">You'll always be able to write to each other for free. <b>Forever</b> is for the part that piles up — the memories, the rituals, the little private language you two build.</p>
+
+  <div class="perk"><span class="em">✉️</span><div><div class="t">Unlimited time capsules</div><div class="d">Letters that stay sealed until the day you choose. Free spaces can keep one sealed at a time.</div></div></div>
+  <div class="perk"><span class="em">🕰️</span><div><div class="t">On this day</div><div class="d">We dig up what you sent each other months ago and hand it back to you.</div></div></div>
+  <div class="perk"><span class="em">🎈</span><div><div class="t">Your own love taps</div><div class="d">Turn your inside jokes into one-tap buttons only the two of you understand.</div></div></div>
+  <div class="perk"><span class="em">📊</span><div><div class="t">Us, so far</div><div class="d">Your streaks, your most-used vibe, every photo and voice note counted up.</div></div></div>
+  <div class="perk"><span class="em">🌙</span><div><div class="t">Midnight &amp; other themes</div><div class="d">A dark theme built for the late calls, plus Sakura and Sage.</div></div></div>
+
+  <div class="price-row">
+    <button class="price-opt" id="priceMonthly" onclick="selectPrice('monthly')">
+      <div class="per">Monthly</div>
+      <div class="amt">$4.99</div>
+      <div class="note">for both of you</div>
+    </button>
+    <button class="price-opt selected" id="priceYearly" onclick="selectPrice('yearly')">
+      <div class="tag">Save 50%</div>
+      <div class="per">Yearly</div>
+      <div class="amt">$29</div>
+      <div class="note">$2.42 / month</div>
+    </button>
+  </div>
+
+  <div style="height:12px;"></div>
+  <button class="btn btn-primary" onclick="upgradeDemo()">Unlock Forever</button>
+  <div class="couple-note">One subscription covers the space, not the person — whichever of you upgrades, you both get it.</div>
+  <button class="sheet-close" onclick="closeSheets()">Not now</button>
+</div>
+
+<!-- WRAPPED -->
+<div class="sheet" id="wrappedSheet">
+  <div class="sheet-grab"></div>
+  <h2>Us, so far.</h2>
+  <p class="sheet-sub" id="wrappedSub">Everything the two of you have put in here.</p>
+  <div id="wrappedBody"></div>
+  <button class="sheet-close" onclick="closeSheets()">Close</button>
+</div>
+
 <div class="lightbox" id="lightbox">
   <button class="lb-close" onclick="closeLightbox()">×</button>
   <button class="lb-nav lb-prev" onclick="navLightbox(-1)">‹</button>
@@ -865,6 +1061,44 @@ const VIBES = [
   { key:"moody",   label:"Moody",   emoji:"🌧️", color:"#2B2440" },
   { key:"lovey",   label:"Lovey",   emoji:"💗", color:"#D98A9E" },
   { key:"sleepy",  label:"Sleepy",  emoji:"😴", color:"#9C8AA5" }
+];
+
+/* ---------------------------------------------------------
+   TIERS
+   Free ("Together") keeps the whole daily heartbeat: taps, notes,
+   vibe, mood, the daily question, time zones, coffee dates, streaks.
+   Paid ("Forever") is the memory + ritual layer on top.
+
+   Deliberate line: we never lock a couple out of words they already
+   wrote. Their full archive stays readable on free — only the work we
+   do ON that archive (resurfacing, Wrapped) is paid.
+--------------------------------------------------------- */
+const FREE_LIMITS = {
+  sealedCapsules: 1,   // one sealed capsule at a time, so free users feel the feature
+  customTaps: 0
+};
+const MAX_CUSTOM_TAPS = 6;
+
+const THEMES = [
+  { key:"paper",    label:"Paper",    free:true, swatch:["#F5EDE6","#C1666B"], vars:{} },
+  { key:"midnight", label:"Midnight", swatch:["#221E33","#D98A9E"], vars:{
+      "--paper":"#1E1A2B", "--paper-soft":"#262135", "--card":"#2C2740",
+      "--ink":"#EFE9F5", "--ink-soft":"#A79FB8", "--ink-faint":"#6F6782",
+      "--line":"#3A3350", "--rose":"#D98A9E", "--rose-deep":"#EDAFBD",
+      "--rose-wash":"#3E2E3C", "--night":"#12101C", "--good":"#9DB08F"
+    } },
+  { key:"sakura",   label:"Sakura",   swatch:["#FBEEF1","#D9819A"], vars:{
+      "--paper":"#FBEEF1", "--paper-soft":"#FFF7F9", "--card":"#FFFDFE",
+      "--ink":"#3A2B33", "--ink-soft":"#8A7480", "--ink-faint":"#C3AEB6",
+      "--line":"#F2DCE2", "--rose":"#D9819A", "--rose-deep":"#B85F79",
+      "--rose-wash":"#F8DFE6"
+    } },
+  { key:"sage",     label:"Sage",     swatch:["#EDF0E9","#6F8F63"], vars:{
+      "--paper":"#EDF0E9", "--paper-soft":"#F6F8F3", "--card":"#FDFEFB",
+      "--ink":"#2C332A", "--ink-soft":"#717C6C", "--ink-faint":"#A9B3A2",
+      "--line":"#DAE0D2", "--rose":"#6F8F63", "--rose-deep":"#55744A",
+      "--rose-wash":"#DCE6D4"
+    } }
 ];
 
 const PROMPTS = [
@@ -953,7 +1187,7 @@ function checkForNew(){
   const latestPartnerPing = pings.find(p => p.from === theirKey());
   if (latestPartnerPing && latestPartnerPing.ts > lastSeen.pingTs){
     const nm = them()?.name || "They";
-    const tap = TAPS.find(t => t.type === latestPartnerPing.type) || TAPS[0];
+    const tap = allTaps().find(t => t.type === latestPartnerPing.type) || TAPS[0];
     fireNotification(`${tap.label} ${tap.emoji}`, `${nm} sent: ${tap.label.toLowerCase()}`);
     showToast(`${nm}: ${tap.label} ${tap.emoji}`);
     unseenPing = true;
@@ -1058,10 +1292,38 @@ function defaultCore(){
     prompt: { date:"", answers:{} },
     bucket: [],
     ntfyTopic: "",
-    streak: { count:0, lastDate:"" },
+    streak: { count:0, lastDate:"", best:0 },
     session: null,
-    vibe: {}
+    vibe: {},
+    plan: { tier:"free", since:"", by:"" },
+    theme: "paper",
+    capsules: [],
+    customTaps: [],
+    tapCounts: {},   // lifetime, since core.pings only keeps the last 10
+    vibeCounts: {}
   };
+}
+
+/* ---------------- Tier / entitlement ----------------
+   Entitlement lives on the SPACE, not the person: if one partner
+   upgrades, both get it. It's a couples app — splitting a couple
+   across two tiers would be absurd, and "your partner unlocked this
+   for you" is a far better moment than a second checkout.
+
+   NOTE: this is a client-side flag, which is fine for a demo but is
+   NOT real billing. See README — real money needs Stripe Checkout, a
+   webhook writing core.plan server-side, and a Firestore rule that
+   forbids clients from touching the `plan` field.
+------------------------------------------------------ */
+function isPremium(){
+  return state.core?.plan?.tier === "forever";
+}
+
+// Gate a premium action. Returns true if allowed; otherwise opens the paywall.
+function requirePremium(context){
+  if (isPremium()) return true;
+  openPaywall(context);
+  return false;
 }
 
 async function updateCore(mutator){
@@ -1185,6 +1447,7 @@ async function enterApp(){
   document.getElementById("settingsCode").textContent = state.code;
   renderTapGrid();
   renderVibeGrid();
+  applyTheme();
 
   loadLastSeen();
   renderNotifStatus();
@@ -1222,6 +1485,7 @@ function myKey(){ return state.role; }
 function theirKey(){ return state.role === "a" ? "b" : "a"; }
 
 function renderAll(){
+  applyTheme();
   renderHome();
   renderNotes();
   renderTogether();
@@ -1287,7 +1551,10 @@ function tickClock(){
 /* ---- Home: ping + stats ---- */
 function renderTapGrid(){
   const grid = document.getElementById("tapGrid");
-  grid.innerHTML = TAPS.map(t => `<button class="tap-btn" onclick="sendTap('${t.type}')"><span class="em">${t.emoji}</span>${t.label}</button>`).join("");
+  grid.innerHTML = allTaps().map(t => {
+    const del = t.custom ? `<span onclick="event.stopPropagation(); removeCustomTap('${t.type}')" style="position:absolute; top:2px; right:5px; color:var(--ink-faint); font-size:13px;">×</span>` : "";
+    return `<button class="tap-btn" style="position:relative;" onclick="sendTap('${t.type}')">${del}<span class="em">${escapeHtml(t.emoji)}</span>${escapeHtml(t.label)}</button>`;
+  }).join("");
 }
 
 /* ---- Vibe: live shared ambient mood ---- */
@@ -1303,6 +1570,8 @@ async function setVibe(key){
     await updateCore(core => {
       core.vibe = core.vibe || {};
       core.vibe[myKey()] = { key, ts: Date.now() };
+      core.vibeCounts = core.vibeCounts || {};
+      core.vibeCounts[key] = (core.vibeCounts[key] || 0) + 1;
     });
   }catch(e){ return; }
   showToast(`Vibe set to ${v.emoji} ${v.label}`);
@@ -1341,13 +1610,420 @@ function renderVibe(){
   }
 }
 
-async function sendTap(type){
-  const tap = TAPS.find(t => t.type===type) || TAPS[0];
-  await updateCore(core => {
-    core.pings = core.pings || [];
-    core.pings.unshift({ from: myKey(), type: tap.type, ts: Date.now() });
-    core.pings = core.pings.slice(0, 10);
+/* ---- Sheets (paywall + wrapped) ---- */
+let selectedPrice = "yearly";
+
+function closeSheets(){
+  document.getElementById("sheetBackdrop").classList.remove("show");
+  document.querySelectorAll(".sheet").forEach(s => s.classList.remove("show"));
+}
+function openSheet(id){
+  document.getElementById("sheetBackdrop").classList.add("show");
+  document.getElementById(id).classList.add("show");
+}
+
+// Context lets the paywall lead with the feature they actually reached for,
+// instead of a generic "go premium" wall.
+const PAYWALL_COPY = {
+  capsule: { t:"One sealed capsule at a time.", s:"Your free space keeps one letter sealed at once — open it and you can write another. <b>Forever</b> lets you stack up as many as you want, for every date that matters." },
+  memory:  { t:"You wrote all this already.", s:"It's still here, and it always will be — you can scroll back to any of it for free. <b>Forever</b> is what brings the good bits back to you without you having to go looking." },
+  taps:    { t:"Make your own love taps.", s:"Every couple has a word that means nothing to anyone else. <b>Forever</b> turns yours into one-tap buttons." },
+  wrapped: { t:"Everything you two have built.", s:"Your streaks, your most-used vibe, the words you've written each other. <b>Forever</b> counts it all up." },
+  theme:   { t:"A look that's yours.", s:"Midnight is built for the late calls, when one of you is up and the other is winding down. <b>Forever</b> unlocks it, plus Sakura and Sage." }
+};
+
+function openPaywall(context){
+  const copy = PAYWALL_COPY[context];
+  document.getElementById("paywallTitle").textContent = copy ? copy.t : "Keep every version of us.";
+  document.getElementById("paywallSub").innerHTML = copy ? copy.s
+    : "You'll always be able to write to each other for free. <b>Forever</b> is for the part that piles up — the memories, the rituals, the little private language you two build.";
+  openSheet("paywallSheet");
+}
+
+function selectPrice(which){
+  selectedPrice = which;
+  document.getElementById("priceMonthly").classList.toggle("selected", which==="monthly");
+  document.getElementById("priceYearly").classList.toggle("selected", which==="yearly");
+}
+
+// DEMO ONLY — flips the flag locally. Real billing must set this server-side
+// from a Stripe webhook; see README.
+async function upgradeDemo(){
+  try{
+    await updateCore(core => {
+      core.plan = { tier:"forever", since: isoToday(), by: myKey(), cycle: selectedPrice };
+    });
+  }catch(e){ return; }
+  closeSheets();
+  showToast("Forever unlocked — for both of you 💛");
+  const myName = me()?.name || "Your partner";
+  pushExternal("Forever unlocked 💛", `${myName} upgraded your space — you both have it now.`, "gift");
+  applyTheme();
+  renderAll();
+}
+
+async function downgradeDemo(){
+  if (!confirm("Drop back to the free tier? Your notes, photos and capsules all stay — you'll just lose the extras.")) return;
+  try{
+    await updateCore(core => { core.plan = { tier:"free", since:"", by:"" }; core.theme = "paper"; });
+  }catch(e){ return; }
+  applyTheme();
+  renderAll();
+  showToast("Back on the free tier");
+}
+
+function renderPlanCard(){
+  const card = document.getElementById("planCard");
+  if (!card) return;
+  if (isPremium()){
+    const p = state.core.plan || {};
+    const byName = p.by === myKey() ? "you" : (them()?.name || "your partner");
+    card.innerHTML = `<div class="card-title">Forever<span class="pro-pill">Active</span></div>
+      <div style="font-size:13px; color:var(--ink-soft); line-height:1.5;">
+        Unlocked by ${escapeHtml(byName)}${p.since ? ` on ${escapeHtml(p.since)}` : ""}. Covers both of you.
+      </div>
+      <div style="height:12px;"></div>
+      <button class="link-btn" onclick="downgradeDemo()">Switch back to free</button>`;
+  } else {
+    card.innerHTML = `<div class="card-title">You're on Together (free)</div>
+      <div style="font-size:13px; color:var(--ink-soft); line-height:1.5;">
+        Notes, photos, voice, vibes, moods, the daily question and your streak are yours for good — free, no limits on any of it.
+      </div>
+      <div style="height:12px;"></div>
+      <button class="btn btn-primary btn-sm" onclick="openPaywall()">See what Forever adds</button>`;
+  }
+}
+
+/* ---- Themes (shared across the space) ---- */
+function applyTheme(){
+  const key = state.core?.theme || "paper";
+  const theme = THEMES.find(t => t.key === key) || THEMES[0];
+  const root = document.documentElement;
+  // clear any previously applied overrides, then apply this theme's
+  THEMES.forEach(t => Object.keys(t.vars).forEach(v => root.style.removeProperty(v)));
+  Object.entries(theme.vars).forEach(([k,v]) => root.style.setProperty(k, v));
+}
+
+function renderThemeRow(){
+  const row = document.getElementById("themeRow");
+  if (!row) return;
+  document.getElementById("themePro").style.display = isPremium() ? "none" : "inline-flex";
+  const current = state.core?.theme || "paper";
+  row.innerHTML = THEMES.map(t => `
+    <button class="theme-opt ${t.key===current?'selected':''}" onclick="setTheme('${t.key}')">
+      <span class="theme-swatch"><i style="background:${t.swatch[0]}"></i><i style="background:${t.swatch[1]}"></i></span>
+      ${t.label}${t.free ? "" : (isPremium() ? "" : " 🔒")}
+    </button>`).join("");
+}
+
+async function setTheme(key){
+  const t = THEMES.find(x => x.key === key);
+  if (!t) return;
+  if (!t.free && !requirePremium("theme")) return;
+  try{
+    await updateCore(core => { core.theme = key; });
+  }catch(e){ return; }
+  applyTheme();
+  renderAll();
+}
+
+/* ---- Time capsules ----
+   Sealed content is hidden from the partner until the unlock date.
+   This is ceremony, not cryptography: the text sits in Firestore in
+   plaintext, so anyone willing to open devtools could read it early.
+   Real secrecy would need the body encrypted with a key released by a
+   server on the unlock date.
+------------------------------------------------------------------ */
+function isoToday(){
+  const d = new Date();
+  return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;
+}
+function capsuleUnlocked(c){ return !c.unlockAt || c.unlockAt <= isoToday(); }
+function sealedCount(core, role){
+  return (core.capsules || []).filter(c => c.from === role && !capsuleUnlocked(c)).length;
+}
+
+async function addCapsule(){
+  const titleEl = document.getElementById("capsuleTitle");
+  const bodyEl = document.getElementById("capsuleBody");
+  const dateEl = document.getElementById("capsuleDate");
+  const title = titleEl.value.trim();
+  const body = bodyEl.value.trim();
+  const unlockAt = dateEl.value;
+  if (!body){ showToast("Write something to put inside first"); return; }
+  if (!unlockAt){ showToast("Pick a date for it to open"); return; }
+  if (unlockAt <= isoToday()){ showToast("Pick a date in the future — that's the whole point"); return; }
+
+  if (!isPremium() && sealedCount(state.core, myKey()) >= FREE_LIMITS.sealedCapsules){
+    openPaywall("capsule");
+    return;
+  }
+  try{
+    await updateCore(core => {
+      core.capsules = core.capsules || [];
+      core.capsules.push({
+        id: String(Date.now()), from: myKey(),
+        title: title || "Open me", body, unlockAt, ts: Date.now()
+      });
+    });
+  }catch(e){ return; }
+  titleEl.value = ""; bodyEl.value = ""; dateEl.value = "";
+  showToast("Sealed 💌");
+  const myName = me()?.name || "Someone";
+  pushExternal("A sealed capsule 💌", `${myName} left you something to open on ${unlockAt}.`, "love_letter");
+  renderPlans();
+}
+
+async function deleteCapsule(id){
+  if (!confirm("Delete this capsule? It can't be recovered.")) return;
+  try{
+    await updateCore(core => { core.capsules = (core.capsules||[]).filter(c => c.id !== id); });
+  }catch(e){ return; }
+  renderPlans();
+}
+
+function daysUntil(iso){
+  const [y,m,d] = iso.split("-").map(Number);
+  return daysBetween(new Date(), new Date(y, m-1, d));
+}
+
+function renderCapsules(){
+  const list = document.getElementById("capsuleList");
+  if (!list) return;
+  const pro = document.getElementById("capsulePro");
+  if (pro) pro.style.display = isPremium() ? "none" : "inline-flex";
+
+  const capsules = (state.core?.capsules || []).slice().sort((a,b) => {
+    const au = capsuleUnlocked(a), bu = capsuleUnlocked(b);
+    if (au !== bu) return au ? 1 : -1;      // sealed ones first
+    return a.unlockAt < b.unlockAt ? -1 : 1;
   });
+
+  const mySealed = sealedCount(state.core || {}, myKey());
+  const atLimit = !isPremium() && mySealed >= FREE_LIMITS.sealedCapsules;
+
+  let html = "";
+  if (atLimit){
+    html += `<div style="font-size:12.5px; color:var(--ink-soft); line-height:1.5; background:var(--paper-soft); border:1px solid var(--line); border-radius:12px; padding:10px 12px; margin-bottom:10px;">
+      You've got one sealed and waiting. Once it opens you can write another — or <button class="link-btn" style="padding:0;" onclick="openPaywall('capsule')">unlock unlimited</button>.
+    </div>`;
+  }
+
+  if (!capsules.length){
+    html += `<div class="empty-state">No capsules yet. Write one for a birthday, a landing, or a hard week you know is coming.</div>`;
+    list.innerHTML = html;
+    return;
+  }
+
+  html += capsules.map(c => {
+    const mine = c.from === myKey();
+    const who = mine ? "From you" : `From ${them()?.name || "them"}`;
+    const open = capsuleUnlocked(c);
+    if (open){
+      return `<div class="capsule">
+        <div class="capsule-top">
+          <span class="capsule-who">${who}</span>
+          <span class="capsule-when">Opened ${escapeHtml(c.unlockAt)}${mine ? ` <button class="capsule-del" onclick="deleteCapsule('${c.id}')">×</button>` : ""}</span>
+        </div>
+        <div class="capsule-title">${escapeHtml(c.title)}</div>
+        <div class="capsule-body">${escapeHtml(c.body)}</div>
+      </div>`;
+    }
+    const d = daysUntil(c.unlockAt);
+    const countdown = d <= 0 ? "opens today" : `opens in ${d} day${d===1?'':'s'}`;
+    return `<div class="capsule sealed">
+      <div class="capsule-top">
+        <span class="capsule-who">${who}</span>
+        <span class="capsule-when">🔒 ${countdown}${mine ? ` <button class="capsule-del" onclick="deleteCapsule('${c.id}')">×</button>` : ""}</span>
+      </div>
+      <div class="capsule-title">${escapeHtml(c.title)}</div>
+      ${mine
+        ? `<div class="capsule-body" style="opacity:0.75;">${escapeHtml(c.body)}</div>
+           <div class="capsule-locked" style="margin-top:8px;">Only you can see this until ${escapeHtml(c.unlockAt)}.</div>`
+        : `<div class="capsule-locked">Sealed until ${escapeHtml(c.unlockAt)}. No peeking.</div>`}
+    </div>`;
+  }).join("");
+
+  list.innerHTML = html;
+}
+
+/* ---- On this day ---- */
+function agoLabel(ts){
+  const days = Math.floor((Date.now()-ts)/86400000);
+  if (days >= 365){ const y = Math.floor(days/365); return `${y} year${y===1?'':'s'} ago`; }
+  const m = Math.floor(days/30);
+  return `${m} month${m===1?'':'s'} ago`;
+}
+
+function renderMemory(){
+  const card = document.getElementById("memoryCard");
+  if (!card) return;
+  const cutoff = Date.now() - 30*86400000;
+  const old = (state.notes || []).filter(n => n.ts < cutoff && (n.text || n.img));
+  if (!old.length){ card.style.display = "none"; return; }
+  card.style.display = "block";
+
+  if (!isPremium()){
+    // Honest gate: we tell them exactly what's waiting, we don't blur their
+    // own words back at them, and the archive itself stays open in Notes.
+    card.innerHTML = `<div class="card-title">On this day<span class="pro-pill">Forever</span></div>
+      <div class="locked-cta" style="text-align:left;">
+        <p class="why">You've got <b>${old.length}</b> note${old.length===1?'':'s'} in here older than a month — the oldest from ${agoLabel(old[old.length-1].ts)}. They're all still yours to scroll back through in Notes, any time. Forever is what brings them back up on their own.</p>
+        <button class="btn btn-soft btn-sm" onclick="openPaywall('memory')">Turn on resurfacing</button>
+      </div>`;
+    return;
+  }
+
+  const pick = old[Math.floor(Date.now()/86400000) % old.length];
+  const mine = pick.from === myKey();
+  const who = mine ? "You" : (them()?.name || "They");
+  const dt = new Date(pick.ts).toLocaleDateString("en-US", { month:"long", day:"numeric", year:"numeric" });
+  card.innerHTML = `<div class="memory-when">On this day · ${agoLabel(pick.ts)}</div>
+    ${pick.text ? `<div class="memory-text">${escapeHtml(pick.text)}</div>` : ""}
+    ${pick.img ? `<img class="memory-img" src="${pick.img}">` : ""}
+    <div class="memory-meta">${who} · ${dt}</div>`;
+}
+
+/* ---- Custom love taps ---- */
+function allTaps(){
+  return TAPS.concat(state.core?.customTaps || []);
+}
+
+function renderCustomTapWrap(){
+  const wrap = document.getElementById("customTapWrap");
+  if (!wrap) return;
+  // Don't blow away a half-typed tap when a snapshot lands mid-edit.
+  const editing = document.activeElement;
+  if (editing && (editing.id === "newTapEmoji" || editing.id === "newTapLabel")) return;
+  const custom = state.core?.customTaps || [];
+  if (!isPremium()){
+    wrap.innerHTML = `<button class="link-btn" style="padding:6px 0 0;" onclick="openPaywall('taps')">＋ Make your own tap</button>`;
+    return;
+  }
+  const atMax = custom.length >= MAX_CUSTOM_TAPS;
+  wrap.innerHTML = `
+    ${custom.length ? `<div style="font-size:11px; color:var(--ink-faint); margin-top:8px;">Tap and hold isn't a thing here — use × to remove one of yours.</div>` : ""}
+    ${atMax ? `<div style="font-size:12px; color:var(--ink-soft); padding-top:8px;">That's all ${MAX_CUSTOM_TAPS} slots used.</div>` : `
+      <div class="custom-tap-row">
+        <input type="text" class="emoji-in" id="newTapEmoji" placeholder="🐢" maxlength="4">
+        <input type="text" id="newTapLabel" placeholder="Your inside joke" maxlength="22">
+      </div>
+      <div style="height:8px;"></div>
+      <button class="btn btn-soft btn-sm" onclick="addCustomTap()">Add tap</button>`}`;
+}
+
+async function addCustomTap(){
+  if (!requirePremium("taps")) return;
+  const emoji = document.getElementById("newTapEmoji").value.trim();
+  const label = document.getElementById("newTapLabel").value.trim();
+  if (!emoji || !label){ showToast("Needs an emoji and a label"); return; }
+  if ((state.core?.customTaps || []).length >= MAX_CUSTOM_TAPS){ showToast("All slots used"); return; }
+  try{
+    await updateCore(core => {
+      core.customTaps = core.customTaps || [];
+      core.customTaps.push({ type:`c-${Date.now()}`, emoji, label, custom:true });
+    });
+  }catch(e){ return; }
+  showToast("Tap added");
+  renderTapGrid();
+  renderHome();
+}
+
+async function removeCustomTap(type){
+  try{
+    await updateCore(core => {
+      core.customTaps = (core.customTaps||[]).filter(t => t.type !== type);
+    });
+  }catch(e){ return; }
+  renderTapGrid();
+  renderHome();
+}
+
+/* ---- Us Wrapped ---- */
+function computeStats(){
+  const notes = state.notes || [];
+  const core = state.core || {};
+  const words = notes.reduce((sum,n) => sum + (n.text ? n.text.trim().split(/\s+/).filter(Boolean).length : 0), 0);
+  const voiceNotes = notes.filter(n => n.voice);
+  const voiceSecs = voiceNotes.reduce((s,n) => s + (n.voice.duration || 0), 0);
+  const tapCounts = core.tapCounts || {};
+  const vibeCounts = core.vibeCounts || {};
+  let topVibeKey = null, topVibeN = 0;
+  Object.entries(vibeCounts).forEach(([k,v]) => { if (v > topVibeN){ topVibeN = v; topVibeKey = k; } });
+  const topVibe = VIBES.find(v => v.key === topVibeKey);
+  return {
+    notes: notes.length,
+    photos: notes.filter(n => n.img).length,
+    voiceNotes: voiceNotes.length,
+    voiceMins: Math.max(voiceSecs >= 30 ? 1 : 0, Math.round(voiceSecs/60)),
+    words,
+    taps: (tapCounts.a || 0) + (tapCounts.b || 0),
+    streak: core.streak?.count || 0,
+    best: Math.max(core.streak?.best || 0, core.streak?.count || 0),
+    capsules: (core.capsules || []).length,
+    daysTogether: core.startDate ? daysBetween(new Date(core.startDate), new Date()) : null,
+    topVibe
+  };
+}
+
+function openWrapped(){
+  renderWrapped();
+  openSheet("wrappedSheet");
+}
+
+function renderWrapped(){
+  const body = document.getElementById("wrappedBody");
+  const s = computeStats();
+  const grid = `<div class="wrap-grid">
+      <div class="wrap-stat"><div class="n">${s.notes}</div><div class="l">Notes</div></div>
+      <div class="wrap-stat"><div class="n">${s.photos}</div><div class="l">Photos</div></div>
+      <div class="wrap-stat"><div class="n">${s.voiceNotes}</div><div class="l">Voice notes</div></div>
+      <div class="wrap-stat"><div class="n">${s.voiceMins}</div><div class="l">Minutes of voice</div></div>
+      <div class="wrap-stat"><div class="n">${s.taps}</div><div class="l">Love taps</div></div>
+      <div class="wrap-stat"><div class="n">${s.capsules}</div><div class="l">Capsules</div></div>
+      <div class="wrap-stat"><div class="n">${s.streak}</div><div class="l">Day streak</div></div>
+      <div class="wrap-stat"><div class="n">${s.best}</div><div class="l">Best streak</div></div>
+    </div>`;
+
+  if (!isPremium()){
+    document.getElementById("wrappedSub").innerHTML = "Here's the shape of it — <b>Forever</b> fills in the numbers.";
+    body.innerHTML = `
+      <div class="wrap-hero">
+        <div class="big">${s.words.toLocaleString()}</div>
+        <div class="cap">words written to each other so far — that one's on the house.</div>
+      </div>
+      <div class="locked-teaser">${grid}</div>
+      <div class="locked-cta" style="margin-top:14px;">
+        <p class="why">Every number above is already yours — we just haven't added it up for you yet.</p>
+        <button class="btn btn-primary btn-sm" style="margin:auto;" onclick="closeSheets(); openPaywall('wrapped');">Unlock Us, so far</button>
+      </div>`;
+    return;
+  }
+
+  document.getElementById("wrappedSub").textContent = "Everything the two of you have put in here.";
+  body.innerHTML = `
+    <div class="wrap-hero">
+      <div class="big">${s.words.toLocaleString()}</div>
+      <div class="cap">words written to each other${s.daysTogether !== null ? `, across ${s.daysTogether.toLocaleString()} days together` : ""}.</div>
+    </div>
+    ${grid}
+    ${s.topVibe ? `<div class="wrap-hero" style="margin-top:12px;">
+      <div class="big">${s.topVibe.emoji} ${s.topVibe.label}</div>
+      <div class="cap">the vibe you two land on most.</div>
+    </div>` : ""}`;
+}
+
+async function sendTap(type){
+  const tap = allTaps().find(t => t.type===type) || TAPS[0];
+  try{
+    await updateCore(core => {
+      core.pings = core.pings || [];
+      core.pings.unshift({ from: myKey(), type: tap.type, ts: Date.now() });
+      core.pings = core.pings.slice(0, 10);
+      core.tapCounts = core.tapCounts || {};
+      core.tapCounts[myKey()] = (core.tapCounts[myKey()] || 0) + 1;
+    });
+  }catch(e){ return; }
   showToast(`Sent ${tap.emoji}`);
   const myName = me()?.name || "Someone";
   pushExternal(`${tap.label} ${tap.emoji}`, `${myName}: ${tap.label.toLowerCase()}`, "heart");
@@ -1372,8 +2048,8 @@ function renderHome(){
   } else {
     feed.innerHTML = pings.map(p => {
       const whoName = p.from === myKey() ? "You" : (them()?.name || "They");
-      const tap = TAPS.find(t => t.type === p.type) || TAPS[0];
-      return `<div class="ping-item"><span>${tap.emoji} <b>${whoName}</b> — ${tap.label.toLowerCase()}</span><span>${timeAgo(p.ts)}</span></div>`;
+      const tap = allTaps().find(t => t.type === p.type) || TAPS[0];
+      return `<div class="ping-item"><span>${escapeHtml(tap.emoji)} <b>${escapeHtml(whoName)}</b> — ${escapeHtml(tap.label.toLowerCase())}</span><span>${timeAgo(p.ts)}</span></div>`;
     }).join("");
   }
 
@@ -1392,6 +2068,9 @@ function renderHome(){
   renderVibe();
   renderOverlap();
   renderSession();
+  renderTapGrid();
+  renderCustomTapWrap();
+  renderMemory();
 }
 
 function renderStreak(){
@@ -1869,6 +2548,7 @@ function recalcStreak(core, notes){
   if (core.streak.lastDate === yesterdayKey()) core.streak.count += 1;
   else core.streak.count = 1;
   core.streak.lastDate = tk;
+  core.streak.best = Math.max(core.streak.best || 0, core.streak.count);
 }
 
 function renderTogether(){
@@ -1924,6 +2604,7 @@ async function answerPrompt(){
 /* ---- Plans ---- */
 function renderPlans(){
   if (!state.core) return;
+  renderCapsules();
   document.getElementById("nextVisitInput").value = state.core.nextVisit || "";
   const nv = state.core.nextVisit;
   if (nv){
@@ -1993,6 +2674,9 @@ async function testPush(){
 
 function renderSettings(){
   if (!state.core) return;
+  renderPlanCard();
+  renderThemeRow();
+  document.getElementById("wrappedPro").style.display = isPremium() ? "none" : "inline-flex";
   renderNotifStatus();
   document.getElementById("ntfyTopicDisplay").textContent = state.core.ntfyTopic || "Not set yet";
   const m = me();
