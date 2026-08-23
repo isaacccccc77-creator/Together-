@@ -600,6 +600,62 @@
   .custom-tap-row{ display:flex; gap:8px; margin-top:10px; }
   .custom-tap-row input.emoji-in{ width:64px; text-align:center; }
 
+  /* ---------- Move / running ---------- */
+  .gap-hero{ text-align:center; padding:4px 0 2px; }
+  .gap-hero .apart{ font-family:var(--font-display); font-size:30px; line-height:1.1; }
+  .gap-hero .apart-lab{ font-size:11px; text-transform:uppercase; letter-spacing:0.1em; color:var(--ink-soft); font-weight:700; margin-top:3px; }
+  .gap-bar{
+    position:relative; height:12px; border-radius:99px; margin:16px 0 8px;
+    background:var(--paper-soft); border:1px solid var(--line); overflow:hidden;
+  }
+  .gap-fill{
+    position:absolute; inset:0 auto 0 0; border-radius:99px;
+    background:linear-gradient(90deg, var(--rose), var(--honey));
+    transition:width .8s cubic-bezier(.22,.9,.3,1);
+  }
+  .gap-ends{ display:flex; justify-content:space-between; font-size:11px; color:var(--ink-soft); font-weight:600; }
+  .gap-line{ font-size:13.5px; line-height:1.55; color:var(--ink-soft); margin-top:12px; text-align:center; }
+  .gap-line b{ color:var(--rose-deep); }
+
+  .run-live{ display:flex; gap:10px; margin-bottom:12px; }
+  .run-side{
+    flex:1; background:var(--paper-soft); border:1px solid var(--line);
+    border-radius:16px; padding:12px 10px; text-align:center;
+  }
+  .run-side.active{ border-color:var(--rose); background:var(--card); box-shadow:var(--shadow-sm); }
+  .run-side .who{ font-size:10.5px; text-transform:uppercase; letter-spacing:0.07em; font-weight:700; color:var(--ink-soft); }
+  .run-side .dist{ font-family:var(--font-display); font-size:24px; margin-top:4px; line-height:1.1; }
+  .run-side .sub{ font-size:11.5px; color:var(--ink-faint); margin-top:3px; }
+  .run-side .dot-live{
+    display:inline-block; width:7px; height:7px; border-radius:50%; background:var(--rose);
+    margin-right:4px; animation:recPulse 1.2s ease-in-out infinite; vertical-align:middle;
+  }
+
+  .run-readout{ text-align:center; padding:6px 0 14px; }
+  .run-readout .big{ font-family:var(--font-display); font-size:44px; line-height:1; }
+  .run-readout .unit{ font-size:12px; color:var(--ink-soft); text-transform:uppercase; letter-spacing:0.1em; font-weight:700; margin-top:4px; }
+  .run-secondary{ display:flex; justify-content:center; gap:26px; margin-top:14px; }
+  .run-secondary div{ text-align:center; }
+  .run-secondary .v{ font-family:var(--font-display); font-size:19px; }
+  .run-secondary .k{ font-size:10.5px; color:var(--ink-soft); text-transform:uppercase; letter-spacing:0.06em; margin-top:2px; }
+  .gps-note{ font-size:11.5px; color:var(--ink-faint); text-align:center; line-height:1.5; margin-top:10px; }
+
+  .run-item{ display:flex; align-items:center; gap:12px; padding:11px 0; border-bottom:1px solid var(--line); }
+  .run-item:last-child{ border-bottom:none; }
+  .run-shape{ width:44px; height:44px; flex-shrink:0; border-radius:12px; background:var(--paper-soft); border:1px solid var(--line); }
+  .run-shape svg{ display:block; width:100%; height:100%; }
+  .run-badge{
+    width:44px; height:44px; flex-shrink:0; border-radius:12px; background:var(--paper-soft);
+    border:1px solid var(--line); display:flex; align-items:center; justify-content:center; font-size:18px;
+  }
+  .run-info{ flex:1; min-width:0; }
+  .run-info .l1{ font-size:14.5px; font-weight:600; }
+  .run-info .l2{ font-size:11.5px; color:var(--ink-soft); margin-top:2px; }
+  .run-together-tag{
+    font-size:9.5px; font-weight:800; letter-spacing:0.06em; text-transform:uppercase;
+    color:var(--rose-deep); background:var(--rose-wash); padding:2px 6px; border-radius:99px; margin-left:6px;
+  }
+
   /* ---------- Lightbox ---------- */
   .lightbox{
     position:fixed; inset:0; background:rgba(30,26,42,0.94); z-index:100;
@@ -867,6 +923,47 @@
       </div>
     </div>
 
+    <!-- MOVE -->
+    <div class="screen" id="screen-move">
+      <div class="eyebrow">Move</div>
+      <h1 class="page-title">Run toward each other.</h1>
+
+      <div class="card">
+        <div class="card-title">Closing the distance</div>
+        <div id="gapBody"></div>
+      </div>
+
+      <div class="card">
+        <div class="card-title">The run</div>
+        <div id="runLiveWrap"></div>
+        <div id="runBody"></div>
+      </div>
+
+      <div class="card">
+        <div class="card-title">Already track it elsewhere?</div>
+        <div style="font-size:13px; color:var(--ink-soft); line-height:1.5; margin-bottom:12px;">
+          If you run with Strava, Garmin, Nike or anything else, drop the numbers in here and it still counts toward the two of you.
+        </div>
+        <div class="btn-row">
+          <div style="flex:1;">
+            <label class="field-label">Distance</label>
+            <input type="text" id="manualDist" inputmode="decimal" placeholder="5.2">
+          </div>
+          <div style="flex:1;">
+            <label class="field-label">Minutes</label>
+            <input type="text" id="manualMins" inputmode="numeric" placeholder="28">
+          </div>
+        </div>
+        <div style="height:12px;"></div>
+        <button class="btn btn-soft btn-sm" onclick="logManualRun()">Add it</button>
+      </div>
+
+      <div class="card">
+        <div class="card-title">Recent runs</div>
+        <div id="runList"></div>
+      </div>
+    </div>
+
     <!-- SETTINGS -->
     <div class="screen" id="screen-settings">
       <div class="eyebrow">Our space</div>
@@ -883,6 +980,11 @@
           <select id="settingsWake"></select>
           <select id="settingsSleep"></select>
         </div>
+        <label class="field-label">Distances in</label>
+        <select id="settingsUnits">
+          <option value="km">Kilometres</option>
+          <option value="mi">Miles</option>
+        </select>
         <div style="height:12px;"></div>
         <button class="btn btn-soft btn-sm" onclick="saveProfile()">Save</button>
       </div>
@@ -961,6 +1063,11 @@
     <button class="nav-btn" data-screen="plans" onclick="showScreen('plans')">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3.5" y="5" width="17" height="15" rx="2"/><path d="M8 3v4M16 3v4M3.5 9.5h17"/></svg>
       <span class="lab">Plans</span>
+    </button>
+    <button class="nav-btn" data-screen="move" onclick="showScreen('move')">
+      <span class="nav-dot" id="dotMove"></span>
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M2.5 12.5h4l2.5-6 4 12 2.5-6h6"/></svg>
+      <span class="lab">Move</span>
     </button>
     <button class="nav-btn" data-screen="settings" onclick="showScreen('settings')">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="12" r="3"/><path d="M19.4 13a7.9 7.9 0 000-2l2-1.5-2-3.5-2.4 1a8 8 0 00-1.7-1L15 3h-4l-.3 2.6a8 8 0 00-1.7 1l-2.4-1-2 3.5L6.6 11a7.9 7.9 0 000 2l-2 1.5 2 3.5 2.4-1a8 8 0 001.7 1L11 21h4l.3-2.6a8 8 0 001.7-1l2.4 1 2-3.5-2-1.5z"/></svg>
@@ -1123,7 +1230,9 @@ let state = {
   code: null,
   role: null, // 'a' or 'b'
   core: null,
-  notes: []
+  notes: [],
+  runs: [],
+  liveRun: {}
 };
 
 let lastSeen = { pingTs: 0, noteTs: 0 };
@@ -1300,7 +1409,9 @@ function defaultCore(){
     capsules: [],
     customTaps: [],
     tapCounts: {},   // lifetime, since core.pings only keeps the last 10
-    vibeCounts: {}
+    vibeCounts: {},
+    moveTotals: {},  // lifetime metres run, per person
+    homeCoords: {}   // rounded to ~11km — city-level, never an address
   };
 }
 
@@ -1421,9 +1532,12 @@ async function joinSpace(){
 async function leaveSpace(){
   if (!confirm("Leave this space on this device? You can rejoin later with the code.")) return;
   localRemove("my-role");
+  if (runState.active) stopRun(true);
   if (unsubCore) unsubCore();
   if (unsubNotes) unsubNotes();
-  state = { code:null, role:null, core:null, notes:[] };
+  if (unsubRuns) unsubRuns();
+  if (unsubLive) unsubLive();
+  state = { code:null, role:null, core:null, notes:[], runs:[], liveRun:{} };
   document.getElementById("mainApp").style.display = "none";
   document.getElementById("navbar").style.display = "none";
   document.getElementById("onboardScreen").style.display = "flex";
@@ -1437,7 +1551,7 @@ function copyCode(){
 
 /* ---------------- MAIN APP ---------------- */
 
-let unsubCore = null, unsubNotes = null;
+let unsubCore = null, unsubNotes = null, unsubRuns = null, unsubLive = null;
 
 async function enterApp(){
   document.getElementById("onboardScreen").style.display = "none";
@@ -1460,6 +1574,8 @@ async function enterApp(){
 function subscribeSpace(){
   if (unsubCore) unsubCore();
   if (unsubNotes) unsubNotes();
+  if (unsubRuns) unsubRuns();
+  if (unsubLive) unsubLive();
 
   unsubCore = fb.onSnapshot(fb.doc(db, "spaces", state.code), snap => {
     state.core = snap.exists() ? snap.data() : defaultCore();
@@ -1477,6 +1593,21 @@ function subscribeSpace(){
     checkForNew();
     renderAll();
   });
+
+  const runsQ = fb.query(
+    fb.collection(db, "spaces", state.code, "runs"),
+    fb.orderBy("ts", "desc"),
+    fb.limit(100)
+  );
+  unsubRuns = fb.onSnapshot(runsQ, snap => {
+    state.runs = snap.docs.map(d => ({ id: d.id, ...d.data() }));
+    renderAll();
+  });
+
+  unsubLive = fb.onSnapshot(fb.doc(db, "spaces", state.code, "live", "run"), snap => {
+    state.liveRun = snap.exists() ? snap.data() : {};
+    renderMove();
+  });
 }
 
 function me(){ return state.role === "a" ? state.core.a : state.core.b; }
@@ -1487,6 +1618,7 @@ function theirKey(){ return state.role === "a" ? "b" : "a"; }
 function renderAll(){
   applyTheme();
   renderHome();
+  renderMove();
   renderNotes();
   renderTogether();
   renderPlans();
@@ -1939,6 +2071,400 @@ async function removeCustomTap(type){
   renderHome();
 }
 
+/* ==========================================================
+   MOVE — running together across time zones
+
+   The tracker is plumbing; the product is the togetherness.
+   Two things carry it:
+     1. a live synced run, so you watch their distance climb
+        next to yours while you're both out there, and
+     2. "closing the distance" — the real great-circle gap
+        between your two cities, chipped away by every km you
+        both run. That ties exercise straight to the premise.
+
+   Deliberately NOT using Strava: its OAuth needs a client
+   secret exchanged server-side, and this app has no server.
+   Manual logging keeps Strava/Garmin users included; see the
+   README for the Cloud Function route to a real integration.
+   ========================================================== */
+
+// Home coords are rounded to ~11km on purpose. We need city-level
+// positions to measure the gap between you — never house-level.
+const COORD_ROUND = 10;
+const GPS_MAX_ACCURACY = 40;    // metres; ignore fixes vaguer than this
+const GPS_MAX_SPEED = 9;        // m/s; above this it's a GPS jump, not a runner
+const GPS_MIN_STEP = 3;         // metres; below this it's jitter
+const LIVE_PUSH_MS = 5000;
+
+let runState = {
+  active:false, startTs:0, meters:0, points:[],
+  lastPos:null, watchId:null, tickHandle:null, lastPush:0
+};
+let wakeLock = null;
+
+function myUnits(){ return me()?.units === "mi" ? "mi" : "km"; }
+
+function haversine(lat1, lon1, lat2, lon2){
+  const R = 6371000, toRad = d => d * Math.PI / 180;
+  const dLat = toRad(lat2-lat1), dLon = toRad(lon2-lon1);
+  const a = Math.sin(dLat/2)**2 + Math.cos(toRad(lat1))*Math.cos(toRad(lat2))*Math.sin(dLon/2)**2;
+  return 2 * R * Math.asin(Math.sqrt(a));
+}
+
+function fmtDist(meters, units){
+  const u = units || myUnits();
+  if (u === "mi"){
+    const mi = meters / 1609.344;
+    return mi < 0.1 ? `${Math.round(meters*3.28084)} ft` : `${mi.toFixed(2)} mi`;
+  }
+  return meters < 100 ? `${Math.round(meters)} m` : `${(meters/1000).toFixed(2)} km`;
+}
+function fmtBigDist(meters, units){
+  const u = units || myUnits();
+  const v = u === "mi" ? meters/1609.344 : meters/1000;
+  return v.toLocaleString(undefined, { minimumFractionDigits:1, maximumFractionDigits:1 });
+}
+function fmtClock(sec){
+  const h = Math.floor(sec/3600), m = Math.floor((sec%3600)/60), s = Math.floor(sec%60);
+  return h ? `${h}:${String(m).padStart(2,'0')}:${String(s).padStart(2,'0')}`
+           : `${m}:${String(s).padStart(2,'0')}`;
+}
+function fmtPace(meters, seconds, units){
+  const u = units || myUnits();
+  if (!meters || meters < 50 || !seconds) return "—";
+  const per = u === "mi" ? 1609.344 : 1000;
+  const secPer = seconds / (meters/per);
+  if (!isFinite(secPer) || secPer > 5400) return "—";
+  return `${Math.floor(secPer/60)}:${String(Math.round(secPer%60)).padStart(2,'0')} /${u}`;
+}
+
+async function acquireWakeLock(){
+  try{
+    if ("wakeLock" in navigator) wakeLock = await navigator.wakeLock.request("screen");
+  }catch(e){ /* denied or unsupported — the run still tracks while visible */ }
+}
+function releaseWakeLock(){
+  try{ wakeLock?.release(); }catch(e){}
+  wakeLock = null;
+}
+document.addEventListener("visibilitychange", () => {
+  if (document.visibilityState === "visible" && runState.active && !wakeLock) acquireWakeLock();
+});
+
+async function startRun(){
+  if (runState.active) return;
+  if (!navigator.geolocation){ showToast("This browser can't do GPS — log it manually below"); return; }
+  runState = { active:true, startTs:Date.now(), meters:0, points:[], lastPos:null, watchId:null, tickHandle:null, lastPush:0 };
+
+  runState.watchId = navigator.geolocation.watchPosition(onRunPosition, err => {
+    if (err.code === err.PERMISSION_DENIED){
+      showToast("Location blocked — allow it for this site, or log the run manually");
+      stopRun(true);
+    }
+  }, { enableHighAccuracy:true, maximumAge:2000, timeout:15000 });
+
+  runState.tickHandle = setInterval(tickRun, 1000);
+  acquireWakeLock();
+  pushLiveRun({ active:true, meters:0, seconds:0, startedAt:runState.startTs, name: me()?.name || "" });
+  renderMove();
+}
+
+function onRunPosition(pos){
+  if (!runState.active) return;
+  const { latitude:lat, longitude:lng, accuracy } = pos.coords;
+  if (accuracy > GPS_MAX_ACCURACY) return;
+
+  // First decent fix doubles as our city-level home coord, if we don't have one.
+  maybeSaveHomeCoord(lat, lng);
+
+  const now = pos.timestamp || Date.now();
+  const prev = runState.lastPos;
+  if (prev){
+    const d = haversine(prev.lat, prev.lng, lat, lng);
+    const dt = Math.max(0.001, (now - prev.t) / 1000);
+    if (d >= GPS_MIN_STEP && (d/dt) <= GPS_MAX_SPEED){
+      runState.meters += d;
+      runState.points.push([lat, lng]);
+      runState.lastPos = { lat, lng, t: now };
+    }
+    // else: jitter or a jump — keep the old anchor, don't bank the distance
+  } else {
+    runState.lastPos = { lat, lng, t: now };
+    runState.points.push([lat, lng]);
+  }
+}
+
+function tickRun(){
+  if (!runState.active) return;
+  const secs = Math.floor((Date.now() - runState.startTs)/1000);
+  const distEl = document.getElementById("runDistVal");
+  if (distEl){
+    distEl.textContent = fmtBigDist(runState.meters);
+    const t = document.getElementById("runTimeVal"); if (t) t.textContent = fmtClock(secs);
+    const p = document.getElementById("runPaceVal"); if (p) p.textContent = fmtPace(runState.meters, secs);
+  }
+  // keep the side-by-side tile in step with the main readout
+  const mineDist = document.getElementById("runMineDist");
+  if (mineDist){
+    mineDist.textContent = fmtDist(runState.meters);
+    const mt = document.getElementById("runMineTime"); if (mt) mt.textContent = fmtClock(secs);
+    const both = document.getElementById("runBothTotal");
+    if (both) both.textContent = fmtDist(runState.meters + (state.liveRun?.[theirKey()]?.meters || 0));
+  }
+  if (Date.now() - runState.lastPush > LIVE_PUSH_MS){
+    runState.lastPush = Date.now();
+    pushLiveRun({ active:true, meters: Math.round(runState.meters), seconds: secs, startedAt: runState.startTs, name: me()?.name || "" });
+  }
+}
+
+async function stopRun(discard){
+  if (!runState.active) return;
+  const meters = runState.meters;
+  const seconds = Math.floor((Date.now() - runState.startTs)/1000);
+  const points = runState.points.slice();
+
+  if (runState.watchId !== null) navigator.geolocation.clearWatch(runState.watchId);
+  clearInterval(runState.tickHandle);
+  releaseWakeLock();
+  runState.active = false;
+  pushLiveRun({ active:false, meters:0, seconds:0 });
+
+  if (discard || meters < 50){
+    if (!discard) showToast("Too short to save — logged nothing");
+    renderMove();
+    return;
+  }
+  // Was your partner out there at the same time?
+  const together = !!(state.liveRun?.[theirKey()]?.active);
+  await saveRun({ meters: Math.round(meters), seconds, points, together, source:"gps" });
+  renderMove();
+}
+
+function simplifyRoute(points, max){
+  if (points.length <= max) return points;
+  const step = points.length / max;
+  const out = [];
+  for (let i = 0; i < max; i++) out.push(points[Math.floor(i*step)]);
+  out.push(points[points.length-1]);
+  return out;
+}
+
+async function saveRun({ meters, seconds, points, together, source }){
+  const run = {
+    from: myKey(), meters, seconds, ts: Date.now(),
+    together: !!together, source,
+    // Route traces are precise location history, so only keep one when the
+    // couple has the feature that actually draws it.
+    route: (isPremium() && points && points.length > 1) ? simplifyRoute(points, 60) : null
+  };
+  try{
+    await fb.addDoc(fb.collection(db, "spaces", state.code, "runs"), run);
+  }catch(e){
+    showToast("Couldn't save that run — check your connection");
+    return;
+  }
+  try{
+    await updateCore(core => {
+      core.moveTotals = core.moveTotals || {};
+      core.moveTotals[myKey()] = (core.moveTotals[myKey()] || 0) + meters;
+    });
+  }catch(e){ /* run is saved; the total will drift until the next write */ }
+
+  showToast(`${fmtDist(meters)} logged 🏃`);
+  const myName = me()?.name || "Someone";
+  pushExternal(
+    together ? "You ran together 🏃‍♀️🏃" : "They just ran 🏃",
+    `${myName} covered ${fmtDist(meters)}${together ? " while you were out too." : "."}`,
+    "runner"
+  );
+}
+
+async function logManualRun(){
+  const dEl = document.getElementById("manualDist");
+  const mEl = document.getElementById("manualMins");
+  const dist = parseFloat(dEl.value);
+  const mins = parseFloat(mEl.value);
+  if (!isFinite(dist) || dist <= 0){ showToast("Add a distance first"); return; }
+  if (!isFinite(mins) || mins <= 0){ showToast("How many minutes did it take?"); return; }
+  const meters = Math.round(dist * (myUnits() === "mi" ? 1609.344 : 1000));
+  await saveRun({ meters, seconds: Math.round(mins*60), points:null, together:false, source:"manual" });
+  dEl.value = ""; mEl.value = "";
+  renderMove();
+}
+
+/* ---- Live run sync (its own small doc, so we're not rewriting
+        the whole core document every five seconds) ---- */
+async function pushLiveRun(patch){
+  if (!db || !fb || !state.code) return;
+  try{
+    await fb.setDoc(fb.doc(db, "spaces", state.code, "live", "run"),
+      { [myKey()]: { ...patch, ts: Date.now() } }, { merge:true });
+  }catch(e){ /* best effort — a dropped live tick isn't worth a toast */ }
+}
+
+async function inviteToRun(){
+  await pushLiveRun({ invited: Date.now() });
+  const myName = me()?.name || "Your partner";
+  pushExternal("Run with me? 🏃", `${myName} is heading out — open the app and start yours.`, "runner");
+  showToast("Asked them to come along");
+}
+
+// A live entry goes stale if their phone slept or they closed the tab.
+function liveIsFresh(entry){
+  return !!(entry && entry.active && entry.ts && (Date.now() - entry.ts) < 90000);
+}
+
+async function maybeSaveHomeCoord(lat, lng){
+  const existing = state.core?.homeCoords?.[myKey()];
+  if (existing) return;
+  try{
+    await updateCore(core => {
+      core.homeCoords = core.homeCoords || {};
+      core.homeCoords[myKey()] = {
+        lat: Math.round(lat*COORD_ROUND)/COORD_ROUND,
+        lng: Math.round(lng*COORD_ROUND)/COORD_ROUND
+      };
+    });
+  }catch(e){}
+}
+
+/* ---- Move: rendering ---- */
+function gapMeters(){
+  const h = state.core?.homeCoords || {};
+  if (!h.a || !h.b) return null;
+  return haversine(h.a.lat, h.a.lng, h.b.lat, h.b.lng);
+}
+function totalRun(){
+  const t = state.core?.moveTotals || {};
+  return (t.a || 0) + (t.b || 0);
+}
+
+function renderGap(){
+  const el = document.getElementById("gapBody");
+  if (!el) return;
+  const gap = gapMeters();
+  const done = totalRun();
+
+  if (gap === null){
+    el.innerHTML = `<div style="font-size:13.5px; color:var(--ink-soft); line-height:1.55;">
+      Once you've each started one run, we'll work out how far apart you actually are and start counting your kilometres against it.
+      <div style="margin-top:8px; font-size:12px; color:var(--ink-faint);">We keep only a rounded, city-level position for this — never your address.</div>
+    </div>`;
+    return;
+  }
+  const pct = Math.min(100, (done/gap)*100);
+  el.innerHTML = `
+    <div class="gap-hero">
+      <div class="apart">${fmtBigDist(gap)} ${myUnits()}</div>
+      <div class="apart-lab">between you</div>
+    </div>
+    <div class="gap-bar"><div class="gap-fill" style="width:${pct.toFixed(2)}%"></div></div>
+    <div class="gap-ends"><span>${escapeHtml(me()?.name || "You")}</span><span>${escapeHtml(them()?.name || "Them")}</span></div>
+    <div class="gap-line">Together you've run <b>${fmtBigDist(done)} ${myUnits()}</b> toward each other — that's <b>${pct < 0.1 && done > 0 ? "&lt;0.1" : pct.toFixed(1)}%</b> of the way.</div>`;
+}
+
+function renderRunLive(){
+  const wrap = document.getElementById("runLiveWrap");
+  if (!wrap) return;
+  const live = state.liveRun || {};
+  const theirs = live[theirKey()];
+  const theirLive = liveIsFresh(theirs);
+
+  if (!runState.active && !theirLive){ wrap.innerHTML = ""; return; }
+
+  const mySecs = runState.active ? Math.floor((Date.now()-runState.startTs)/1000) : 0;
+  wrap.innerHTML = `<div class="run-live">
+    <div class="run-side ${runState.active?'active':''}">
+      <div class="who">${runState.active ? '<span class="dot-live"></span>' : ''}${escapeHtml(me()?.name || "You")}</div>
+      <div class="dist" id="runMineDist">${runState.active ? fmtDist(runState.meters) : "—"}</div>
+      <div class="sub" id="runMineTime">${runState.active ? fmtClock(mySecs) : "not out yet"}</div>
+    </div>
+    <div class="run-side ${theirLive?'active':''}">
+      <div class="who">${theirLive ? '<span class="dot-live"></span>' : ''}${escapeHtml(them()?.name || "Them")}</div>
+      <div class="dist">${theirLive ? fmtDist(theirs.meters || 0) : "—"}</div>
+      <div class="sub">${theirLive ? fmtClock(theirs.seconds || 0) : "not out yet"}</div>
+    </div>
+  </div>
+  ${runState.active && theirLive ? `<div class="gap-line" style="margin:0 0 12px;">You're both out there right now. <b id="runBothTotal">${fmtDist(runState.meters + (theirs.meters||0))}</b> between you so far.</div>` : ""}`;
+}
+
+function renderRunBody(){
+  const el = document.getElementById("runBody");
+  if (!el) return;
+  const theirLive = liveIsFresh(state.liveRun?.[theirKey()]);
+
+  if (runState.active){
+    const secs = Math.floor((Date.now()-runState.startTs)/1000);
+    el.innerHTML = `
+      <div class="run-readout">
+        <div class="big" id="runDistVal">${fmtBigDist(runState.meters)}</div>
+        <div class="unit">${myUnits()}</div>
+        <div class="run-secondary">
+          <div><div class="v" id="runTimeVal">${fmtClock(secs)}</div><div class="k">Time</div></div>
+          <div><div class="v" id="runPaceVal">${fmtPace(runState.meters, secs)}</div><div class="k">Pace</div></div>
+        </div>
+      </div>
+      <button class="btn btn-primary" onclick="stopRun(false)">Finish run</button>
+      <div style="height:8px;"></div>
+      <button class="btn btn-ghost btn-sm" style="margin:auto;" onclick="stopRun(true)">Discard</button>
+      <div class="gps-note">Keep this screen open while you run — a browser tab can't track GPS once the phone locks. We keep the screen awake where the browser allows it.</div>`;
+    return;
+  }
+
+  el.innerHTML = `
+    ${theirLive ? `<div class="gap-line" style="margin:0 0 12px;"><b>${escapeHtml(them()?.name || "They")}</b> is out running right now.</div>` : ""}
+    <button class="btn btn-primary" onclick="startRun()">${theirLive ? "Join them 🏃" : "Start a run 🏃"}</button>
+    <div style="height:8px;"></div>
+    <button class="btn btn-soft btn-sm" style="margin:auto;" onclick="inviteToRun()">Ask them to run too</button>`;
+}
+
+function routeSvg(route){
+  if (!route || route.length < 2) return "";
+  const lats = route.map(p=>p[0]), lngs = route.map(p=>p[1]);
+  const minLat = Math.min(...lats), maxLat = Math.max(...lats);
+  const minLng = Math.min(...lngs), maxLng = Math.max(...lngs);
+  const spanLat = Math.max(1e-6, maxLat-minLat), spanLng = Math.max(1e-6, maxLng-minLng);
+  const span = Math.max(spanLat, spanLng);
+  const pts = route.map(([la,ln]) => {
+    const x = 6 + ((ln - minLng) / span) * 32 + (span - spanLng)/span * 16;
+    const y = 38 - ((la - minLat) / span) * 32 - (span - spanLat)/span * 16;
+    return `${x.toFixed(1)},${y.toFixed(1)}`;
+  }).join(" ");
+  return `<svg viewBox="0 0 44 44"><polyline points="${pts}" fill="none" stroke="var(--rose)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>`;
+}
+
+function renderRunList(){
+  const list = document.getElementById("runList");
+  if (!list) return;
+  const runs = state.runs || [];
+  if (!runs.length){
+    list.innerHTML = `<div class="empty-state">No runs yet. The first one starts the count.</div>`;
+    return;
+  }
+  list.innerHTML = runs.map(r => {
+    const mine = r.from === myKey();
+    const who = mine ? "You" : (them()?.name || "Them");
+    const when = new Date(r.ts).toLocaleDateString("en-US", { month:"short", day:"numeric" });
+    const shape = r.route ? `<div class="run-shape">${routeSvg(r.route)}</div>`
+                          : `<div class="run-badge">${r.source === "manual" ? "✍️" : "🏃"}</div>`;
+    return `<div class="run-item">
+      ${shape}
+      <div class="run-info">
+        <div class="l1">${fmtDist(r.meters)}${r.together ? `<span class="run-together-tag">together</span>` : ""}</div>
+        <div class="l2">${escapeHtml(who)} · ${when} · ${fmtClock(r.seconds)} · ${fmtPace(r.meters, r.seconds)}</div>
+      </div>
+    </div>`;
+  }).join("");
+}
+
+function renderMove(){
+  if (!state.core) return;
+  renderGap();
+  renderRunLive();
+  renderRunBody();
+  renderRunList();
+}
+
 /* ---- Us Wrapped ---- */
 function computeStats(){
   const notes = state.notes || [];
@@ -1961,6 +2487,9 @@ function computeStats(){
     streak: core.streak?.count || 0,
     best: Math.max(core.streak?.best || 0, core.streak?.count || 0),
     capsules: (core.capsules || []).length,
+    runs: (state.runs || []).length,
+    runMeters: (core.moveTotals?.a || 0) + (core.moveTotals?.b || 0),
+    runsTogether: (state.runs || []).filter(r => r.together).length,
     daysTogether: core.startDate ? daysBetween(new Date(core.startDate), new Date()) : null,
     topVibe
   };
@@ -1983,6 +2512,8 @@ function renderWrapped(){
       <div class="wrap-stat"><div class="n">${s.capsules}</div><div class="l">Capsules</div></div>
       <div class="wrap-stat"><div class="n">${s.streak}</div><div class="l">Day streak</div></div>
       <div class="wrap-stat"><div class="n">${s.best}</div><div class="l">Best streak</div></div>
+      <div class="wrap-stat"><div class="n">${fmtBigDist(s.runMeters)}</div><div class="l">${myUnits()} run</div></div>
+      <div class="wrap-stat"><div class="n">${s.runsTogether}</div><div class="l">Runs together</div></div>
     </div>`;
 
   if (!isPremium()){
@@ -2536,8 +3067,9 @@ function activeToday(core, notes, role){
   const noted = (notes||[]).some(n => n.from===role && dateKeyFromTs(n.ts)===tk);
   const moody = core.mood && core.mood[role] && dateKeyFromTs(core.mood[role].ts)===tk;
   const vibed = core.vibe && core.vibe[role] && dateKeyFromTs(core.vibe[role].ts)===tk;
+  const ran = (state.runs||[]).some(r => r.from===role && dateKeyFromTs(r.ts)===tk);
   const answered = core.prompt && core.prompt.date===tk && core.prompt.answers && core.prompt.answers[role];
-  return !!(pinged || noted || moody || vibed || answered);
+  return !!(pinged || noted || moody || vibed || ran || answered);
 }
 function recalcStreak(core, notes){
   core.streak = core.streak || { count:0, lastDate:"" };
@@ -2684,6 +3216,7 @@ function renderSettings(){
   document.getElementById("settingsTz").value = m?.tz || "";
   document.getElementById("settingsWake").value = m?.wake ?? 8;
   document.getElementById("settingsSleep").value = m?.sleep ?? 23;
+  document.getElementById("settingsUnits").value = m?.units || "km";
   document.getElementById("startDateInput").value = state.core.startDate || "";
 }
 
@@ -2692,7 +3225,8 @@ async function saveProfile(){
   const tz = document.getElementById("settingsTz").value;
   const wake = parseInt(document.getElementById("settingsWake").value);
   const sleep = parseInt(document.getElementById("settingsSleep").value);
-  await updateCore(core => { core[myKey()] = { name, tz, wake, sleep }; });
+  const units = document.getElementById("settingsUnits").value;
+  await updateCore(core => { core[myKey()] = { name, tz, wake, sleep, units }; });
   showToast("Saved");
   renderAll();
 }

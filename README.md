@@ -30,6 +30,11 @@ shared Firebase Firestore document per couple, and free push via
   answer.
 - **Plans** — countdown to your next visit, a someday/bucket list, and
   **time capsules**: letters that stay sealed until a date you choose.
+- **Move** — a GPS run tracker, a **live synced run** (watch their
+  distance climb next to yours while you're both out there), and
+  **closing the distance**: the real great-circle gap between your two
+  cities, chipped away by every kilometre you both run. Manual logging
+  for anyone who already tracks with Strava, Garmin or Nike.
 - **Settings** — profile, time zone, wake/sleep hours (used to compute
   your best overlapping hours to talk), and phone push via ntfy.
 
@@ -50,6 +55,8 @@ always readable, forever, on the free tier.
 | Custom love taps (inside jokes) | — | Up to 6 |
 | "Us, so far" stats | — | ✓ |
 | Themes (Midnight / Sakura / Sage) | Paper only | All |
+| Run tracking, live synced runs, closing the distance | ✓ | ✓ |
+| Saved route shapes | — | ✓ |
 
 Two deliberate design rules behind that split:
 
@@ -73,6 +80,66 @@ it from devtools. To take real money you need:
 3. A Firestore rule forbidding clients from writing the `plan` field —
    the rules in this repo do not yet enforce that, because with no server
    there is nothing trustworthy to enforce it against.
+
+## Running: how it works, and why not Strava (yet)
+
+The tracker uses the browser's `navigator.geolocation.watchPosition`,
+summing haversine distance between fixes. It filters out fixes vaguer
+than 40m, steps under 3m (GPS jitter while standing still), and implied
+speeds over 9 m/s (a GPS jump, not a runner). Rejected fixes keep the
+previous anchor rather than resetting it, so a slow jogger's distance
+accumulates across several fixes instead of being discarded.
+
+Live run state is written to its own small doc (`spaces/{code}/live/run`)
+every 5 seconds rather than into the main core document — otherwise a
+30-minute run would rewrite the whole space document a few hundred times.
+
+**Known limits:**
+
+- A browser tab cannot track GPS once the phone locks. The app requests a
+  screen Wake Lock where supported, and tells the user to keep the screen
+  on. This is the honest ceiling for a web app; a native wrapper
+  (Capacitor) or a real background-location API is the only fix.
+- Home coordinates for the "distance between us" calculation are rounded
+  to one decimal degree (~11km) before they are stored — city-level, so
+  the feature works without keeping anyone's address in the database.
+- Route traces are precise location history, so they are only saved for
+  couples on the paid tier, which is the only tier that draws them.
+
+### Strava
+
+Not integrated, and it can't be from a static file. Strava uses OAuth2:
+redeeming the authorization code for tokens requires your
+`client_secret`, and anything in this HTML file is readable by anyone who
+opens it. Shipping the secret client-side would let a stranger pull your
+users' Strava data. Refresh tokens also need somewhere server-side to
+live.
+
+To do it properly you need a small backend (a Firebase Cloud Function
+fits, since Firebase is already here):
+
+1. Register an API application in Strava's developer settings for the
+   `client_id` / `client_secret`.
+2. Function 1 — `stravaCallback`: receives Strava's redirect, exchanges
+   the code for access + refresh tokens using the secret, stores them
+   under the space, keyed per partner.
+3. Function 2 — `stravaWebhook`: subscribe to Strava's activity webhook
+   so new activities are pushed to you; on each event, fetch the
+   activity and write a run into `spaces/{code}/runs` in the same shape
+   the tracker already produces.
+4. Refresh the access token when it expires and write the new one back.
+
+Because step 3 writes into the existing `runs` collection, everything on
+the Move screen — the live gap, the totals, the history — keeps working
+untouched.
+
+**Check Strava's API Agreement before building this.** It places real
+restrictions on displaying one athlete's data to another user, which is
+exactly what a couples app does. That is a product risk, not a technical
+one, and it is worth resolving before writing the functions.
+
+Manual logging exists so Strava/Garmin/Nike users aren't shut out in the
+meantime — the numbers count toward the shared totals identically.
 
 ## Security note
 
