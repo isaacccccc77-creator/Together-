@@ -600,6 +600,35 @@
   .custom-tap-row{ display:flex; gap:8px; margin-top:10px; }
   .custom-tap-row input.emoji-in{ width:64px; text-align:center; }
 
+  /* ---------- Presence / quiet hours ---------- */
+  .presence-row{
+    display:flex; align-items:center; justify-content:space-between; gap:10px;
+    margin-top:14px; padding-top:12px; border-top:1px solid var(--line);
+  }
+  .presence-line{ font-size:12.5px; color:var(--ink-soft); line-height:1.45; }
+  .presence-line b{ color:var(--ink); font-weight:600; }
+  .presence-dot{
+    display:inline-block; width:7px; height:7px; border-radius:50%;
+    background:var(--good); margin-right:5px; vertical-align:middle;
+  }
+  .presence-dot.away{ background:var(--ink-faint); }
+  .presence-dot.asleep{ background:var(--dusk); }
+  .night-btn{
+    background:var(--paper-soft); border:1px solid var(--line); border-radius:999px;
+    padding:7px 13px; font-size:12.5px; font-weight:600; color:var(--ink-soft);
+    white-space:nowrap; flex-shrink:0;
+    transition:transform .15s ease, box-shadow .15s ease, border-color .15s ease;
+  }
+  .night-btn:hover{ transform:translateY(-2px); box-shadow:var(--shadow-sm); border-color:var(--rose); }
+  .night-btn.on{ background:var(--night); color:#fff; border-color:var(--night); }
+  .quiet-note{
+    display:flex; gap:9px; align-items:flex-start;
+    background:var(--paper-soft); border:1px solid var(--line); border-radius:12px;
+    padding:10px 12px; margin-bottom:12px; font-size:12.5px; color:var(--ink-soft); line-height:1.5;
+  }
+  .quiet-note .em{ font-size:15px; flex-shrink:0; }
+  .quiet-note b{ color:var(--ink); }
+
   /* ---------- Move / running ---------- */
   .gap-hero{ text-align:center; padding:4px 0 2px; }
   .gap-hero .apart{ font-family:var(--font-display); font-size:30px; line-height:1.1; }
@@ -753,6 +782,10 @@
             <div class="part" id="themPart">&nbsp;</div>
           </div>
         </div>
+        <div class="presence-row">
+          <div class="presence-line" id="presenceLine">&nbsp;</div>
+          <button class="night-btn" id="nightBtn" onclick="toggleAsleep()">🌙 Goodnight</button>
+        </div>
       </div>
 
       <div class="card">
@@ -813,6 +846,7 @@
 
       <div id="timelineView">
         <div class="card">
+          <div id="quietHint"></div>
           <div class="compose">
             <textarea id="noteInput" placeholder="Write something for them to find..."></textarea>
           </div>
@@ -1112,6 +1146,15 @@
   <button class="sheet-close" onclick="closeSheets()">Not now</button>
 </div>
 
+<!-- QUIET HOURS -->
+<div class="sheet" id="quietSheet">
+  <div class="sheet-grab"></div>
+  <h2 id="quietTitle">It's late where they are.</h2>
+  <p class="sheet-sub" id="quietSub"></p>
+  <div id="quietActions"></div>
+  <button class="sheet-close" onclick="quietChoose('cancel')">Never mind</button>
+</div>
+
 <!-- WRAPPED -->
 <div class="sheet" id="wrappedSheet">
   <div class="sheet-grab"></div>
@@ -1232,7 +1275,8 @@ let state = {
   core: null,
   notes: [],
   runs: [],
-  liveRun: {}
+  liveRun: {},
+  presence: {}
 };
 
 let lastSeen = { pingTs: 0, noteTs: 0 };
@@ -1537,7 +1581,9 @@ async function leaveSpace(){
   if (unsubNotes) unsubNotes();
   if (unsubRuns) unsubRuns();
   if (unsubLive) unsubLive();
-  state = { code:null, role:null, core:null, notes:[], runs:[], liveRun:{} };
+  if (unsubPresence) unsubPresence();
+  if (heartbeatHandle) clearInterval(heartbeatHandle);
+  state = { code:null, role:null, core:null, notes:[], runs:[], liveRun:{}, presence:{} };
   document.getElementById("mainApp").style.display = "none";
   document.getElementById("navbar").style.display = "none";
   document.getElementById("onboardScreen").style.display = "flex";
@@ -1551,7 +1597,7 @@ function copyCode(){
 
 /* ---------------- MAIN APP ---------------- */
 
-let unsubCore = null, unsubNotes = null, unsubRuns = null, unsubLive = null;
+let unsubCore = null, unsubNotes = null, unsubRuns = null, unsubLive = null, unsubPresence = null;
 
 async function enterApp(){
   document.getElementById("onboardScreen").style.display = "none";
@@ -1566,6 +1612,7 @@ async function enterApp(){
   loadLastSeen();
   renderNotifStatus();
   subscribeSpace();
+  startHeartbeat();
   tickClock();
   setInterval(tickClock, 30000);
   renderMoodGrid();
@@ -1576,6 +1623,7 @@ function subscribeSpace(){
   if (unsubNotes) unsubNotes();
   if (unsubRuns) unsubRuns();
   if (unsubLive) unsubLive();
+  if (unsubPresence) unsubPresence();
 
   unsubCore = fb.onSnapshot(fb.doc(db, "spaces", state.code), snap => {
     state.core = snap.exists() ? snap.data() : defaultCore();
@@ -1607,6 +1655,12 @@ function subscribeSpace(){
   unsubLive = fb.onSnapshot(fb.doc(db, "spaces", state.code, "live", "run"), snap => {
     state.liveRun = snap.exists() ? snap.data() : {};
     renderMove();
+  });
+
+  unsubPresence = fb.onSnapshot(fb.doc(db, "spaces", state.code, "live", "presence"), snap => {
+    state.presence = snap.exists() ? snap.data() : {};
+    renderPresence();
+    renderNotes();
   });
 }
 
@@ -1742,10 +1796,182 @@ function renderVibe(){
   }
 }
 
+/* ==========================================================
+   PRESENCE & QUIET HOURS
+
+   What this is NOT: phone-off, airplane-mode or DND detection.
+   No browser exposes any of that, on purpose — it's a
+   fingerprinting and stalking vector. Even a native app can't
+   see a powered-off phone, because it's dead too.
+
+   So we never *infer* sleep from silence. Absence of a
+   heartbeat means the app isn't open, which is equally well
+   explained by bad signal or a flat battery, and we say so in
+   those words. Sleep is either declared by the person
+   themselves (the goodnight ritual) or read off the wake/sleep
+   hours they already set in Settings.
+
+   The point of all this isn't monitoring — it's the quiet-hours
+   guard, so you don't buzz someone's phone at 2am.
+   ========================================================== */
+
+const HEARTBEAT_MS = 120000;
+let heartbeatHandle = null;
+
+async function pushPresence(patch){
+  if (!db || !fb || !state.code) return;
+  try{
+    await fb.setDoc(fb.doc(db, "spaces", state.code, "live", "presence"),
+      { [myKey()]: { ts: Date.now(), ...patch } }, { merge:true });
+  }catch(e){ /* a missed heartbeat isn't worth interrupting anyone over */ }
+}
+
+function myPresence(){ return state.presence?.[myKey()] || {}; }
+function theirPresence(){ return state.presence?.[theirKey()] || {}; }
+
+function iAmAsleepFlag(){ return !!myPresence().asleep; }
+
+function heartbeat(){
+  if (document.visibilityState !== "visible") return;
+  const patch = {};
+  // If they're up and about inside their own awake window, quietly retire a
+  // goodnight they forgot to clear — rather than leaving them "asleep" for days.
+  if (iAmAsleepFlag()){
+    const h = getHourIn(me()?.tz);
+    const wake = me()?.wake ?? 8, sleep = me()?.sleep ?? 23;
+    if (h !== null && h >= wake && h < sleep){ patch.asleep = false; patch.since = 0; }
+  }
+  pushPresence(patch);
+}
+
+function startHeartbeat(){
+  if (heartbeatHandle) clearInterval(heartbeatHandle);
+  heartbeat();
+  heartbeatHandle = setInterval(heartbeat, HEARTBEAT_MS);
+  document.addEventListener("visibilitychange", () => {
+    if (document.visibilityState === "visible") heartbeat();
+  });
+}
+
+async function toggleAsleep(){
+  const now = !iAmAsleepFlag();
+  await pushPresence({ asleep: now, since: now ? Date.now() : 0 });
+  if (now){
+    showToast("Goodnight 🌙");
+    const myName = me()?.name || "Your partner";
+    pushExternal("Goodnight 🌙", `${myName} is turning in.`, "crescent_moon");
+  } else {
+    showToast("Good morning ☀️");
+  }
+  renderPresence();
+}
+
+// Is it inside the hours they told us they're normally awake?
+function inTheirAwakeWindow(){
+  const t = them();
+  const h = getHourIn(t?.tz);
+  if (h === null) return null;
+  const wake = t?.wake ?? 8, sleep = t?.sleep ?? 23;
+  return h >= wake && h < sleep;
+}
+
+// Combined view of whether now is a bad moment to buzz their phone.
+function partnerQuiet(){
+  const p = theirPresence();
+  const awake = inTheirAwakeWindow();
+  if (p.asleep) return { quiet:true, reason:"declared", timeStr:getTimeIn(them()?.tz) };
+  if (awake === false) return { quiet:true, reason:"hours", timeStr:getTimeIn(them()?.tz) };
+  return { quiet:false, timeStr:getTimeIn(them()?.tz) };
+}
+
+function renderPresence(){
+  const line = document.getElementById("presenceLine");
+  const btn = document.getElementById("nightBtn");
+  if (!line || !btn) return;
+
+  const asleepMe = iAmAsleepFlag();
+  btn.classList.toggle("on", asleepMe);
+  btn.textContent = asleepMe ? "☀️ Good morning" : "🌙 Goodnight";
+
+  const nm = them()?.name || "They";
+  const p = theirPresence();
+  const q = partnerQuiet();
+
+  if (p.asleep){
+    const since = p.since ? ` at ${new Date(p.since).toLocaleTimeString("en-US",{ hour:"numeric", minute:"2-digit" })} your time` : "";
+    line.innerHTML = `<span class="presence-dot asleep"></span><b>${escapeHtml(nm)}</b> said goodnight${since}.`;
+    return;
+  }
+  if (!p.ts){
+    line.innerHTML = q.quiet
+      ? `<span class="presence-dot asleep"></span>It's <b>${q.timeStr}</b> for ${escapeHtml(nm)} — outside the hours they said they're up.`
+      : `<span class="presence-dot away"></span>No sign of ${escapeHtml(nm)} in here yet.`;
+    return;
+  }
+  const mins = Math.floor((Date.now() - p.ts)/60000);
+  if (mins < 3){
+    line.innerHTML = `<span class="presence-dot"></span><b>${escapeHtml(nm)}</b> has the app open right now.`;
+  } else {
+    // Deliberately says "had the app open", not "was online" — we only know
+    // about app activity, and silence could just be a tunnel or a flat battery.
+    line.innerHTML = `<span class="presence-dot away"></span><b>${escapeHtml(nm)}</b> last had the app open ${timeAgo(p.ts)}.`
+      + (q.quiet ? ` It's ${q.timeStr} there.` : "");
+  }
+}
+
+function renderQuietHint(){
+  const el = document.getElementById("quietHint");
+  if (!el || !state.core) return;
+  const q = partnerQuiet();
+  if (!q.quiet){ el.innerHTML = ""; return; }
+  const nm = them()?.name || "they";
+  el.innerHTML = `<div class="quiet-note">
+    <span class="em">🌙</span>
+    <div>It's <b>${q.timeStr}</b> for ${escapeHtml(nm)}${q.reason === "declared" ? " and they've said goodnight" : ""}. You can still leave a note — we'll keep their phone quiet.</div>
+  </div>`;
+}
+
+/* ---- Quiet-hours guard ---- */
+let quietResolve = null;
+
+function quietChoose(choice){
+  const r = quietResolve;
+  quietResolve = null;
+  closeSheets();
+  if (r) r(choice);
+}
+
+// Returns 'send' | 'quiet' | 'cancel'. 'quiet' means: save it, but don't
+// make their phone buzz — it'll be waiting when they wake up.
+function askQuiet(kind){
+  const q = partnerQuiet();
+  if (!q.quiet) return Promise.resolve("send");
+  const nm = them()?.name || "they";
+  document.getElementById("quietTitle").textContent =
+    q.reason === "declared" ? `${nm} said goodnight.` : "It's late where they are.";
+  document.getElementById("quietSub").innerHTML =
+    q.reason === "declared"
+      ? `It's <b>${q.timeStr}</b> for ${escapeHtml(nm)} and they've turned in for the night.`
+      : `It's <b>${q.timeStr}</b> for ${escapeHtml(nm)} — outside the hours they said they're usually up.`;
+
+  document.getElementById("quietActions").innerHTML = kind === "note"
+    ? `<button class="btn btn-primary" onclick="quietChoose('quiet')">Leave it quietly 🤫</button>
+       <div style="font-size:12px; color:var(--ink-soft); text-align:center; line-height:1.5; margin-top:8px;">It'll be sitting there when they wake up — their phone won't buzz.</div>
+       <div style="height:14px;"></div>
+       <button class="btn btn-soft btn-sm" style="margin:auto;" onclick="quietChoose('send')">Buzz them anyway</button>`
+    : `<button class="btn btn-soft" onclick="quietChoose('cancel')">Hold off till morning</button>
+       <div style="height:10px;"></div>
+       <button class="btn btn-ghost btn-sm" style="margin:auto;" onclick="quietChoose('send')">Buzz them anyway</button>`;
+
+  return new Promise(res => { quietResolve = res; openSheet("quietSheet"); });
+}
+
 /* ---- Sheets (paywall + wrapped) ---- */
 let selectedPrice = "yearly";
 
 function closeSheets(){
+  // If a quiet-hours prompt is open, dismissing it means "don't send".
+  if (quietResolve){ const r = quietResolve; quietResolve = null; r("cancel"); }
   document.getElementById("sheetBackdrop").classList.remove("show");
   document.querySelectorAll(".sheet").forEach(s => s.classList.remove("show"));
 }
@@ -2546,6 +2772,8 @@ function renderWrapped(){
 
 async function sendTap(type){
   const tap = allTaps().find(t => t.type===type) || TAPS[0];
+  // A tap is nothing but a buzz, so there's no quiet version of it.
+  if (await askQuiet("tap") === "cancel") return;
   try{
     await updateCore(core => {
       core.pings = core.pings || [];
@@ -2602,6 +2830,7 @@ function renderHome(){
   renderTapGrid();
   renderCustomTapWrap();
   renderMemory();
+  renderPresence();
 }
 
 function renderStreak(){
@@ -2924,6 +3153,8 @@ async function sendNote(){
     ts: Date.now()
   };
   const wasVoice = !!pendingVoice, wasPhoto = !!pendingPhoto;
+  const quietChoice = await askQuiet("note");
+  if (quietChoice === "cancel") return;
   try{
     await fb.addDoc(fb.collection(db, "spaces", state.code, "notes"), note);
   }catch(e){
@@ -2939,13 +3170,15 @@ async function sendNote(){
   const myName = me()?.name || "Someone";
   const pushTitle = note.voice ? "New voice note 🎙️" : (wasPhoto ? "New photo 📷" : "New note 💌");
   const pushBody = note.voice ? `${myName} recorded you a goodnight message.` : `${myName} left you ${wasPhoto ? "a photo" : "a note"}.`;
-  pushExternal(pushTitle, pushBody, "love_letter");
+  if (quietChoice === "quiet") showToast("Left quietly — their phone stays silent");
+  else pushExternal(pushTitle, pushBody, "love_letter");
   try{
     await updateCore(core => {}); // recompute streak now that a note landed
   }catch(e){ /* note already saved; streak will catch up on next sync */ }
 }
 
 function renderNotes(){
+  renderQuietHint();
   const list = document.getElementById("notesList");
   const notes = state.notes || [];
   if (!notes.length){

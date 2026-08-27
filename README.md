@@ -19,7 +19,8 @@ shared Firebase Firestore document per couple, and free push via
 
 ## Features
 
-- **Home** — a "same sky, different hour" time zone bar, a live shared
+- **Home** — a "same sky, different hour" time zone bar, presence and the
+  goodnight ritual, a live shared
   **vibe** (pick an ambient color/mood and it syncs to your partner's
   screen in real time, tinting the whole app), a streak, a virtual
   coffee-date session, quick love-taps, and **On this day** memory
@@ -80,6 +81,43 @@ it from devtools. To take real money you need:
 3. A Firestore rule forbidding clients from writing the `plan` field —
    the rules in this repo do not yet enforce that, because with no server
    there is nothing trustworthy to enforce it against.
+
+## Presence, sleep, and quiet hours
+
+### What this app deliberately does not do
+
+It does **not** detect when a phone is powered off, in airplane mode, or
+on Do Not Disturb / Focus. No browser exposes any of that, by design —
+device state like that is a fingerprinting and stalking vector. A native
+app barely helps: iOS gates Focus status behind a special entitlement and
+user permission and only yields a boolean, Android needs
+notification-policy access, and *nothing* can report a powered-off phone
+because the app on it is dead too.
+
+More importantly, we don't want it. Inferring "they went to sleep" from
+an absent signal is the shape of passive partner monitoring, and absence
+of a heartbeat is equally well explained by a tunnel, a flat battery, or
+a force-quit. So the app never guesses. It says "last had the app open
+42m ago" — app activity, described as app activity.
+
+### What it does instead
+
+- **Presence heartbeat.** While the app is open and visible it writes a
+  timestamp to `spaces/{code}/live/presence` every two minutes. That
+  drives an honest "has the app open right now" / "last had the app open
+  20m ago".
+- **The goodnight ritual.** You *tap* goodnight; your partner sees it.
+  Intentional and mutual rather than inferred. It clears itself if you're
+  active again inside your own waking hours, so nobody stays "asleep" for
+  days after forgetting.
+- **Inferred quiet hours, with zero tracking.** Both partners already set
+  their wake/sleep hours in Settings, so "it's 2:04 AM for Jamie" needs
+  no monitoring at all.
+- **The quiet-hours guard.** Try to send a love tap while they're asleep
+  or outside their waking hours and the app stops you. For notes it
+  offers **"leave it quietly"** — the note saves and is waiting when they
+  wake, but their phone never buzzes. The notes composer shows the same
+  warning up front, so the guard is never a surprise at send time.
 
 ## Running: how it works, and why not Strava (yet)
 

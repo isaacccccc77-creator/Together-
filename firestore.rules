@@ -48,9 +48,10 @@ service cloud.firestore {
         allow update, delete: if false;
       }
 
-      // Live run ticks, written every few seconds while someone is out
-      // running. Kept out of the space document so a run doesn't rewrite
-      // everything a few hundred times.
+      // Live run ticks (every few seconds while someone is out running) and
+      // presence heartbeats (every two minutes while the app is open).
+      // Kept out of the space document so neither rewrites everything
+      // hundreds of times a session.
       match /live/{docId} {
         allow read, write: if request.auth != null;
       }
