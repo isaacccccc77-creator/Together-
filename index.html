@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1, user-scalable=no">
 <title>Us, Between Time Zones</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,500;0,9..144,600;1,9..144,500&family=Libre+Franklin:wght@400;500;600;700&family=Caveat:wght@500;600&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;0,700;1,400;1,500&family=Jost:wght@300;400;500;600;700&family=Parisienne&display=swap" rel="stylesheet">
 <style>
   :root{
     --paper:#F5EDE6;
@@ -16,6 +16,8 @@
     --ink-faint:#B4ACBE;
     --rose:#C1666B;
     --rose-deep:#A2494F;
+    --on-rose:#FFFFFF;   /* text that sits on a --btn-bg fill */
+    --btn-bg:#A2494F;    /* filled-button ground: WCAG AA against --on-rose */
     --rose-wash:#F1DBDA;
     --honey:#E3A24C;
     --dusk:#5B6B8C;
@@ -27,11 +29,22 @@
     --shadow-lg: 0 16px 36px rgba(46,42,61,0.22), 0 5px 12px rgba(46,42,61,0.12);
     --shadow-rose: 0 8px 18px rgba(193,102,107,0.4);
     --radius:20px;
-    --font-display:'Fraunces', serif;
-    --font-body:'Libre Franklin', sans-serif;
-    --font-hand:'Caveat', cursive;
+    --font-display:'Cormorant Garamond', 'Iowan Old Style', Georgia, serif;
+    --font-body:'Jost', 'Avenir Next', 'Segoe UI', system-ui, sans-serif;
+    --font-hand:'Parisienne', 'Snell Roundhand', cursive;
   }
   *{box-sizing:border-box; -webkit-tap-highlight-color:transparent;}
+  /* Cormorant ships old-style figures by default, so "980" drops the 9 and 8
+     below the baseline and "108" reads as 1o8. Anywhere the display face is
+     showing a number — clocks, counters, distances — force lining figures,
+     and tabular ones so digits don't jitter as they tick. */
+  .stat .num, .sky-person .time, .wrap-stat .n, .gap-hero .apart,
+  .run-side .dist, .run-readout .big, .run-secondary .v, .pocket-when .times,
+  .session-ring .time, .rec-timer, .code-display, .wrap-hero .big,
+  .visit-countdown, .voice-time{
+    font-variant-numeric: lining-nums tabular-nums;
+    font-feature-settings: "lnum" 1, "tnum" 1;
+  }
   html,body{margin:0;padding:0;}
   body{
     background:var(--paper);
@@ -54,7 +67,9 @@
   ::selection{ background:var(--rose-wash); }
   a{color:inherit;}
   button{font-family:inherit; cursor:pointer;}
-  input, select{font-family:inherit;}
+  /* textarea was missing here, so every note and answer box fell back to the
+     browser's default monospace instead of the app's face */
+  input, select, textarea{font-family:inherit;}
   :focus-visible{ outline:2px solid var(--rose); outline-offset:2px; }
 
   /* ---------- Top bar ---------- */
@@ -66,8 +81,8 @@
   }
   .topbar .wordmark{
     font-family:var(--font-display);
-    font-weight:500;
-    font-size:20px;
+    font-weight:600;
+    font-size:23px;
     letter-spacing:0.2px;
   }
   .topbar .wordmark .amp{
@@ -102,8 +117,9 @@
   }
   h1.page-title{
     font-family:var(--font-display);
+    letter-spacing:-0.005em;
     font-weight:500;
-    font-size:26px;
+    font-size:31px;
     margin:0 0 18px 2px;
     line-height:1.2;
   }
@@ -125,8 +141,8 @@
   .card:active{ transform:translateY(0); box-shadow:var(--shadow-sm); }
   .card-title{
     font-family:var(--font-display);
-    font-size:17px;
-    font-weight:500;
+    font-size:20px;
+    font-weight:600;
     margin:0 0 12px 0;
   }
 
@@ -171,7 +187,7 @@
     text-transform:uppercase; letter-spacing:0.06em;
   }
   .sky-person .time{
-    font-family:var(--font-display); font-size:22px; margin-top:2px;
+    font-family:var(--font-display); font-size:26px; margin-top:2px;
   }
   .sky-person .part{ font-size:12px; color:var(--ink-faint); }
 
@@ -183,9 +199,9 @@
     width:100%;
     transition:transform .15s ease, box-shadow .15s ease, background .15s ease, border-color .15s ease;
   }
-  .btn-primary{ background:var(--rose); color:#fff; box-shadow:var(--shadow-rose); }
-  .btn-primary:hover{ background:var(--rose-deep); transform:translateY(-2px); box-shadow:0 10px 22px rgba(193,102,107,0.4); }
-  .btn-primary:active{ background:var(--rose-deep); transform:translateY(1px); box-shadow:0 3px 8px rgba(193,102,107,0.35); }
+  .btn-primary{ background:var(--btn-bg); color:var(--on-rose); box-shadow:var(--shadow-rose); }
+  .btn-primary:hover{ filter:brightness(1.08); transform:translateY(-2px); box-shadow:0 10px 22px rgba(193,102,107,0.4); }
+  .btn-primary:active{ filter:brightness(0.94); transform:translateY(1px); box-shadow:0 3px 8px rgba(193,102,107,0.35); }
   .btn-ghost{ background:transparent; color:var(--ink); border:1px solid var(--line); box-shadow:var(--shadow-sm); }
   .btn-ghost:hover{ background:var(--paper-soft); border-color:var(--rose); transform:translateY(-2px); box-shadow:var(--shadow-md); }
   .btn-ghost:active{ transform:translateY(1px); box-shadow:0 1px 3px rgba(46,42,61,0.1); }
@@ -214,11 +230,11 @@
     transition:transform .18s ease, box-shadow .18s ease;
   }
   .stat:hover{ transform:translateY(-3px); box-shadow:var(--shadow-md); }
-  .stat .num{ font-family:var(--font-display); font-size:28px; }
+  .stat .num{ font-family:var(--font-display); font-size:32px; }
   .stat .label{ font-size:11px; color:var(--ink-soft); text-transform:uppercase; letter-spacing:0.06em; margin-top:2px; }
 
   /* ---------- Prompt ---------- */
-  .prompt-q{ font-family:var(--font-hand); font-size:24px; line-height:1.3; color:var(--ink); margin:0 0 12px 0; }
+  .prompt-q{ font-family:var(--font-hand); font-size:27px; line-height:1.45; color:var(--ink); margin:0 0 12px 0; }
   .answer-block{ margin-top:10px; padding-top:10px; border-top:1px solid var(--line); }
   .answer-who{ font-size:11px; text-transform:uppercase; letter-spacing:0.06em; color:var(--ink-soft); font-weight:600; margin-bottom:4px;}
   .answer-text{ font-size:14px; line-height:1.5; }
@@ -257,11 +273,11 @@
     transition:transform .15s ease, box-shadow .15s ease, background .15s ease;
   }
   .mood-chip:hover{ transform:translateY(-2px); box-shadow:var(--shadow-sm); background:var(--card); }
-  .mood-chip.selected{ background:var(--rose); border-color:var(--rose); color:#fff; box-shadow:var(--shadow-rose); }
-  .mood-chip.selected:hover{ background:var(--rose-deep); }
+  .mood-chip.selected{ background:var(--btn-bg); border-color:var(--btn-bg); color:var(--on-rose); box-shadow:var(--shadow-rose); }
+  .mood-chip.selected:hover{ filter:brightness(1.08); }
   .mood-current{ display:flex; justify-content:space-between; margin-top:14px; padding-top:12px; border-top:1px solid var(--line); }
   .mood-current .who{ font-size:12px; color:var(--ink-soft); font-weight:600; }
-  .mood-current .val{ font-family:var(--font-display); font-size:16px; margin-top:2px; }
+  .mood-current .val{ font-family:var(--font-display); font-size:18px; margin-top:2px; }
 
   /* ---------- Bucket list ---------- */
   .bucket-item{
@@ -282,12 +298,12 @@
 
   /* ---------- Onboarding ---------- */
   .onboard{ min-height:100vh; display:flex; flex-direction:column; justify-content:center; padding:32px 26px; }
-  .onboard .mark{ font-family:var(--font-display); font-size:34px; font-weight:500; line-height:1.15; margin-bottom:6px; }
+  .onboard .mark{ font-family:var(--font-display); font-size:40px; font-weight:600; line-height:1.12; letter-spacing:-0.01em; margin-bottom:6px; }
   .onboard .mark .amp{ font-style:italic; color:var(--rose); }
   .onboard .sub{ color:var(--ink-soft); font-size:14px; margin-bottom:30px; line-height:1.5; }
   .onboard .card{ margin-bottom:16px; }
   .code-display{
-    font-family:var(--font-display); font-size:30px; letter-spacing:0.12em;
+    font-family:var(--font-display); font-size:33px; letter-spacing:0.1em;
     text-align:center; padding:14px 0; color:var(--rose-deep);
   }
   .divider-word{ text-align:center; color:var(--ink-faint); font-size:12px; margin:18px 0; text-transform:uppercase; letter-spacing:0.1em;}
@@ -380,7 +396,7 @@
   .vibe-chip.selected .dot{ box-shadow:inset 0 0 0 1.5px rgba(128,128,128,0.4), 0 0 0 3px color-mix(in srgb, var(--vibe-chip-color, var(--rose)) 30%, transparent); }
   .vibe-current{ display:flex; justify-content:space-between; margin-top:14px; padding-top:12px; border-top:1px solid var(--line); }
   .vibe-current .who{ font-size:12px; color:var(--ink-soft); font-weight:600; }
-  .vibe-current .val{ display:flex; align-items:center; gap:6px; font-family:var(--font-display); font-size:15px; margin-top:3px; }
+  .vibe-current .val{ display:flex; align-items:center; gap:6px; font-family:var(--font-display); font-size:17px; margin-top:3px; }
   .vibe-current .dot{ width:11px; height:11px; border-radius:50%; flex-shrink:0; box-shadow:inset 0 0 0 1.5px rgba(128,128,128,0.4); }
   .vibe-current.them .val{ justify-content:flex-end; }
 
@@ -396,7 +412,7 @@
     margin:6px auto 12px auto; position:relative;
     box-shadow:var(--shadow-md);
   }
-  .session-ring .time{ font-family:var(--font-display); font-size:22px; }
+  .session-ring .time{ font-family:var(--font-display); font-size:25px; }
   .session-waiting{ text-align:center; color:var(--ink-soft); font-size:13px; }
 
   /* ---------- Photo note ---------- */
@@ -428,7 +444,7 @@
     flex-shrink:0;
   }
   @keyframes recPulse{ 0%,100%{opacity:1;} 50%{opacity:0.35;} }
-  .rec-timer{ font-family:var(--font-display); font-size:16px; flex:1; }
+  .rec-timer{ font-family:var(--font-display); font-size:18px; flex:1; }
   .rec-stop{
     background:var(--rose-deep); color:#fff; border:none; border-radius:999px;
     padding:6px 14px; font-size:12px; font-weight:700;
@@ -448,8 +464,8 @@
     background:var(--paper-soft); border-radius:12px; padding:10px 12px; margin-top:8px;
   }
   .voice-play{
-    width:34px; height:34px; border-radius:50%; border:none; background:var(--rose);
-    color:#fff; font-size:13px; flex-shrink:0; display:flex; align-items:center; justify-content:center;
+    width:34px; height:34px; border-radius:50%; border:none; background:var(--btn-bg);
+    color:var(--on-rose); font-size:13px; flex-shrink:0; display:flex; align-items:center; justify-content:center;
     box-shadow:var(--shadow-rose);
   }
   .voice-play:active{ transform:scale(0.94); }
@@ -515,7 +531,7 @@
   }
   .sheet.show{ transform:translateX(-50%) translateY(0); }
   .sheet-grab{ width:38px; height:4px; border-radius:99px; background:var(--ink-faint); opacity:0.4; margin:0 auto 16px; }
-  .sheet h2{ font-family:var(--font-display); font-weight:500; font-size:24px; margin:0 0 6px; line-height:1.2; }
+  .sheet h2{ font-family:var(--font-display); font-weight:600; font-size:27px; margin:0 0 6px; line-height:1.2; }
   .sheet .sheet-sub{ font-size:14px; color:var(--ink-soft); line-height:1.5; margin:0 0 18px; }
   .sheet-close{ background:none; border:none; color:var(--ink-soft); font-size:14px; font-weight:600; width:100%; padding:14px 0 2px; }
 
@@ -558,7 +574,7 @@
   .capsule-top{ display:flex; align-items:center; justify-content:space-between; gap:8px; margin-bottom:6px; }
   .capsule-who{ font-size:11px; font-weight:700; text-transform:uppercase; letter-spacing:0.05em; color:var(--rose-deep); }
   .capsule-when{ font-size:11px; color:var(--ink-soft); font-weight:600; }
-  .capsule-title{ font-family:var(--font-hand); font-size:19px; line-height:1.25; }
+  .capsule-title{ font-family:var(--font-hand); font-size:22px; line-height:1.4; }
   .capsule-body{ font-size:14.5px; line-height:1.55; margin-top:6px; white-space:pre-wrap; }
   .capsule-locked{ font-size:13px; color:var(--ink-soft); line-height:1.5; margin-top:4px; }
   .capsule-del{ background:none; border:none; color:var(--ink-faint); font-size:16px; padding:2px 4px; }
@@ -586,13 +602,13 @@
   /* ---------- Wrapped stats ---------- */
   .wrap-grid{ display:grid; grid-template-columns:repeat(2,1fr); gap:10px; }
   .wrap-stat{ background:var(--card); border:1px solid var(--line); border-radius:16px; padding:14px 12px; text-align:center; box-shadow:var(--shadow-sm); }
-  .wrap-stat .n{ font-family:var(--font-display); font-size:25px; line-height:1.1; }
+  .wrap-stat .n{ font-family:var(--font-display); font-size:28px; line-height:1.1; }
   .wrap-stat .l{ font-size:10.5px; color:var(--ink-soft); text-transform:uppercase; letter-spacing:0.06em; margin-top:4px; }
   .wrap-hero{
     background:linear-gradient(140deg, var(--rose-wash), var(--paper-soft));
     border:1px solid var(--line); border-radius:18px; padding:18px; text-align:center; margin-bottom:12px;
   }
-  .wrap-hero .big{ font-family:var(--font-display); font-size:30px; }
+  .wrap-hero .big{ font-family:var(--font-display); font-size:34px; }
   .wrap-hero .cap{ font-size:12.5px; color:var(--ink-soft); margin-top:4px; line-height:1.45; }
 
   /* ---------- Custom tap composer ---------- */
@@ -605,7 +621,7 @@
     display:inline-flex; align-items:center; justify-content:center;
     width:34px; height:34px; border-radius:50%; overflow:hidden; flex-shrink:0;
     background:var(--rose-wash); color:var(--rose-deep);
-    font-family:var(--font-display); font-size:15px; font-weight:600;
+    font-family:var(--font-display); font-size:17px; font-weight:600;
     border:2px solid var(--card); box-shadow:var(--shadow-sm);
   }
   .avatar img{ width:100%; height:100%; object-fit:cover; display:block; }
@@ -625,21 +641,15 @@
     transition:transform .18s ease, box-shadow .18s ease;
   }
   .pocket:hover{ transform:translateY(-2px); box-shadow:var(--shadow-md); }
-  .pocket.claimed{ border-color:var(--rose); background:linear-gradient(135deg, var(--card), var(--rose-wash)); }
   .pocket-when{ flex:1; min-width:0; }
   .pocket-when .day{ font-size:10.5px; text-transform:uppercase; letter-spacing:0.08em; color:var(--ink-soft); font-weight:700; }
-  .pocket-when .times{ font-family:var(--font-display); font-size:17px; margin-top:2px; }
+  .pocket-when .times{ font-family:var(--font-display); font-size:19px; margin-top:2px; }
   .pocket-when .theirs{ font-size:11.5px; color:var(--ink-faint); margin-top:2px; }
   .pocket-len{
     font-size:10.5px; font-weight:700; letter-spacing:0.05em; text-transform:uppercase;
     color:var(--rose-deep); background:var(--rose-wash); padding:3px 8px; border-radius:99px;
     white-space:nowrap; flex-shrink:0;
   }
-  .pocket-claim{
-    background:var(--paper-soft); border:1px solid var(--line); border-radius:999px;
-    padding:7px 12px; font-size:12px; font-weight:700; color:var(--ink-soft); flex-shrink:0;
-  }
-  .pocket-claim:hover{ border-color:var(--rose); color:var(--rose-deep); }
   .cal-status{
     display:flex; align-items:center; gap:8px; font-size:12.5px; color:var(--ink-soft);
     background:var(--paper-soft); border:1px solid var(--line); border-radius:12px;
@@ -677,7 +687,7 @@
 
   /* ---------- Move / running ---------- */
   .gap-hero{ text-align:center; padding:4px 0 2px; }
-  .gap-hero .apart{ font-family:var(--font-display); font-size:30px; line-height:1.1; }
+  .gap-hero .apart{ font-family:var(--font-display); font-size:34px; line-height:1.1; }
   .gap-hero .apart-lab{ font-size:11px; text-transform:uppercase; letter-spacing:0.1em; color:var(--ink-soft); font-weight:700; margin-top:3px; }
   .gap-bar{
     position:relative; height:12px; border-radius:99px; margin:16px 0 8px;
@@ -699,7 +709,7 @@
   }
   .run-side.active{ border-color:var(--rose); background:var(--card); box-shadow:var(--shadow-sm); }
   .run-side .who{ font-size:10.5px; text-transform:uppercase; letter-spacing:0.07em; font-weight:700; color:var(--ink-soft); }
-  .run-side .dist{ font-family:var(--font-display); font-size:24px; margin-top:4px; line-height:1.1; }
+  .run-side .dist{ font-family:var(--font-display); font-size:27px; margin-top:4px; line-height:1.1; }
   .run-side .sub{ font-size:11.5px; color:var(--ink-faint); margin-top:3px; }
   .run-side .dot-live{
     display:inline-block; width:7px; height:7px; border-radius:50%; background:var(--rose);
@@ -707,11 +717,11 @@
   }
 
   .run-readout{ text-align:center; padding:6px 0 14px; }
-  .run-readout .big{ font-family:var(--font-display); font-size:44px; line-height:1; }
+  .run-readout .big{ font-family:var(--font-display); font-size:50px; line-height:1; }
   .run-readout .unit{ font-size:12px; color:var(--ink-soft); text-transform:uppercase; letter-spacing:0.1em; font-weight:700; margin-top:4px; }
   .run-secondary{ display:flex; justify-content:center; gap:26px; margin-top:14px; }
   .run-secondary div{ text-align:center; }
-  .run-secondary .v{ font-family:var(--font-display); font-size:19px; }
+  .run-secondary .v{ font-family:var(--font-display); font-size:22px; }
   .run-secondary .k{ font-size:10.5px; color:var(--ink-soft); text-transform:uppercase; letter-spacing:0.06em; margin-top:2px; }
   .gps-note{ font-size:11.5px; color:var(--ink-faint); text-align:center; line-height:1.5; margin-top:10px; }
 
@@ -788,7 +798,7 @@
     <div class="card">
       <div class="card-title">Join their space</div>
       <label class="field-label">The code they sent you</label>
-      <input type="text" id="joinCode" placeholder="e.g. PEACH-42" style="text-transform:uppercase;">
+      <input type="text" id="joinCode" placeholder="e.g. AMBER-HARBOR-K7P2" style="text-transform:uppercase;">
       <label class="field-label">Your name</label>
       <input type="text" id="joinName" placeholder="What should we call you?">
       <label class="field-label">Your time zone</label>
@@ -1317,19 +1327,20 @@ const THEMES = [
       "--paper":"#1E1A2B", "--paper-soft":"#262135", "--card":"#2C2740",
       "--ink":"#EFE9F5", "--ink-soft":"#A79FB8", "--ink-faint":"#6F6782",
       "--line":"#3A3350", "--rose":"#D98A9E", "--rose-deep":"#EDAFBD",
-      "--rose-wash":"#3E2E3C", "--night":"#12101C", "--good":"#9DB08F"
+      "--rose-wash":"#3E2E3C", "--night":"#12101C", "--good":"#9DB08F",
+      "--on-rose":"#1E1A2B", "--btn-bg":"#D98A9E"
     } },
   { key:"sakura",   label:"Sakura",   swatch:["#FBEEF1","#D9819A"], vars:{
       "--paper":"#FBEEF1", "--paper-soft":"#FFF7F9", "--card":"#FFFDFE",
       "--ink":"#3A2B33", "--ink-soft":"#8A7480", "--ink-faint":"#C3AEB6",
       "--line":"#F2DCE2", "--rose":"#D9819A", "--rose-deep":"#B85F79",
-      "--rose-wash":"#F8DFE6"
+      "--rose-wash":"#F8DFE6", "--btn-bg":"#A9506A"
     } },
   { key:"sage",     label:"Sage",     swatch:["#EDF0E9","#6F8F63"], vars:{
       "--paper":"#EDF0E9", "--paper-soft":"#F6F8F3", "--card":"#FDFEFB",
       "--ink":"#2C332A", "--ink-soft":"#717C6C", "--ink-faint":"#A9B3A2",
       "--line":"#DAE0D2", "--rose":"#6F8F63", "--rose-deep":"#55744A",
-      "--rose-wash":"#DCE6D4"
+      "--rose-wash":"#DCE6D4", "--btn-bg":"#55744A"
     } }
 ];
 
@@ -1600,8 +1611,7 @@ function defaultCore(){
     moveTotals: {},  // lifetime metres run, per person
     homeCoords: {},  // rounded to ~11km — city-level, never an address
     busy: {},        // imported calendar blocks, per person
-    busyMeta: {},
-    pockets: []      // shared free windows either of you has claimed
+    busyMeta: {}
   };
 }
 
@@ -1860,6 +1870,7 @@ async function enterApp(){
   renderNotifStatus();
   subscribeSpace();
   startHeartbeat();
+  setTimeout(refreshGoogleQuietly, 1500);
   tickClock();
   setInterval(tickClock, 30000);
   renderMoodGrid();
@@ -3107,6 +3118,158 @@ function parseIcs(text, fallbackTz){
   return merged;
 }
 
+/* ---- Google Calendar ----
+   Uses Google Identity Services' token flow, which is built for browser
+   apps and needs no client secret — so this still works with no server.
+
+   Two deliberate choices:
+   - We call freeBusy, not events.list. It returns nothing but busy
+     intervals, so titles, guests and locations never touch this app or
+     the database, even in memory.
+   - The access token is held in a variable and never persisted. GIS
+     tokens last about an hour with no refresh token, so "connected" is
+     a stored preference, not a stored credential.
+------------------------------------------------------------------ */
+const GOOGLE_CLIENT_ID = ""; // paste your OAuth Web client ID — see README
+const GCAL_SCOPE = "https://www.googleapis.com/auth/calendar.readonly";
+
+let gsiTokenClient = null;
+let gcalToken = null;
+
+function googleConfigured(){ return !!GOOGLE_CLIENT_ID; }
+
+function loadGsi(){
+  if (window.google?.accounts?.oauth2) return Promise.resolve();
+  return new Promise((resolve, reject) => {
+    const existing = document.getElementById("gsiScript");
+    if (existing){ existing.addEventListener("load", resolve); existing.addEventListener("error", reject); return; }
+    const el = document.createElement("script");
+    el.id = "gsiScript";
+    el.src = "https://accounts.google.com/gsi/client";
+    el.async = true;
+    el.onload = resolve;
+    el.onerror = () => reject(new Error("Google script blocked"));
+    document.head.appendChild(el);
+  });
+}
+
+async function ensureTokenClient(){
+  await loadGsi();
+  if (!window.google?.accounts?.oauth2) throw new Error("Google Identity unavailable");
+  if (!gsiTokenClient){
+    gsiTokenClient = google.accounts.oauth2.initTokenClient({
+      client_id: GOOGLE_CLIENT_ID,
+      scope: GCAL_SCOPE,
+      callback: () => {}   // replaced per request below
+    });
+  }
+  return gsiTokenClient;
+}
+
+// `silent` uses prompt:'' so a returning, already-consented user refreshes
+// without seeing anything.
+function requestGoogleToken(silent){
+  return new Promise(async (resolve, reject) => {
+    let client;
+    try{ client = await ensureTokenClient(); }catch(e){ return reject(e); }
+    client.callback = resp => {
+      if (resp?.error) return reject(new Error(resp.error));
+      if (!resp?.access_token) return reject(new Error("No token returned"));
+      gcalToken = resp.access_token;
+      resolve(resp.access_token);
+    };
+    try{
+      client.requestAccessToken(silent ? { prompt: "" } : {});
+    }catch(e){ reject(e); }
+  });
+}
+
+async function fetchGoogleBusy(token){
+  const timeMin = new Date().toISOString();
+  const timeMax = new Date(Date.now() + BUSY_HORIZON_DAYS * 86400000).toISOString();
+  const res = await fetch("https://www.googleapis.com/calendar/v3/freeBusy", {
+    method: "POST",
+    headers: { "Authorization": `Bearer ${token}`, "Content-Type": "application/json" },
+    body: JSON.stringify({ timeMin, timeMax, items: [{ id: "primary" }] })
+  });
+  if (!res.ok) throw new Error(`freeBusy ${res.status}`);
+  const data = await res.json();
+  const raw = data?.calendars?.primary?.busy || [];
+  const blocks = raw
+    .map(b => ({ start: Date.parse(b.start), end: Date.parse(b.end) }))
+    .filter(b => Number.isFinite(b.start) && Number.isFinite(b.end) && b.end > b.start)
+    .sort((x, y) => x.start - y.start);
+  // merge touching/overlapping intervals so the pocket scan does less work
+  const merged = [];
+  for (const b of blocks){
+    const last = merged[merged.length - 1];
+    if (last && b.start <= last.end) last.end = Math.max(last.end, b.end);
+    else merged.push({ ...b });
+  }
+  return merged;
+}
+
+async function connectGoogleCalendar(silent){
+  if (!googleConfigured()){
+    if (!silent) showToast("No Google client ID set — see the README");
+    return false;
+  }
+  if (location.protocol === "file:" && !silent){
+    showToast("Google needs the app served over https, not opened as a file");
+    return false;
+  }
+  let token;
+  try{
+    token = await requestGoogleToken(silent);
+  }catch(e){
+    if (!silent) showToast("Couldn't connect to Google Calendar");
+    return false;
+  }
+  let busy;
+  try{
+    busy = await fetchGoogleBusy(token);
+  }catch(e){
+    if (!silent) showToast("Connected, but couldn't read your calendar");
+    return false;
+  }
+  try{
+    await updateCore(core => {
+      core.busy = core.busy || {};
+      core.busy[myKey()] = busy.slice(0, 400);
+      core.busyMeta = core.busyMeta || {};
+      core.busyMeta[myKey()] = { at: Date.now(), count: busy.length, source: "google" };
+    });
+  }catch(e){ return false; }
+  if (!silent) showToast(`Google Calendar connected — ${busy.length} busy block${busy.length===1?'':'s'}`);
+  renderAll();
+  return true;
+}
+
+async function disconnectGoogleCalendar(){
+  try{
+    if (gcalToken && window.google?.accounts?.oauth2){
+      google.accounts.oauth2.revoke(gcalToken, () => {});
+    }
+  }catch(e){}
+  gcalToken = null;
+  try{
+    await updateCore(core => {
+      if (core.busy) core.busy[myKey()] = [];
+      if (core.busyMeta) core.busyMeta[myKey()] = null;
+    });
+  }catch(e){ return; }
+  showToast("Google Calendar disconnected");
+  renderAll();
+}
+
+// On launch, quietly top up a calendar that was connected before. Failure is
+// silent by design — the previously stored busy blocks are still good.
+async function refreshGoogleQuietly(){
+  if (!googleConfigured()) return;
+  if (state.core?.busyMeta?.[myKey()]?.source !== "google") return;
+  try{ await connectGoogleCalendar(true); }catch(e){}
+}
+
 async function onIcsChosen(evt){
   const file = evt.target.files[0];
   if (!file) return;
@@ -3223,28 +3386,6 @@ function fmtLenMin(ms){
   return r ? `${h}h ${r}m` : `${h}h`;
 }
 
-async function claimPocket(startMs, endMs){
-  try{
-    await updateCore(core => {
-      core.pockets = (core.pockets || []).filter(p => p.end > Date.now());
-      if (core.pockets.some(p => p.start === startMs)) return;
-      core.pockets.push({ id:String(startMs), start:startMs, end:endMs, by:myKey(), ts:Date.now() });
-    });
-  }catch(e){ return; }
-  showToast("Pencilled in 💛");
-  const myName = me()?.name || "Your partner";
-  pushExternal("A pocket of time 🗓️",
-    `${myName} set aside ${fmtTimeIn(them()?.tz, startMs)} your time for you.`, "calendar");
-  renderAll();
-}
-
-async function unclaimPocket(id){
-  try{
-    await updateCore(core => { core.pockets = (core.pockets || []).filter(p => p.id !== id); });
-  }catch(e){ return; }
-  renderAll();
-}
-
 function renderPockets(){
   const el = document.getElementById("pocketBody");
   if (!el || !state.core) return;
@@ -3253,39 +3394,19 @@ function renderPockets(){
     el.innerHTML = `<div style="font-size:13.5px; color:var(--ink-soft); line-height:1.55;">Once you've both set a time zone, we'll start finding windows where you're both free.</div>`;
     return;
   }
-
-  const claimed = (state.core.pockets || []).filter(p => p.end > Date.now()).sort((x,y)=>x.start-y.start);
-  const claimedStarts = new Set(claimed.map(p => p.start));
-  const pockets = findPockets().filter(p => !claimedStarts.has(p.start)).slice(0, 4);
-
-  let html = "";
-  if (claimed.length){
-    html += claimed.map(p => `<div class="pocket claimed">
-      <div class="pocket-when">
-        <div class="day">${dayLabelIn(m.tz, p.start)} · pencilled in</div>
-        <div class="times">${fmtTimeIn(m.tz, p.start)} – ${fmtTimeIn(m.tz, p.end)}</div>
-        <div class="theirs">${escapeHtml(t.name || "Them")}: ${fmtTimeIn(t.tz, p.start)} – ${fmtTimeIn(t.tz, p.end)}${crossDaySuffix(m.tz, t.tz, p.start)}</div>
-      </div>
-      <button class="pocket-claim" onclick="unclaimPocket('${p.id}')">Undo</button>
-    </div>`).join("");
-  }
-
+  const pockets = findPockets().slice(0, 5);
   if (!pockets.length){
-    html += claimed.length
-      ? ""
-      : `<div style="font-size:13.5px; color:var(--ink-soft); line-height:1.55;">No overlapping free time in the next few days. Loosen your work hours in Settings, or one of you may need to stay up a little.</div>`;
-  } else {
-    html += pockets.map(p => `<div class="pocket">
-      <div class="pocket-when">
-        <div class="day">${dayLabelIn(m.tz, p.start)}</div>
-        <div class="times">${fmtTimeIn(m.tz, p.start)} – ${fmtTimeIn(m.tz, p.end)}</div>
-        <div class="theirs">${escapeHtml(t.name || "Them")}: ${fmtTimeIn(t.tz, p.start)} – ${fmtTimeIn(t.tz, p.end)}${crossDaySuffix(m.tz, t.tz, p.start)}</div>
-      </div>
-      <span class="pocket-len">${fmtLenMin(p.end - p.start)}</span>
-      <button class="pocket-claim" onclick="claimPocket(${p.start}, ${p.end})">Take it</button>
-    </div>`).join("");
+    el.innerHTML = `<div style="font-size:13.5px; color:var(--ink-soft); line-height:1.55;">No overlapping free time in the next few days. Loosen your work hours in Settings, or one of you may need to stay up a little.</div>`;
+    return;
   }
-  el.innerHTML = html;
+  el.innerHTML = pockets.map(p => `<div class="pocket">
+    <div class="pocket-when">
+      <div class="day">${dayLabelIn(m.tz, p.start)}</div>
+      <div class="times">${fmtTimeIn(m.tz, p.start)} – ${fmtTimeIn(m.tz, p.end)}</div>
+      <div class="theirs">${escapeHtml(t.name || "Them")}: ${fmtTimeIn(t.tz, p.start)} – ${fmtTimeIn(t.tz, p.end)}${crossDaySuffix(m.tz, t.tz, p.start)}</div>
+    </div>
+    <span class="pocket-len">${fmtLenMin(p.end - p.start)}</span>
+  </div>`).join("");
 }
 
 function renderCalendarCard(){
@@ -3294,20 +3415,30 @@ function renderCalendarCard(){
   const meta = state.core.busyMeta?.[myKey()];
   const count = (state.core.busy?.[myKey()] || []).length;
   const theirCount = (state.core.busy?.[theirKey()] || []).length;
+  const isGoogle = meta?.source === "google";
   el.innerHTML = `
     <div class="cal-status">
       <span>🗓️</span>
       <div>${count
-        ? `<b>${count}</b> busy block${count===1?'':'s'} from your calendar${meta?.at ? `, imported ${timeAgo(meta.at)}` : ""}.`
-        : `No calendar imported yet — pockets are using your waking and work hours only.`}
-        ${theirCount ? `<br>${escapeHtml(them()?.name || "They")} has imported ${theirCount}.` : ""}
+        ? `<b>${count}</b> busy block${count===1?'':'s'} from ${isGoogle ? "Google Calendar" : "your calendar file"}${meta?.at ? `, updated ${timeAgo(meta.at)}` : ""}.`
+        : `No calendar connected — pockets are using your waking and work hours only.`}
+        ${theirCount ? `<br>${escapeHtml(them()?.name || "They")} has ${theirCount} of their own.` : ""}
       </div>
     </div>
+    ${googleConfigured()
+      ? `<button class="btn btn-primary btn-sm" style="margin:auto; display:flex;" onclick="connectGoogleCalendar(false)">
+           ${isGoogle ? "Refresh Google Calendar" : "Connect Google Calendar"}
+         </button>
+         ${isGoogle ? `<div style="height:8px;"></div><button class="link-btn" style="margin:auto; display:block;" onclick="disconnectGoogleCalendar()">Disconnect</button>` : ""}
+         <div class="divider-word" style="margin:14px 0 10px;">or</div>`
+      : `<div style="font-size:11.5px; color:var(--ink-faint); line-height:1.5; margin-bottom:12px; text-align:center;">
+           One-tap Google Calendar needs an OAuth client ID — see the README. Until then, import a file:
+         </div>`}
     <label class="btn btn-soft btn-sm" for="icsFile" style="margin:auto; display:flex; width:auto;">Import a .ics file</label>
     <input type="file" id="icsFile" accept=".ics,text/calendar" style="display:none;" onchange="onIcsChosen(event)">
-    ${count ? `<div style="height:8px;"></div><button class="link-btn" style="margin:auto; display:block;" onclick="clearIcs()">Clear my calendar</button>` : ""}
-    <div style="font-size:11.5px; color:var(--ink-faint); line-height:1.5; margin-top:10px;">
-      Export from Google Calendar (Settings → Import/Export), Apple Calendar (File → Export) or Outlook, then drop the file in. Only the busy times are kept — no titles, no guests, no locations.
+    ${count && !isGoogle ? `<div style="height:8px;"></div><button class="link-btn" style="margin:auto; display:block;" onclick="clearIcs()">Clear my calendar</button>` : ""}
+    <div style="font-size:11.5px; color:var(--ink-faint); line-height:1.5; margin-top:12px;">
+      Only busy times are ever read — never titles, guests or locations.
     </div>`;
 }
 

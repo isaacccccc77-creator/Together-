@@ -70,41 +70,88 @@ substitute for real accounts.
 
 ## Calendars and pockets
 
-**Pockets** scans the next three days in 15-minute slots and returns the
+**Pockets** scans the next three days in 15-minute slots and shows the
 windows where *both* of you are awake, outside working hours, and free of
-imported calendar blocks — all evaluated in each person's own time zone.
-Either partner can claim one and it is pencilled in for both. Where a
-window falls on a different calendar date for each of you, the partner's
-side is tagged with their weekday, because "tomorrow" is not the same
-word for both of you.
+calendar blocks — all evaluated in each person's own time zone. It is
+purely something to read: no claiming, no buttons, nothing to negotiate.
+Where a window falls on a different calendar date for each of you, the
+partner's side is tagged with their weekday, because "tomorrow" is not
+the same word for both of you.
 
-Free/busy comes from two sources:
+Free/busy comes from three sources.
 
-1. **Waking and working hours**, set in Settings. No integration needed.
-2. **A `.ics` import.** Export from Google Calendar (Settings →
-   Import/Export), Apple Calendar (File → Export) or Outlook and drop the
-   file in. Parsed entirely in the browser. Handles UTC and `TZID` times,
-   all-day events, RFC 5545 line folding, and `DAILY`/`WEEKLY` recurrence
-   including `BYDAY`, `COUNT` and `UNTIL`. `TRANSPARENT` (shown as free)
-   and `CANCELLED` events are ignored. Monthly and yearly recurrence is
-   skipped rather than guessed at. **Only start and end times are
-   stored** — no titles, guests or locations ever reach the database.
+### 1. Waking and working hours
 
-### Live calendar sync is not built
+Set in Settings. No integration needed, works immediately.
 
-- **Google Calendar** *is* reachable from a pure browser app: Google
-  Identity Services issues access tokens without a client secret. But it
-  needs your own OAuth client ID with authorised origins, and Calendar is
-  a sensitive scope, so Google verification is required before more than
-  a hundred people can use it. Its browser tokens also expire in about an
-  hour with no refresh token, so reads only happen while the app is open
-  — there is no background sync without a server.
-- **Apple Calendar / iCloud** has no public API. CalDAV needs an
-  app-specific password and is blocked by CORS from a browser.
-- **Secret `.ics` subscription URLs** from Google/Outlook/Apple are also
-  CORS-blocked, so they would need a proxy.
+### 2. Google Calendar (one tap)
 
-The `.ics` import exists because it needs none of that and works today.
+Uses Google Identity Services' token flow, which is designed for browser
+apps and needs **no client secret** — so the app still has no server.
+
+Two deliberate choices:
+
+- It calls the **`freeBusy`** endpoint, not `events.list`. That returns
+  nothing but busy intervals, so event titles, guests and locations never
+  reach the app or the database, even in memory.
+- The access token lives in a variable and is **never persisted**. GIS
+  tokens last about an hour with no refresh token, so "connected" is a
+  stored preference, not a stored credential. On launch the app quietly
+  tries to re-mint a token; if that fails, the busy blocks already synced
+  are still there.
+
+To enable it:
+
+1. In Google Cloud Console, create an **OAuth 2.0 Client ID** of type
+   *Web application*.
+2. Add the origin you serve the app from to **Authorised JavaScript
+   origins**. It must be `https://…` — Google will not accept a
+   `file://` page, so the app has to be hosted (GitHub Pages is fine).
+3. Paste the client ID into `GOOGLE_CLIENT_ID` in `index.html`.
+
+Note that Calendar scopes are classed **sensitive** by Google, so an app
+serving the public needs to pass OAuth verification. Until it does, the
+project stays in testing mode and only test users you add explicitly can
+connect. The `Connect Google Calendar` button only appears once
+`GOOGLE_CLIENT_ID` is filled in; without it the card falls back to file
+import.
+
+### 3. A `.ics` import
+
+Needs no setup at all. Export from Google Calendar (Settings →
+Import/Export), Apple Calendar (File → Export) or Outlook and drop the
+file in. Parsed entirely in the browser: UTC and `TZID` times, all-day
+events, RFC 5545 line folding, and `DAILY`/`WEEKLY` recurrence including
+`BYDAY`, `COUNT` and `UNTIL`. `TRANSPARENT` (shown as free) and
+`CANCELLED` events are ignored. Monthly and yearly recurrence is skipped
+rather than guessed at. Only start and end times are stored.
+
+**Apple Calendar** still has no public API — CalDAV needs an
+app-specific password and is CORS-blocked from a browser — and secret
+`.ics` subscription URLs are CORS-blocked too, so both remain
+file-import only.
+
+## Typography
+
+- **Cormorant Garamond** for display — a high-contrast old-style serif,
+  the elegant and romantic end of luxury rather than the loud
+  fashion-magazine end.
+- **Jost** for the interface — a quiet geometric sans that stays out of
+  the serif's way.
+- **Parisienne** for handwritten moments: the daily question and the
+  capsule envelopes.
+
+Two things this needed. Cormorant has a small x-height, so everything set
+in it is sized up about 12% to hold the same optical weight. It also
+defaults to **old-style figures**, which drop 9s and 8s below the
+baseline — fine in a sentence, wrong in a clock or a counter — so every
+numeric display forces `lining-nums tabular-nums`.
+
+Filled buttons take their colour from `--btn-bg` rather than `--rose`.
+`--rose` is a decorative fill and failed WCAG AA under white text in
+three of the four themes (paper 3.9:1, sakura 2.78:1, sage 3.63:1).
+Each theme now sets a button ground measured against its own text
+colour; all four clear 4.5:1.
 
 ## Tiers
 
