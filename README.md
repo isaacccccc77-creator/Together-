@@ -20,7 +20,8 @@ shared Firebase Firestore document per couple, and free push via
 ## Features
 
 - **Home** — a "same sky, different hour" time zone bar, presence and the
-  goodnight ritual, a live shared
+  goodnight ritual, **pockets of time** (overlapping windows where you're
+  both awake and free, claimable by either of you), a live shared
   **vibe** (pick an ambient color/mood and it syncs to your partner's
   screen in real time, tinting the whole app), a streak, a virtual
   coffee-date session, quick love-taps, and **On this day** memory
@@ -36,8 +37,74 @@ shared Firebase Firestore document per couple, and free push via
   **closing the distance**: the real great-circle gap between your two
   cities, chipped away by every kilometre you both run. Manual logging
   for anyone who already tracks with Strava, Garmin or Nike.
-- **Settings** — profile, time zone, wake/sleep hours (used to compute
-  your best overlapping hours to talk), and phone push via ntfy.
+- **Settings** — profile picture and details, time zone, wake/sleep and
+  working hours, calendar import, and phone push via ntfy.
+
+## Invite codes and identity
+
+The invite code is the credential for a space, so it has to be hard to
+guess. It is `ADJECTIVE-NOUN-XXXX` (e.g. `AMBER-HARBOR-K7P2`) drawn from
+`crypto.getRandomValues`, where `XXXX` is base32 with `0`, `1`, `O`, `I`
+and `L` removed so a code survives being read down the phone. That is
+64 x 64 x 31^4 = **3,782,742,016** combinations.
+
+The previous scheme was 12 words x 89 numbers = 1,068, which had two
+serious consequences that are now fixed:
+
+- **Collisions destroyed data.** Space creation did a blind `setDoc`, so
+  generating a code another couple already held overwrote their entire
+  space. At 1,068 combinations the birthday paradox put that at roughly a
+  coin flip by the 38th couple. Creation now checks whether the document
+  exists first and retries, and never writes over an existing space.
+- **Anyone with a code could take over a partner.** Joining always
+  assigned role `b` and overwrote `core.b`, so a third party who guessed
+  a code silently replaced partner B and inherited the space. Each
+  profile now records the anonymous-auth `uid` that owns it. Joining
+  fills an empty slot or recognises a returning device; if both slots are
+  held by other devices it asks *which one of you is this?* rather than
+  overwriting anyone. Existing spaces adopt a uid on next launch.
+
+Codes remain bearer credentials — anyone you give one to is in. This
+raises the cost of guessing by about 3.5 million times; it is not a
+substitute for real accounts.
+
+## Calendars and pockets
+
+**Pockets** scans the next three days in 15-minute slots and returns the
+windows where *both* of you are awake, outside working hours, and free of
+imported calendar blocks — all evaluated in each person's own time zone.
+Either partner can claim one and it is pencilled in for both. Where a
+window falls on a different calendar date for each of you, the partner's
+side is tagged with their weekday, because "tomorrow" is not the same
+word for both of you.
+
+Free/busy comes from two sources:
+
+1. **Waking and working hours**, set in Settings. No integration needed.
+2. **A `.ics` import.** Export from Google Calendar (Settings →
+   Import/Export), Apple Calendar (File → Export) or Outlook and drop the
+   file in. Parsed entirely in the browser. Handles UTC and `TZID` times,
+   all-day events, RFC 5545 line folding, and `DAILY`/`WEEKLY` recurrence
+   including `BYDAY`, `COUNT` and `UNTIL`. `TRANSPARENT` (shown as free)
+   and `CANCELLED` events are ignored. Monthly and yearly recurrence is
+   skipped rather than guessed at. **Only start and end times are
+   stored** — no titles, guests or locations ever reach the database.
+
+### Live calendar sync is not built
+
+- **Google Calendar** *is* reachable from a pure browser app: Google
+  Identity Services issues access tokens without a client secret. But it
+  needs your own OAuth client ID with authorised origins, and Calendar is
+  a sensitive scope, so Google verification is required before more than
+  a hundred people can use it. Its browser tokens also expire in about an
+  hour with no refresh token, so reads only happen while the app is open
+  — there is no background sync without a server.
+- **Apple Calendar / iCloud** has no public API. CalDAV needs an
+  app-specific password and is blocked by CORS from a browser.
+- **Secret `.ics` subscription URLs** from Google/Outlook/Apple are also
+  CORS-blocked, so they would need a proxy.
+
+The `.ics` import exists because it needs none of that and works today.
 
 ## Tiers
 

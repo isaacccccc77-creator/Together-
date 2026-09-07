@@ -600,6 +600,52 @@
   .custom-tap-row{ display:flex; gap:8px; margin-top:10px; }
   .custom-tap-row input.emoji-in{ width:64px; text-align:center; }
 
+  /* ---------- Avatars ---------- */
+  .avatar{
+    display:inline-flex; align-items:center; justify-content:center;
+    width:34px; height:34px; border-radius:50%; overflow:hidden; flex-shrink:0;
+    background:var(--rose-wash); color:var(--rose-deep);
+    font-family:var(--font-display); font-size:15px; font-weight:600;
+    border:2px solid var(--card); box-shadow:var(--shadow-sm);
+  }
+  .avatar img{ width:100%; height:100%; object-fit:cover; display:block; }
+  .avatar.lg{ width:64px; height:64px; font-size:26px; }
+  .avatar.sm{ width:24px; height:24px; font-size:11px; border-width:1.5px; }
+  .avatar.them{ background:var(--paper-soft); color:var(--dusk); }
+  .sky-person .who-row{ display:flex; align-items:center; gap:7px; }
+  .sky-person.them .who-row{ flex-direction:row-reverse; }
+  .avatar-edit{ display:flex; align-items:center; gap:14px; }
+  .avatar-edit .acts{ display:flex; flex-direction:column; gap:6px; }
+
+  /* ---------- Pockets ---------- */
+  .pocket{
+    display:flex; align-items:center; gap:12px;
+    border:1px solid var(--line); border-radius:16px; padding:12px 14px;
+    margin-bottom:10px; background:var(--card); box-shadow:var(--shadow-sm);
+    transition:transform .18s ease, box-shadow .18s ease;
+  }
+  .pocket:hover{ transform:translateY(-2px); box-shadow:var(--shadow-md); }
+  .pocket.claimed{ border-color:var(--rose); background:linear-gradient(135deg, var(--card), var(--rose-wash)); }
+  .pocket-when{ flex:1; min-width:0; }
+  .pocket-when .day{ font-size:10.5px; text-transform:uppercase; letter-spacing:0.08em; color:var(--ink-soft); font-weight:700; }
+  .pocket-when .times{ font-family:var(--font-display); font-size:17px; margin-top:2px; }
+  .pocket-when .theirs{ font-size:11.5px; color:var(--ink-faint); margin-top:2px; }
+  .pocket-len{
+    font-size:10.5px; font-weight:700; letter-spacing:0.05em; text-transform:uppercase;
+    color:var(--rose-deep); background:var(--rose-wash); padding:3px 8px; border-radius:99px;
+    white-space:nowrap; flex-shrink:0;
+  }
+  .pocket-claim{
+    background:var(--paper-soft); border:1px solid var(--line); border-radius:999px;
+    padding:7px 12px; font-size:12px; font-weight:700; color:var(--ink-soft); flex-shrink:0;
+  }
+  .pocket-claim:hover{ border-color:var(--rose); color:var(--rose-deep); }
+  .cal-status{
+    display:flex; align-items:center; gap:8px; font-size:12.5px; color:var(--ink-soft);
+    background:var(--paper-soft); border:1px solid var(--line); border-radius:12px;
+    padding:9px 12px; margin-bottom:10px; line-height:1.45;
+  }
+
   /* ---------- Presence / quiet hours ---------- */
   .presence-row{
     display:flex; align-items:center; justify-content:space-between; gap:10px;
@@ -772,12 +818,12 @@
         </div>
         <div class="sky-labels">
           <div class="sky-person me">
-            <div class="name" id="meName">You</div>
+            <div class="who-row"><span id="meAvatar"></span><div class="name" id="meName">You</div></div>
             <div class="time" id="meTime">--:--</div>
             <div class="part" id="mePart">&nbsp;</div>
           </div>
           <div class="sky-person them">
-            <div class="name" id="themName">Them</div>
+            <div class="who-row"><span id="themAvatar"></span><div class="name" id="themName">Them</div></div>
             <div class="time" id="themTime">--:--</div>
             <div class="part" id="themPart">&nbsp;</div>
           </div>
@@ -802,8 +848,9 @@
       </div>
 
       <div class="card">
-        <div class="card-title">Best time to talk</div>
-        <div class="overlap-line" id="overlapLine">Add wake/sleep times in Settings to see your overlap.</div>
+        <div class="card-title">Pockets of time</div>
+        <div class="overlap-line" id="overlapLine" style="margin-bottom:12px;">Add wake/sleep times in Settings to see your overlap.</div>
+        <div id="pocketBody"></div>
       </div>
 
       <div class="card" id="sessionCard">
@@ -1005,14 +1052,32 @@
 
       <div class="card">
         <div class="card-title">Your details</div>
+        <div class="avatar-edit" style="margin-bottom:16px;">
+          <span id="settingsAvatar"></span>
+          <div class="acts">
+            <label class="btn btn-soft btn-sm" for="avatarFile" style="width:auto; display:flex;">Change picture</label>
+            <input type="file" id="avatarFile" accept="image/*" style="display:none;" onchange="onAvatarChosen(event)">
+            <button class="link-btn" id="avatarRemove" style="text-align:left; padding:0;" onclick="removeAvatar()">Remove</button>
+          </div>
+        </div>
         <label class="field-label">Your name</label>
         <input type="text" id="settingsName">
+        <label class="field-label">A line about you</label>
+        <input type="text" id="settingsAbout" maxlength="60" placeholder="e.g. always cold, always hungry">
         <label class="field-label">Your time zone</label>
         <select id="settingsTz"></select>
         <label class="field-label">Usually awake from</label>
         <div class="btn-row">
           <select id="settingsWake"></select>
           <select id="settingsSleep"></select>
+        </div>
+        <label class="field-label">Usually working</label>
+        <div class="btn-row">
+          <select id="settingsWorkStart"></select>
+          <select id="settingsWorkEnd"></select>
+        </div>
+        <div style="font-size:11.5px; color:var(--ink-faint); line-height:1.5; margin-top:6px;">
+          Weekdays only. Used to keep pockets out of your working hours.
         </div>
         <label class="field-label">Distances in</label>
         <select id="settingsUnits">
@@ -1039,6 +1104,14 @@
           Everything you two have built in here, counted up.
         </div>
         <button class="btn btn-soft btn-sm" onclick="openWrapped()">See our numbers</button>
+      </div>
+
+      <div class="card">
+        <div class="card-title">Your calendar</div>
+        <div style="font-size:13px; color:var(--ink-soft); line-height:1.5; margin-bottom:12px;">
+          Import your calendar so pockets skip the times you're already booked.
+        </div>
+        <div id="calBody"></div>
       </div>
 
       <div class="card">
@@ -1144,6 +1217,15 @@
   <button class="btn btn-primary" onclick="upgradeDemo()">Unlock Forever</button>
   <div class="couple-note">One subscription covers the space, not the person — whichever of you upgrades, you both get it.</div>
   <button class="sheet-close" onclick="closeSheets()">Not now</button>
+</div>
+
+<!-- CLAIM A SLOT -->
+<div class="sheet" id="claimSheet">
+  <div class="sheet-grab"></div>
+  <h2 id="claimTitle">Which one of you is this?</h2>
+  <p class="sheet-sub" id="claimSub"></p>
+  <div id="claimActions"></div>
+  <button class="sheet-close" onclick="claimChoose(null)">Cancel</button>
 </div>
 
 <!-- QUIET HOURS -->
@@ -1382,11 +1464,68 @@ function showToast(msg){
   setTimeout(()=>t.classList.remove("show"), 1800);
 }
 
+/* ---------------- Invite codes ----------------
+   The code IS the credential for a space, so it needs to be
+   genuinely hard to guess. The old scheme was 12 words x 89
+   numbers = 1,068 possibilities, which is both brute-forceable
+   in seconds and collision-prone: with a blind write, the ~38th
+   couple had a coin-flip chance of landing on an existing code
+   and destroying that couple's entire space.
+
+   Now: ADJECTIVE-NOUN-XXXX drawn from crypto.getRandomValues,
+   where XXXX is base32 with the ambiguous characters (0/O/1/I/L)
+   removed so codes survive being read aloud or written down.
+------------------------------------------------------------- */
+const CODE_ADJ = [
+  "AMBER","BOLD","BRAVE","BRIGHT","CALM","CLEAR","COSY","CRISP","DEEP","EAGER",
+  "EARLY","FAIR","FOND","FRESH","GENTLE","GLAD","GOLDEN","GRAND","GREEN","HAPPY",
+  "HONEST","HUMBLE","IVORY","JOLLY","KEEN","KIND","LIVELY","LOYAL","LUCKY","MELLOW",
+  "MERRY","MILD","NEAT","NOBLE","PLAIN","PROUD","PURE","QUIET","RAPID","READY",
+  "RICH","ROSY","ROYAL","RUSTIC","SILENT","SILVER","SIMPLE","SLEEK","SMOOTH","SOFT",
+  "SOLID","STEADY","SUNNY","SWEET","TENDER","TIDY","TRUE","VIVID","WARM","WHOLE",
+  "WILD","WISE","YOUNG","ZESTY"
+];
+const CODE_NOUN = [
+  "ACORN","ANCHOR","ASTER","BASIL","BIRCH","BLOOM","BRANCH","BREEZE","BROOK","CANYON",
+  "CEDAR","CLOVER","COAST","COMET","CORAL","COVE","CREEK","DAISY","DELTA","DUNE",
+  "EMBER","FERN","FIELD","FJORD","FOREST","GARDEN","GLADE","GROVE","HARBOR","HAVEN",
+  "HAZEL","HEATH","ISLAND","JASMINE","LAGOON","LARCH","LAUREL","LEDGE","LILAC","MAPLE",
+  "MARSH","MEADOW","MESA","OASIS","OLIVE","ORCHARD","PEACH","PEBBLE","PINE","PLUME",
+  "POND","PRAIRIE","RAPIDS","REEF","RIDGE","RIVER","SPRUCE","SUMMIT","THICKET","TIDE",
+  "VALLEY","WILLOW","MEADOWS","SUNSET"
+];
+// base32 minus 0/O/1/I/L, which people mix up when reading a code aloud
+const CODE_CHARS = "23456789ABCDEFGHJKMNPQRSTUVWXYZ";
+const CODE_TAIL = 4;
+
+function codeSpaceSize(){
+  return CODE_ADJ.length * CODE_NOUN.length * Math.pow(CODE_CHARS.length, CODE_TAIL);
+}
+
+function randomInts(n, max){
+  // Rejection sampling so the modulo doesn't skew the distribution.
+  const out = [];
+  const limit = Math.floor(4294967296 / max) * max;
+  while (out.length < n){
+    const buf = new Uint32Array(n);
+    (crypto || window.crypto).getRandomValues(buf);
+    for (const v of buf){
+      if (v < limit && out.length < n) out.push(v % max);
+    }
+  }
+  return out;
+}
+
 function genCode(){
-  const words = ["PEACH","MAPLE","AMBER","CORAL","OLIVE","BASIL","CEDAR","IVORY","SIENA","PLUME","HAZEL","BLOOM"];
-  const w = words[Math.floor(Math.random()*words.length)];
-  const n = Math.floor(10 + Math.random()*89);
-  return `${w}-${n}`;
+  const [ai] = randomInts(1, CODE_ADJ.length);
+  const [ni] = randomInts(1, CODE_NOUN.length);
+  const tail = randomInts(CODE_TAIL, CODE_CHARS.length).map(i => CODE_CHARS[i]).join("");
+  return `${CODE_ADJ[ai]}-${CODE_NOUN[ni]}-${tail}`;
+}
+
+// Accept what people actually type: spaces, lowercase, missing dashes.
+function normalizeCode(raw){
+  return (raw || "").trim().toUpperCase().replace(/\s+/g, "").replace(/[^A-Z0-9-]/g, "");
 }
 
 /* ---------------- Firebase (shared data) + localStorage (personal data) ---------------- */
@@ -1403,6 +1542,9 @@ const FIREBASE_CONFIG = {
 
 let db = null;
 let fb = null; // holds the Firestore function references we need
+let currentUid = null; // anonymous auth uid, used to own a profile slot
+
+function myUid(){ return currentUid; }
 
 function firebaseConfigured(){
   return FIREBASE_CONFIG.apiKey && FIREBASE_CONFIG.apiKey !== "YOUR_API_KEY";
@@ -1421,7 +1563,8 @@ async function loadFirebase(){
   // this keeps random bots/scanners from reading every couple's space,
   // even though the room code itself still acts as the real "password".
   const auth = authMod.getAuth(app);
-  await authMod.signInAnonymously(auth);
+  const cred = await authMod.signInAnonymously(auth);
+  currentUid = cred?.user?.uid || null;
 }
 
 function localGet(key){
@@ -1455,7 +1598,10 @@ function defaultCore(){
     tapCounts: {},   // lifetime, since core.pings only keeps the last 10
     vibeCounts: {},
     moveTotals: {},  // lifetime metres run, per person
-    homeCoords: {}   // rounded to ~11km — city-level, never an address
+    homeCoords: {},  // rounded to ~11km — city-level, never an address
+    busy: {},        // imported calendar blocks, per person
+    busyMeta: {},
+    pockets: []      // shared free windows either of you has claimed
   };
 }
 
@@ -1505,6 +1651,8 @@ async function init(){
   fillTzSelect(document.getElementById("settingsTz"));
   fillHourSelect(document.getElementById("settingsWake"), 8);
   fillHourSelect(document.getElementById("settingsSleep"), 23);
+  fillHourSelect(document.getElementById("settingsWorkStart"), 9);
+  fillHourSelect(document.getElementById("settingsWorkEnd"), 17);
 
   // guess default tz
   try{
@@ -1532,6 +1680,7 @@ async function init(){
     state.code = mr.code;
     state.role = mr.role;
     await enterApp();
+    claimSlotUid();
   } else {
     document.getElementById("onboardScreen").style.display = "flex";
   }
@@ -1541,36 +1690,120 @@ async function createSpace(){
   const name = document.getElementById("createName").value.trim();
   const tz = document.getElementById("createTz").value;
   if (!name){ showToast("Add your name first"); return; }
-  const code = genCode();
-  state.role = "a";
-  localSet("my-role", JSON.stringify({code, role:"a"}));
-  const ntfyTopic = `us-apart-${code.toLowerCase()}-${Math.random().toString(36).slice(2,8)}`;
+
+  // Never write blind: a code that already exists belongs to another
+  // couple, and overwriting it would wipe everything they have.
+  let code = null;
+  for (let attempt = 0; attempt < 6; attempt++){
+    const candidate = genCode();
+    let taken = true;
+    try{
+      const snap = await fb.getDoc(fb.doc(db, "spaces", candidate));
+      taken = snap.exists();
+    }catch(e){
+      showToast("Couldn't reach the database — check your connection");
+      return;
+    }
+    if (!taken){ code = candidate; break; }
+  }
+  if (!code){ showToast("Couldn't find a free code just now — try again"); return; }
+
+  const tail = randomInts(8, CODE_CHARS.length).map(i => CODE_CHARS[i]).join("").toLowerCase();
   const core = defaultCore();
-  core.a = { name, tz, wake:8, sleep:23 };
-  core.ntfyTopic = ntfyTopic;
-  await fb.setDoc(fb.doc(db, "spaces", code), core);
+  core.a = { name, tz, wake:8, sleep:23, uid: myUid() };
+  core.ntfyTopic = `us-apart-${tail}`;
+  try{
+    await fb.setDoc(fb.doc(db, "spaces", code), core);
+  }catch(e){
+    showToast("Couldn't create the space — check your connection");
+    return;
+  }
+  state.role = "a";
   state.code = code;
   state.core = core;
+  localSet("my-role", JSON.stringify({ code, role:"a" }));
   showToast(`Space created: ${code}`);
   await enterApp();
 }
 
 async function joinSpace(){
-  const codeInput = document.getElementById("joinCode").value.trim().toUpperCase();
+  const codeInput = normalizeCode(document.getElementById("joinCode").value);
   const name = document.getElementById("joinName").value.trim();
   const tz = document.getElementById("joinTz").value;
   if (!codeInput || !name){ showToast("Fill in the code and your name"); return; }
-  const snap = await fb.getDoc(fb.doc(db, "spaces", codeInput));
+
+  let snap;
+  try{
+    snap = await fb.getDoc(fb.doc(db, "spaces", codeInput));
+  }catch(e){
+    showToast("Couldn't reach the database — check your connection");
+    return;
+  }
   if (!snap.exists()){ showToast("Couldn't find that space — check the code"); return; }
-  state.role = "b";
-  localSet("my-role", JSON.stringify({code:codeInput, role:"b"}));
+
   const core = snap.data();
-  core.b = { name, tz, wake:8, sleep:23 };
-  await fb.setDoc(fb.doc(db, "spaces", codeInput), core);
+  const uid = myUid();
+
+  // Which slot are we? Previously this was hardcoded to 'b', so a third
+  // person with the code silently took over partner B — erasing their
+  // profile and inheriting the whole space.
+  let role = null;
+  if (core.a?.uid && core.a.uid === uid) role = "a";
+  else if (core.b?.uid && core.b.uid === uid) role = "b";
+  else if (!core.b?.name) role = "b";               // empty second slot
+  else if (!core.a?.name) role = "a";               // empty first slot
+  else {
+    // Both slots are filled by other devices. Rather than clobbering
+    // someone, ask who they are — losing a phone is a real thing.
+    const claimed = await askClaimSlot(core);
+    if (!claimed) return;
+    role = claimed;
+  }
+
+  const existing = core[role] || {};
+  core[role] = {
+    ...existing,
+    name, tz,
+    wake: existing.wake ?? 8,
+    sleep: existing.sleep ?? 23,
+    uid
+  };
+  try{
+    await fb.setDoc(fb.doc(db, "spaces", codeInput), core);
+  }catch(e){
+    showToast("Couldn't join — check your connection");
+    return;
+  }
+  state.role = role;
   state.code = codeInput;
   state.core = core;
+  localSet("my-role", JSON.stringify({ code: codeInput, role }));
   showToast("You're in 💛");
   await enterApp();
+}
+
+// Both seats are taken by other devices — the person joining is most likely
+// one of the pair on a new phone. Make them say which, out loud, instead of
+// silently overwriting whoever is in slot B.
+function askClaimSlot(core){
+  const aName = core.a?.name || "Partner 1";
+  const bName = core.b?.name || "Partner 2";
+  document.getElementById("claimTitle").textContent = "Which one of you is this?";
+  document.getElementById("claimSub").innerHTML =
+    `This space already has <b>${escapeHtml(aName)}</b> and <b>${escapeHtml(bName)}</b> set up on other devices. Pick yourself to move over to this one — the other person is left alone.`;
+  document.getElementById("claimActions").innerHTML = `
+    <button class="btn btn-soft" onclick="claimChoose('a')">I'm ${escapeHtml(aName)}</button>
+    <div style="height:10px;"></div>
+    <button class="btn btn-soft" onclick="claimChoose('b')">I'm ${escapeHtml(bName)}</button>`;
+  return new Promise(res => { claimResolve = res; openSheet("claimSheet"); });
+}
+
+let claimResolve = null;
+function claimChoose(role){
+  const r = claimResolve;
+  claimResolve = null;
+  closeSheets();
+  if (r) r(role);
 }
 
 async function leaveSpace(){
@@ -1587,6 +1820,20 @@ async function leaveSpace(){
   document.getElementById("mainApp").style.display = "none";
   document.getElementById("navbar").style.display = "none";
   document.getElementById("onboardScreen").style.display = "flex";
+}
+
+// Spaces created before slots had owners have no uid on them. The device
+// that already holds the role adopts it on next launch, so the protection
+// applies to existing couples too without them doing anything.
+async function claimSlotUid(){
+  const uid = myUid();
+  if (!uid || !state.core || !state.role) return;
+  if (state.core[state.role]?.uid) return;
+  try{
+    await updateCore(core => {
+      core[state.role] = { ...(core[state.role] || {}), uid };
+    });
+  }catch(e){}
 }
 
 function copyCode(){
@@ -1722,6 +1969,8 @@ function tickClock(){
   const m = me(), t = them();
   document.getElementById("meName").textContent = m?.name || "You";
   document.getElementById("themName").textContent = t?.name || "Them";
+  document.getElementById("meAvatar").innerHTML = avatarHtml(m, "");
+  document.getElementById("themAvatar").innerHTML = avatarHtml(t, "them");
   document.getElementById("meTime").textContent = getTimeIn(m?.tz);
   document.getElementById("themTime").textContent = getTimeIn(t?.tz);
   const mh = getHourIn(m?.tz), th = getHourIn(t?.tz);
@@ -1972,6 +2221,7 @@ let selectedPrice = "yearly";
 function closeSheets(){
   // If a quiet-hours prompt is open, dismissing it means "don't send".
   if (quietResolve){ const r = quietResolve; quietResolve = null; r("cancel"); }
+  if (claimResolve){ const r = claimResolve; claimResolve = null; r(null); }
   document.getElementById("sheetBackdrop").classList.remove("show");
   document.querySelectorAll(".sheet").forEach(s => s.classList.remove("show"));
 }
@@ -2691,6 +2941,376 @@ function renderMove(){
   renderRunList();
 }
 
+/* ==========================================================
+   CALENDAR & POCKETS
+
+   Feasibility, honestly: Google Calendar can be read from a
+   pure browser app via Google Identity Services (no client
+   secret), but it needs your own OAuth client ID and Google
+   verification before more than 100 people can use it, and the
+   tokens it hands out expire in an hour with no refresh — so
+   there's no background sync without a server. Apple Calendar
+   has no public API at all, and secret .ics subscription URLs
+   are blocked by CORS.
+
+   What works with zero setup and no third party: importing an
+   .ics export, plus a recurring work-hours block. That's what's
+   built here. See the README for the Google path.
+   ========================================================== */
+
+const POCKET_DAYS = 3;           // how far ahead to look
+const SLOT_MIN = 15;             // granularity
+const MIN_POCKET_MIN = 30;       // shorter than this isn't worth surfacing
+const BUSY_HORIZON_DAYS = 14;
+
+const _tzFmtCache = new Map();
+function tzFormatter(tz){
+  if (!_tzFmtCache.has(tz)){
+    _tzFmtCache.set(tz, new Intl.DateTimeFormat("en-US", {
+      timeZone: tz, hour12:false,
+      year:"numeric", month:"2-digit", day:"2-digit",
+      hour:"2-digit", minute:"2-digit", second:"2-digit", weekday:"short"
+    }));
+  }
+  return _tzFmtCache.get(tz);
+}
+function localPartsIn(tz, date){
+  const p = tzFormatter(tz).formatToParts(date).reduce((a,x)=>(a[x.type]=x.value,a),{});
+  return {
+    year:+p.year, month:+p.month, day:+p.day,
+    hour: p.hour === "24" ? 0 : +p.hour, minute:+p.minute, second:+p.second,
+    weekday: ["Sun","Mon","Tue","Wed","Thu","Fri","Sat"].indexOf(p.weekday)
+  };
+}
+function tzOffsetMs(tz, date){
+  const p = localPartsIn(tz, date);
+  return Date.UTC(p.year, p.month-1, p.day, p.hour, p.minute, p.second) - date.getTime();
+}
+// Turn a wall-clock time in some zone into a real UTC instant. Two passes so
+// a DST boundary between the guess and the answer still lands correctly.
+function zonedToUtc(y, mo, d, h, mi, tz){
+  let guess = Date.UTC(y, mo-1, d, h, mi);
+  for (let i = 0; i < 2; i++){
+    guess = Date.UTC(y, mo-1, d, h, mi) - tzOffsetMs(tz, new Date(guess));
+  }
+  return guess;
+}
+
+/* ---- .ics parsing ---- */
+function unfoldIcs(text){
+  // RFC 5545 folds long lines by starting the continuation with a space/tab.
+  return text.replace(/\r\n/g, "\n").replace(/\r/g, "\n").replace(/\n[ \t]/g, "");
+}
+function parseIcsDate(value, params, fallbackTz){
+  const m = value.match(/^(\d{4})(\d{2})(\d{2})(?:T(\d{2})(\d{2})(\d{2})(Z)?)?$/);
+  if (!m) return null;
+  const [, y, mo, d, h, mi, s, z] = m;
+  const allDay = h === undefined;
+  if (allDay) return { ms: zonedToUtc(+y, +mo, +d, 0, 0, fallbackTz), allDay:true };
+  if (z) return { ms: Date.UTC(+y, +mo-1, +d, +h, +mi, +s), allDay:false };
+  const tzid = (params.match(/TZID=([^;:]+)/) || [])[1];
+  let tz = fallbackTz;
+  if (tzid){
+    try{ new Intl.DateTimeFormat("en-US", { timeZone: tzid }); tz = tzid; }catch(e){ /* unknown zone, use theirs */ }
+  }
+  return { ms: zonedToUtc(+y, +mo, +d, +h, +mi, tz), allDay:false };
+}
+
+// Expands DAILY/WEEKLY recurrence only. Monthly/yearly events are rare as
+// busy-blockers and are skipped rather than guessed at.
+function expandRecurrence(startMs, endMs, rrule, windowEnd){
+  const out = [];
+  const dur = Math.max(0, endMs - startMs);
+  const get = k => (rrule.match(new RegExp(k + "=([^;]+)")) || [])[1];
+  const freq = get("FREQ");
+  if (freq !== "DAILY" && freq !== "WEEKLY") return [{ start:startMs, end:endMs }];
+
+  const interval = parseInt(get("INTERVAL") || "1", 10) || 1;
+  const count = parseInt(get("COUNT") || "0", 10);
+  const untilRaw = get("UNTIL");
+  let until = windowEnd;
+  if (untilRaw){
+    const u = parseIcsDate(untilRaw.replace(/Z$/, "Z"), "", "UTC");
+    if (u) until = Math.min(until, u.ms);
+  }
+  const byDay = (get("BYDAY") || "").split(",").filter(Boolean)
+    .map(d => ["SU","MO","TU","WE","TH","FR","SA"].indexOf(d.slice(-2))).filter(i => i >= 0);
+
+  const step = (freq === "DAILY" ? 1 : 7) * interval * 86400000;
+  let cursor = startMs, made = 0;
+  for (let guard = 0; guard < 400 && cursor <= until; guard++){
+    if (freq === "WEEKLY" && byDay.length){
+      const weekStart = cursor;
+      for (const wd of byDay){
+        const base = new Date(weekStart);
+        const delta = (wd - base.getUTCDay() + 7) % 7;
+        const occ = weekStart + delta * 86400000;
+        if (occ >= startMs && occ <= until){ out.push({ start:occ, end:occ + dur }); made++; }
+        if (count && made >= count) return out;
+      }
+    } else {
+      out.push({ start:cursor, end:cursor + dur }); made++;
+      if (count && made >= count) return out;
+    }
+    cursor += step;
+  }
+  return out;
+}
+
+function parseIcs(text, fallbackTz){
+  const lines = unfoldIcs(text).split("\n");
+  const busy = [];
+  const now = Date.now();
+  const windowEnd = now + BUSY_HORIZON_DAYS * 86400000;
+  let cur = null;
+
+  for (const line of lines){
+    if (line.startsWith("BEGIN:VEVENT")){ cur = {}; continue; }
+    if (line.startsWith("END:VEVENT")){
+      if (cur && cur.start != null && cur.end != null){
+        const occurrences = cur.rrule
+          ? expandRecurrence(cur.start, cur.end, cur.rrule, windowEnd)
+          : [{ start:cur.start, end:cur.end }];
+        for (const o of occurrences){
+          if (o.end > now && o.start < windowEnd && !cur.transparent){
+            busy.push({ start:o.start, end:o.end });
+          }
+        }
+      }
+      cur = null; continue;
+    }
+    if (!cur) continue;
+
+    const colon = line.indexOf(":");
+    if (colon < 0) continue;
+    const rawKey = line.slice(0, colon);
+    const value = line.slice(colon + 1).trim();
+    const key = rawKey.split(";")[0].toUpperCase();
+    const params = rawKey.slice(key.length);
+
+    if (key === "DTSTART"){ const d = parseIcsDate(value, params, fallbackTz); if (d){ cur.start = d.ms; cur.allDay = d.allDay; } }
+    else if (key === "DTEND"){ const d = parseIcsDate(value, params, fallbackTz); if (d) cur.end = d.ms; }
+    else if (key === "RRULE"){ cur.rrule = value.toUpperCase(); }
+    // "free"/transparent events aren't really busy, and declined ones aren't either
+    else if (key === "TRANSP" && value.toUpperCase() === "TRANSPARENT"){ cur.transparent = true; }
+    else if (key === "STATUS" && value.toUpperCase() === "CANCELLED"){ cur.transparent = true; }
+    if (cur.start != null && cur.end == null && cur.allDay) cur.end = cur.start + 86400000;
+  }
+  // merge overlaps so the pocket scan does less work
+  busy.sort((x,y) => x.start - y.start);
+  const merged = [];
+  for (const b of busy){
+    const last = merged[merged.length-1];
+    if (last && b.start <= last.end) last.end = Math.max(last.end, b.end);
+    else merged.push({ ...b });
+  }
+  return merged;
+}
+
+async function onIcsChosen(evt){
+  const file = evt.target.files[0];
+  if (!file) return;
+  let text;
+  try{ text = await file.text(); }
+  catch(e){ showToast("Couldn't read that file"); return; }
+  if (!/BEGIN:VCALENDAR/i.test(text)){ showToast("That doesn't look like a calendar file"); return; }
+
+  let busy;
+  try{ busy = parseIcs(text, me()?.tz || "UTC"); }
+  catch(e){ showToast("Couldn't understand that calendar"); return; }
+
+  try{
+    await updateCore(core => {
+      core.busy = core.busy || {};
+      core.busy[myKey()] = busy.slice(0, 400);
+      core.busyMeta = core.busyMeta || {};
+      core.busyMeta[myKey()] = { at: Date.now(), count: busy.length };
+    });
+  }catch(e){ return; }
+  evt.target.value = "";
+  showToast(busy.length ? `${busy.length} busy block${busy.length===1?'':'s'} imported` : "No upcoming events found");
+  renderAll();
+}
+
+async function clearIcs(){
+  try{
+    await updateCore(core => {
+      if (core.busy) core.busy[myKey()] = [];
+      if (core.busyMeta) core.busyMeta[myKey()] = null;
+    });
+  }catch(e){ return; }
+  showToast("Calendar cleared");
+  renderAll();
+}
+
+/* ---- Pocket finding ---- */
+// Is this person free at this instant? Awake, not at work, not in a
+// calendar block — all evaluated in their own time zone.
+function personFreeAt(role, date){
+  const p = state.core?.[role];
+  if (!p?.tz) return false;
+  const local = localPartsIn(p.tz, date);
+  const wake = p.wake ?? 8, sleep = p.sleep ?? 23;
+  if (local.hour < wake || local.hour >= sleep) return false;
+
+  if (p.workStart != null && p.workEnd != null){
+    const days = p.workDays || [1,2,3,4,5];
+    if (days.includes(local.weekday) && local.hour >= p.workStart && local.hour < p.workEnd) return false;
+  }
+  const ms = date.getTime();
+  const busy = state.core?.busy?.[role] || [];
+  for (const b of busy){ if (ms >= b.start && ms < b.end) return false; }
+  return true;
+}
+
+function findPockets(){
+  if (!state.core?.a?.tz || !state.core?.b?.tz) return [];
+  const step = SLOT_MIN * 60000;
+  // start at the next clean slot boundary
+  let t = Math.ceil(Date.now() / step) * step;
+  const end = t + POCKET_DAYS * 86400000;
+  const runs = [];
+  let cur = null;
+
+  for (; t < end; t += step){
+    const d = new Date(t);
+    const free = personFreeAt("a", d) && personFreeAt("b", d);
+    if (free){
+      if (cur) cur.end = t + step;
+      else cur = { start:t, end:t + step };
+    } else if (cur){
+      runs.push(cur); cur = null;
+    }
+  }
+  if (cur) runs.push(cur);
+
+  return runs
+    .filter(r => (r.end - r.start) >= MIN_POCKET_MIN * 60000)
+    .slice(0, 12);
+}
+
+function fmtTimeIn(tz, ms){
+  try{
+    return new Intl.DateTimeFormat("en-US", { timeZone:tz, hour:"numeric", minute:"2-digit" }).format(new Date(ms));
+  }catch(e){ return "--:--"; }
+}
+// Their side of a pocket can land on a different date than mine. Returns a
+// short suffix like " (Tue)" only when the two dates actually differ.
+function crossDaySuffix(myTz, theirTz, ms){
+  const a = localPartsIn(myTz, new Date(ms));
+  const b = localPartsIn(theirTz, new Date(ms));
+  if (a.year === b.year && a.month === b.month && a.day === b.day) return "";
+  try{
+    return ` (${new Intl.DateTimeFormat("en-US", { timeZone: theirTz, weekday:"short" }).format(new Date(ms))})`;
+  }catch(e){ return ""; }
+}
+
+function dayLabelIn(tz, ms){
+  const today = localPartsIn(tz, new Date());
+  const d = localPartsIn(tz, new Date(ms));
+  const diff = Date.UTC(d.year,d.month-1,d.day) - Date.UTC(today.year,today.month-1,today.day);
+  const days = Math.round(diff / 86400000);
+  if (days === 0) return "Today";
+  if (days === 1) return "Tomorrow";
+  try{
+    return new Intl.DateTimeFormat("en-US", { timeZone:tz, weekday:"long" }).format(new Date(ms));
+  }catch(e){ return "Soon"; }
+}
+function fmtLenMin(ms){
+  const m = Math.round(ms/60000);
+  if (m < 60) return `${m} min`;
+  const h = Math.floor(m/60), r = m % 60;
+  return r ? `${h}h ${r}m` : `${h}h`;
+}
+
+async function claimPocket(startMs, endMs){
+  try{
+    await updateCore(core => {
+      core.pockets = (core.pockets || []).filter(p => p.end > Date.now());
+      if (core.pockets.some(p => p.start === startMs)) return;
+      core.pockets.push({ id:String(startMs), start:startMs, end:endMs, by:myKey(), ts:Date.now() });
+    });
+  }catch(e){ return; }
+  showToast("Pencilled in 💛");
+  const myName = me()?.name || "Your partner";
+  pushExternal("A pocket of time 🗓️",
+    `${myName} set aside ${fmtTimeIn(them()?.tz, startMs)} your time for you.`, "calendar");
+  renderAll();
+}
+
+async function unclaimPocket(id){
+  try{
+    await updateCore(core => { core.pockets = (core.pockets || []).filter(p => p.id !== id); });
+  }catch(e){ return; }
+  renderAll();
+}
+
+function renderPockets(){
+  const el = document.getElementById("pocketBody");
+  if (!el || !state.core) return;
+  const m = me(), t = them();
+  if (!m?.tz || !t?.tz){
+    el.innerHTML = `<div style="font-size:13.5px; color:var(--ink-soft); line-height:1.55;">Once you've both set a time zone, we'll start finding windows where you're both free.</div>`;
+    return;
+  }
+
+  const claimed = (state.core.pockets || []).filter(p => p.end > Date.now()).sort((x,y)=>x.start-y.start);
+  const claimedStarts = new Set(claimed.map(p => p.start));
+  const pockets = findPockets().filter(p => !claimedStarts.has(p.start)).slice(0, 4);
+
+  let html = "";
+  if (claimed.length){
+    html += claimed.map(p => `<div class="pocket claimed">
+      <div class="pocket-when">
+        <div class="day">${dayLabelIn(m.tz, p.start)} · pencilled in</div>
+        <div class="times">${fmtTimeIn(m.tz, p.start)} – ${fmtTimeIn(m.tz, p.end)}</div>
+        <div class="theirs">${escapeHtml(t.name || "Them")}: ${fmtTimeIn(t.tz, p.start)} – ${fmtTimeIn(t.tz, p.end)}${crossDaySuffix(m.tz, t.tz, p.start)}</div>
+      </div>
+      <button class="pocket-claim" onclick="unclaimPocket('${p.id}')">Undo</button>
+    </div>`).join("");
+  }
+
+  if (!pockets.length){
+    html += claimed.length
+      ? ""
+      : `<div style="font-size:13.5px; color:var(--ink-soft); line-height:1.55;">No overlapping free time in the next few days. Loosen your work hours in Settings, or one of you may need to stay up a little.</div>`;
+  } else {
+    html += pockets.map(p => `<div class="pocket">
+      <div class="pocket-when">
+        <div class="day">${dayLabelIn(m.tz, p.start)}</div>
+        <div class="times">${fmtTimeIn(m.tz, p.start)} – ${fmtTimeIn(m.tz, p.end)}</div>
+        <div class="theirs">${escapeHtml(t.name || "Them")}: ${fmtTimeIn(t.tz, p.start)} – ${fmtTimeIn(t.tz, p.end)}${crossDaySuffix(m.tz, t.tz, p.start)}</div>
+      </div>
+      <span class="pocket-len">${fmtLenMin(p.end - p.start)}</span>
+      <button class="pocket-claim" onclick="claimPocket(${p.start}, ${p.end})">Take it</button>
+    </div>`).join("");
+  }
+  el.innerHTML = html;
+}
+
+function renderCalendarCard(){
+  const el = document.getElementById("calBody");
+  if (!el || !state.core) return;
+  const meta = state.core.busyMeta?.[myKey()];
+  const count = (state.core.busy?.[myKey()] || []).length;
+  const theirCount = (state.core.busy?.[theirKey()] || []).length;
+  el.innerHTML = `
+    <div class="cal-status">
+      <span>🗓️</span>
+      <div>${count
+        ? `<b>${count}</b> busy block${count===1?'':'s'} from your calendar${meta?.at ? `, imported ${timeAgo(meta.at)}` : ""}.`
+        : `No calendar imported yet — pockets are using your waking and work hours only.`}
+        ${theirCount ? `<br>${escapeHtml(them()?.name || "They")} has imported ${theirCount}.` : ""}
+      </div>
+    </div>
+    <label class="btn btn-soft btn-sm" for="icsFile" style="margin:auto; display:flex; width:auto;">Import a .ics file</label>
+    <input type="file" id="icsFile" accept=".ics,text/calendar" style="display:none;" onchange="onIcsChosen(event)">
+    ${count ? `<div style="height:8px;"></div><button class="link-btn" style="margin:auto; display:block;" onclick="clearIcs()">Clear my calendar</button>` : ""}
+    <div style="font-size:11.5px; color:var(--ink-faint); line-height:1.5; margin-top:10px;">
+      Export from Google Calendar (Settings → Import/Export), Apple Calendar (File → Export) or Outlook, then drop the file in. Only the busy times are kept — no titles, no guests, no locations.
+    </div>`;
+}
+
 /* ---- Us Wrapped ---- */
 function computeStats(){
   const notes = state.notes || [];
@@ -2831,6 +3451,7 @@ function renderHome(){
   renderCustomTapWrap();
   renderMemory();
   renderPresence();
+  renderPockets();
 }
 
 function renderStreak(){
@@ -3109,26 +3730,78 @@ function onVoiceEnded(id){
   currentlyPlayingVoiceId = null;
 }
 
-function onPhotoChosen(evt){
+// Shared by note photos and avatars. `square` centre-crops, which is what
+// you want for a profile picture and not for a photo of a sunset.
+function compressImage(file, maxW, quality, square){
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.onerror = reject;
+    reader.onload = () => {
+      const img = new Image();
+      img.onerror = reject;
+      img.onload = () => {
+        const canvas = document.createElement("canvas");
+        const ctx = canvas.getContext("2d");
+        if (square){
+          const side = Math.min(img.width, img.height);
+          const sx = (img.width - side) / 2, sy = (img.height - side) / 2;
+          canvas.width = canvas.height = Math.min(maxW, side);
+          ctx.drawImage(img, sx, sy, side, side, 0, 0, canvas.width, canvas.height);
+        } else {
+          const scale = Math.min(1, maxW / img.width);
+          canvas.width = Math.round(img.width * scale);
+          canvas.height = Math.round(img.height * scale);
+          ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+        }
+        resolve(canvas.toDataURL("image/jpeg", quality));
+      };
+      img.src = reader.result;
+    };
+    reader.readAsDataURL(file);
+  });
+}
+
+async function onPhotoChosen(evt){
   const file = evt.target.files[0];
   if (!file) return;
-  const reader = new FileReader();
-  reader.onload = () => {
-    const img = new Image();
-    img.onload = () => {
-      const maxW = 640;
-      const scale = Math.min(1, maxW / img.width);
-      const canvas = document.createElement("canvas");
-      canvas.width = Math.round(img.width * scale);
-      canvas.height = Math.round(img.height * scale);
-      const ctx = canvas.getContext("2d");
-      ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
-      pendingPhoto = canvas.toDataURL("image/jpeg", 0.6);
-      renderPhotoPreview();
-    };
-    img.src = reader.result;
-  };
-  reader.readAsDataURL(file);
+  try{
+    pendingPhoto = await compressImage(file, 640, 0.6, false);
+    renderPhotoPreview();
+  }catch(e){ showToast("Couldn't read that image"); }
+}
+
+async function onAvatarChosen(evt){
+  const file = evt.target.files[0];
+  if (!file) return;
+  let dataUrl;
+  try{
+    // 224px square keeps two avatars well inside the 1MiB core document.
+    dataUrl = await compressImage(file, 224, 0.72, true);
+  }catch(e){ showToast("Couldn't read that image"); return; }
+  try{
+    await updateCore(core => {
+      core[myKey()] = { ...(core[myKey()] || {}), avatar: dataUrl };
+    });
+  }catch(e){ return; }
+  evt.target.value = "";
+  showToast("Picture updated");
+  renderAll();
+}
+
+async function removeAvatar(){
+  try{
+    await updateCore(core => {
+      core[myKey()] = { ...(core[myKey()] || {}), avatar: null };
+    });
+  }catch(e){ return; }
+  renderAll();
+}
+
+function avatarHtml(person, cls){
+  const initial = (person?.name || "?").trim().charAt(0).toUpperCase();
+  return person?.avatar
+    ? `<span class="avatar ${cls||''}"><img src="${person.avatar}" alt=""></span>`
+    : `<span class="avatar ${cls||''} letter">${escapeHtml(initial)}</span>`;
 }
 function clearPendingPhoto(){
   pendingPhoto = null;
@@ -3190,7 +3863,7 @@ function renderNotes(){
       const dt = new Date(n.ts).toLocaleString("en-US", { month:"short", day:"numeric", hour:"numeric", minute:"2-digit" });
       const dur = n.voice ? formatDuration(n.voice.duration || 0) : "0:00";
       return `<div class="note ${mine?'me':'them'}">
-        <div class="note-meta"><span class="note-who">${whoName}</span><span class="note-time">${dt}</span></div>
+        <div class="note-meta"><span class="note-who" style="display:flex; align-items:center; gap:6px;">${avatarHtml(mine ? me() : them(), mine ? "sm" : "sm them")}${escapeHtml(whoName)}</span><span class="note-time">${dt}</span></div>
         ${n.text ? `<div class="note-text">${escapeHtml(n.text)}</div>` : ""}
         ${n.img ? `<img class="note-img" src="${n.img}">` : ""}
         ${n.voice ? `<div class="voice-note" data-id="${n.id}">
@@ -3441,6 +4114,13 @@ function renderSettings(){
   if (!state.core) return;
   renderPlanCard();
   renderThemeRow();
+  renderCalendarCard();
+  const meNow = me();
+  document.getElementById("settingsAvatar").innerHTML = avatarHtml(meNow, "lg");
+  document.getElementById("avatarRemove").style.display = meNow?.avatar ? "block" : "none";
+  document.getElementById("settingsAbout").value = meNow?.about || "";
+  document.getElementById("settingsWorkStart").value = meNow?.workStart ?? 9;
+  document.getElementById("settingsWorkEnd").value = meNow?.workEnd ?? 17;
   document.getElementById("wrappedPro").style.display = isPremium() ? "none" : "inline-flex";
   renderNotifStatus();
   document.getElementById("ntfyTopicDisplay").textContent = state.core.ntfyTopic || "Not set yet";
@@ -3459,7 +4139,13 @@ async function saveProfile(){
   const wake = parseInt(document.getElementById("settingsWake").value);
   const sleep = parseInt(document.getElementById("settingsSleep").value);
   const units = document.getElementById("settingsUnits").value;
-  await updateCore(core => { core[myKey()] = { name, tz, wake, sleep, units }; });
+  const about = document.getElementById("settingsAbout").value.trim();
+  const workStart = parseInt(document.getElementById("settingsWorkStart").value);
+  const workEnd = parseInt(document.getElementById("settingsWorkEnd").value);
+  // Spread the existing profile so avatar/uid/homeCoords survive a save.
+  await updateCore(core => {
+    core[myKey()] = { ...(core[myKey()] || {}), name, tz, wake, sleep, units, about, workStart, workEnd };
+  });
   showToast("Saved");
   renderAll();
 }
