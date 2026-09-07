@@ -685,6 +685,110 @@
   .quiet-note .em{ font-size:15px; flex-shrink:0; }
   .quiet-note b{ color:var(--ink); }
 
+  /* ---------- Circuit card ---------- */
+  .circuit-head{ display:flex; align-items:center; gap:12px; margin-bottom:12px; }
+  .circuit-badge{
+    width:52px; height:52px; border-radius:16px; flex-shrink:0;
+    background:linear-gradient(140deg, var(--rose-wash), var(--paper-soft));
+    border:1px solid var(--line);
+    display:flex; align-items:center; justify-content:center; font-size:24px;
+  }
+  .circuit-name{ font-family:var(--font-display); font-size:21px; font-weight:600; line-height:1.15; }
+  .circuit-meta{ font-size:11.5px; color:var(--ink-soft); text-transform:uppercase; letter-spacing:0.07em; font-weight:700; margin-top:3px; }
+  .move-list{ margin:4px 0 14px; }
+  .move-row{ display:flex; align-items:baseline; gap:9px; padding:5px 0; font-size:13.5px; }
+  .move-row .n{ font-size:10.5px; color:var(--ink-faint); font-weight:700; width:16px; flex-shrink:0; }
+  .move-row .nm{ flex:1; }
+  .circuit-done{
+    display:flex; align-items:center; gap:9px; font-size:12.5px; color:var(--ink-soft);
+    background:var(--paper-soft); border:1px solid var(--line); border-radius:12px;
+    padding:9px 12px; margin-bottom:12px; line-height:1.45;
+  }
+  .circuit-done b{ color:var(--ink); }
+
+  /* ---------- Workout overlay ---------- */
+  .wk-overlay{
+    position:fixed; inset:0; z-index:120; display:none;
+    background:var(--paper); overflow-y:auto;
+    padding:22px 20px calc(26px + env(safe-area-inset-bottom));
+  }
+  .wk-overlay.show{ display:block; }
+  .wk-inner{ max-width:460px; margin:0 auto; }
+  .wk-top{ display:flex; align-items:center; justify-content:space-between; margin-bottom:18px; }
+  .wk-quit{ background:none; border:none; color:var(--ink-soft); font-size:13px; font-weight:600; padding:6px; }
+  .wk-step{ font-size:11px; text-transform:uppercase; letter-spacing:0.1em; color:var(--ink-faint); font-weight:700; }
+
+  .wk-phase{ font-size:11px; text-transform:uppercase; letter-spacing:0.12em; font-weight:700; text-align:center; margin-bottom:6px; }
+  .wk-phase.work{ color:var(--rose-deep); }
+  .wk-phase.rest{ color:var(--dusk); }
+  .wk-phase.warmup, .wk-phase.cooldown{ color:var(--good); }
+  .wk-move{
+    font-family:var(--font-display); font-size:34px; font-weight:600; line-height:1.12;
+    text-align:center; margin-bottom:8px;
+  }
+  .wk-cue{ font-size:13.5px; color:var(--ink-soft); text-align:center; line-height:1.5; margin-bottom:18px; min-height:40px; }
+
+  .wk-ring{ position:relative; width:190px; height:190px; margin:0 auto 20px; }
+  .wk-ring svg{ width:100%; height:100%; transform:rotate(-90deg); }
+  .wk-ring .track{ fill:none; stroke:var(--line); stroke-width:9; }
+  .wk-ring .prog{ fill:none; stroke:var(--btn-bg); stroke-width:9; stroke-linecap:round; transition:stroke-dashoffset .25s linear; }
+  .wk-ring .count{
+    position:absolute; inset:0; display:flex; align-items:center; justify-content:center;
+    font-family:var(--font-display); font-size:52px; font-weight:600;
+    font-variant-numeric: lining-nums tabular-nums;
+  }
+  .wk-next{ font-size:12.5px; color:var(--ink-faint); text-align:center; margin-bottom:18px; }
+  .wk-next b{ color:var(--ink-soft); }
+  .wk-controls{ display:flex; gap:10px; align-items:center; justify-content:center; margin-bottom:16px; }
+  .wk-ctrl{
+    width:52px; height:52px; border-radius:50%; border:1px solid var(--line);
+    background:var(--card); color:var(--ink); font-size:17px; box-shadow:var(--shadow-sm);
+    display:flex; align-items:center; justify-content:center;
+    transition:transform .15s ease, box-shadow .15s ease;
+  }
+  .wk-ctrl:hover{ transform:translateY(-2px); box-shadow:var(--shadow-md); }
+  .wk-ctrl.main{ width:66px; height:66px; background:var(--btn-bg); color:var(--on-rose); border-color:transparent; font-size:21px; box-shadow:var(--shadow-rose); }
+  .wk-bar{ height:5px; border-radius:99px; background:var(--paper-soft); border:1px solid var(--line); overflow:hidden; }
+  .wk-bar-fill{ height:100%; background:linear-gradient(90deg, var(--rose), var(--honey)); transition:width .3s linear; }
+  .wk-total{ font-size:11.5px; color:var(--ink-faint); text-align:center; margin-top:7px; }
+
+  .wk-spotify{ margin-top:20px; border-radius:14px; overflow:hidden; }
+  .wk-spotify iframe{ display:block; width:100%; border:0; border-radius:14px; }
+
+  /* ---------- Celebration ---------- */
+  .wk-cheer{ text-align:center; padding:10px 0 4px; }
+  .wk-cheer .big{ font-family:var(--font-display); font-size:38px; font-weight:600; line-height:1.15; margin-bottom:8px; }
+  .wk-cheer .sub{ font-size:14px; color:var(--ink-soft); line-height:1.55; margin-bottom:20px; }
+  .wk-photo-frame{
+    position:relative; border-radius:18px; overflow:hidden; margin-bottom:16px;
+    border:1px solid var(--line); box-shadow:var(--shadow-md);
+  }
+  .wk-photo-frame img{ display:block; width:100%; }
+  .wk-photo-frame button{
+    position:absolute; top:8px; right:8px; background:rgba(46,42,61,0.72); color:#fff;
+    border:none; border-radius:50%; width:28px; height:28px; font-size:15px; line-height:1;
+  }
+  #confettiCanvas{ position:fixed; inset:0; pointer-events:none; z-index:130; display:none; }
+  #confettiCanvas.show{ display:block; }
+  @keyframes popIn{ 0%{ transform:scale(0.7); opacity:0; } 60%{ transform:scale(1.06); } 100%{ transform:scale(1); opacity:1; } }
+  .pop-in{ animation:popIn .5s cubic-bezier(.2,.9,.3,1.2) both; }
+  @keyframes floatUp{ from{ transform:translateY(10px); opacity:0; } to{ transform:none; opacity:1; } }
+  .float-up{ animation:floatUp .45s ease both; }
+  @media (prefers-reduced-motion: reduce){
+    .pop-in, .float-up{ animation:none; }
+  }
+
+  .wk-history{ display:flex; gap:7px; overflow-x:auto; padding-bottom:2px; }
+  .wk-thumb{
+    width:56px; height:56px; border-radius:12px; overflow:hidden; flex-shrink:0;
+    background:var(--paper-soft); border:1px solid var(--line); position:relative;
+  }
+  .wk-thumb img{ width:100%; height:100%; object-fit:cover; display:block; }
+  .wk-thumb .no-photo{ width:100%; height:100%; display:flex; align-items:center; justify-content:center; font-size:18px; }
+  .wk-thumb .who-dot{ position:absolute; bottom:4px; right:4px; width:8px; height:8px; border-radius:50%; border:1.5px solid var(--card); }
+  .wk-thumb .who-dot.me{ background:var(--rose); }
+  .wk-thumb .who-dot.them{ background:var(--dusk); }
+
   /* ---------- Move / running ---------- */
   .gap-hero{ text-align:center; padding:4px 0 2px; }
   .gap-hero .apart{ font-family:var(--font-display); font-size:34px; line-height:1.1; }
@@ -1020,6 +1124,11 @@
       <h1 class="page-title">Run toward each other.</h1>
 
       <div class="card">
+        <div class="card-title">Today's circuit</div>
+        <div id="circuitBody"></div>
+      </div>
+
+      <div class="card">
         <div class="card-title">Closing the distance</div>
         <div id="gapBody"></div>
       </div>
@@ -1052,6 +1161,11 @@
       <div class="card">
         <div class="card-title">Recent runs</div>
         <div id="runList"></div>
+      </div>
+
+      <div class="card">
+        <div class="card-title">Circuits you've finished</div>
+        <div id="workoutHistory"></div>
       </div>
     </div>
 
@@ -1196,6 +1310,18 @@
 <div class="toast" id="toast"></div>
 
 <div class="sheet-backdrop" id="sheetBackdrop" onclick="closeSheets()"></div>
+
+<canvas id="confettiCanvas"></canvas>
+
+<div class="wk-overlay" id="workoutOverlay">
+  <div class="wk-inner">
+    <div class="wk-top">
+      <div class="wk-step" id="wkStep">&nbsp;</div>
+      <button class="wk-quit" onclick="quitWorkout()">Close</button>
+    </div>
+    <div id="wkBody"></div>
+  </div>
+</div>
 
 <!-- PAYWALL -->
 <div class="sheet" id="paywallSheet">
@@ -1368,6 +1494,7 @@ let state = {
   core: null,
   notes: [],
   runs: [],
+  workouts: [],
   liveRun: {},
   presence: {}
 };
@@ -1611,7 +1738,8 @@ function defaultCore(){
     moveTotals: {},  // lifetime metres run, per person
     homeCoords: {},  // rounded to ~11km — city-level, never an address
     busy: {},        // imported calendar blocks, per person
-    busyMeta: {}
+    busyMeta: {},
+    workoutPlaylist: ""   // shared Spotify link for the circuit screen
   };
 }
 
@@ -1825,8 +1953,10 @@ async function leaveSpace(){
   if (unsubRuns) unsubRuns();
   if (unsubLive) unsubLive();
   if (unsubPresence) unsubPresence();
+  if (unsubWorkouts) unsubWorkouts();
   if (heartbeatHandle) clearInterval(heartbeatHandle);
-  state = { code:null, role:null, core:null, notes:[], runs:[], liveRun:{}, presence:{} };
+  if (wk.open) quitWorkout();
+  state = { code:null, role:null, core:null, notes:[], runs:[], workouts:[], liveRun:{}, presence:{} };
   document.getElementById("mainApp").style.display = "none";
   document.getElementById("navbar").style.display = "none";
   document.getElementById("onboardScreen").style.display = "flex";
@@ -1854,7 +1984,7 @@ function copyCode(){
 
 /* ---------------- MAIN APP ---------------- */
 
-let unsubCore = null, unsubNotes = null, unsubRuns = null, unsubLive = null, unsubPresence = null;
+let unsubCore = null, unsubNotes = null, unsubRuns = null, unsubLive = null, unsubPresence = null, unsubWorkouts = null;
 
 async function enterApp(){
   document.getElementById("onboardScreen").style.display = "none";
@@ -1882,6 +2012,7 @@ function subscribeSpace(){
   if (unsubRuns) unsubRuns();
   if (unsubLive) unsubLive();
   if (unsubPresence) unsubPresence();
+  if (unsubWorkouts) unsubWorkouts();
 
   unsubCore = fb.onSnapshot(fb.doc(db, "spaces", state.code), snap => {
     state.core = snap.exists() ? snap.data() : defaultCore();
@@ -1907,6 +2038,16 @@ function subscribeSpace(){
   );
   unsubRuns = fb.onSnapshot(runsQ, snap => {
     state.runs = snap.docs.map(d => ({ id: d.id, ...d.data() }));
+    renderAll();
+  });
+
+  const wkQ = fb.query(
+    fb.collection(db, "spaces", state.code, "workouts"),
+    fb.orderBy("ts", "desc"),
+    fb.limit(60)
+  );
+  unsubWorkouts = fb.onSnapshot(wkQ, snap => {
+    state.workouts = snap.docs.map(d => ({ id: d.id, ...d.data() }));
     renderAll();
   });
 
@@ -2815,6 +2956,561 @@ async function maybeSaveHomeCoord(lat, lng){
   }catch(e){}
 }
 
+/* ==========================================================
+   METABOLIC CIRCUITS
+
+   Bodyweight only, no equipment, and small enough for a flat —
+   these are meant to be done in a bedroom at 6am or 11pm, on a
+   video call, in two different time zones. Every circuit is the
+   same 15-minute shape so the two of you always know what
+   you're agreeing to.
+
+   Deterministic by date, like the daily question, so both
+   partners open the app and get the same circuit without
+   anything needing to sync.
+   ========================================================== */
+
+const CIRCUIT_WORK = 40, CIRCUIT_REST = 20, CIRCUIT_ROUNDS = 2;
+
+const CIRCUITS = [
+  {
+    key:"ember", name:"Ember", emoji:"🔥", focus:"Full body",
+    warmup:[
+      { name:"March in place", seconds:45, cue:"Loose and easy. Roll your shoulders back." },
+      { name:"Hip openers", seconds:45, cue:"Big slow circles, one knee at a time." }
+    ],
+    moves:[
+      { name:"Squats", cue:"Weight in your heels, chest tall. Sit back, don't dip forward." },
+      { name:"Push-ups", cue:"On your knees is a real push-up. Hands under shoulders." },
+      { name:"Reverse lunges", cue:"Step back, not forward — kinder on the knees." },
+      { name:"Shoulder taps", cue:"High plank, feet wide. Stop the hips rocking." },
+      { name:"Glute bridges", cue:"Heels close, squeeze at the top, pause a beat." },
+      { name:"Mountain climbers", cue:"Quick knees. Slow them down if the hips bounce." }
+    ],
+    cooldown:[
+      { name:"Forward fold", seconds:45, cue:"Soft knees. Let your head hang heavy." },
+      { name:"Long breathing", seconds:45, cue:"In for four, out for six. Tell them you're done." }
+    ]
+  },
+  {
+    key:"tide", name:"Tide", emoji:"🌊", focus:"Legs & core",
+    warmup:[
+      { name:"Jog in place", seconds:45, cue:"Light feet. Quiet if there's someone below you." },
+      { name:"Leg swings", seconds:45, cue:"Hold a wall. Forward and back, then side to side." }
+    ],
+    moves:[
+      { name:"Squat pulses", cue:"Stay low, small bounces. Burn is the point." },
+      { name:"Side lunges", cue:"Push the hips back, keep the other leg straight." },
+      { name:"Sit-ups", cue:"Chin off your chest. Slow on the way down." },
+      { name:"Wall sit", cue:"Thighs parallel, back flat. Breathe through it." },
+      { name:"Calf raises", cue:"All the way up, all the way down. Pause at the top." },
+      { name:"Bicycle crunches", cue:"Opposite elbow to knee. Slower is harder." }
+    ],
+    cooldown:[
+      { name:"Quad & hamstring stretch", seconds:45, cue:"Thirty seconds a side, no bouncing." },
+      { name:"Child's pose", seconds:45, cue:"Knees wide, arms long, forehead down." }
+    ]
+  },
+  {
+    key:"kindling", name:"Kindling", emoji:"✨", focus:"Upper & core",
+    warmup:[
+      { name:"Shoulder rolls", seconds:45, cue:"Back, then forward. Undo the desk." },
+      { name:"Cat-cow", seconds:45, cue:"On all fours, arch and round with your breath." }
+    ],
+    moves:[
+      { name:"Incline push-ups", cue:"Hands on a desk, sofa or windowsill. Body in one line." },
+      { name:"Superman holds", cue:"Face down, lift chest and thighs. Look at the floor." },
+      { name:"Tricep dips", cue:"Edge of a sturdy chair. Elbows back, not out." },
+      { name:"Plank", cue:"Squeeze everything. Drop to your knees before your hips sag." },
+      { name:"Arm pulses", cue:"Arms out wide, tiny circles. It gets heavy fast." },
+      { name:"Dead bug", cue:"On your back, opposite arm and leg. Low back stays down." }
+    ],
+    cooldown:[
+      { name:"Chest opener", seconds:45, cue:"Hands behind you, lift and breathe wide." },
+      { name:"Neck rolls", seconds:45, cue:"Slow half circles. Never force it." }
+    ]
+  },
+  {
+    key:"spark", name:"Spark", emoji:"⚡", focus:"Cardio",
+    warmup:[
+      { name:"Step touch", seconds:45, cue:"Side to side, arms swinging. Wake it all up." },
+      { name:"Ankle rolls", seconds:45, cue:"Both directions. Don't skip these." }
+    ],
+    moves:[
+      { name:"Jumping jacks", cue:"Step them out instead of jumping if you're upstairs." },
+      { name:"High knees", cue:"Knees to hip height. Stay on the balls of your feet." },
+      { name:"Skaters", cue:"Bound side to side, land soft, reach across." },
+      { name:"Squat to reach", cue:"Down low, then stretch tall. Full range." },
+      { name:"Fast feet", cue:"Tiny quick steps, low stance. Ten seconds feels long." },
+      { name:"Shadow boxing", cue:"Rotate from the hips. Pick a rhythm and hold it." }
+    ],
+    cooldown:[
+      { name:"Walk it out", seconds:45, cue:"Keep moving until the heart rate drops." },
+      { name:"Long exhale", seconds:45, cue:"Out longer than in. That's the switch-off." }
+    ]
+  }
+];
+
+function todaysCircuit(){
+  return CIRCUITS[Math.floor(Date.now()/86400000) % CIRCUITS.length];
+}
+
+// Flatten a circuit definition into the exact second-by-second sequence.
+function buildTimeline(c){
+  const t = [];
+  c.warmup.forEach(w => t.push({ ...w, phase:"warmup" }));
+  for (let r = 1; r <= CIRCUIT_ROUNDS; r++){
+    c.moves.forEach((m, i) => {
+      t.push({ name:m.name, cue:m.cue, seconds:CIRCUIT_WORK, phase:"work", round:r });
+      const isLast = (r === CIRCUIT_ROUNDS && i === c.moves.length - 1);
+      if (!isLast) t.push({ name:"Rest", cue:"Shake it out. Breathe.", seconds:CIRCUIT_REST, phase:"rest", round:r });
+    });
+  }
+  c.cooldown.forEach(cd => t.push({ ...cd, phase:"cooldown" }));
+  return t;
+}
+function timelineSeconds(t){ return t.reduce((n, s) => n + s.seconds, 0); }
+
+/* ---- The workout run ---- */
+let wk = {
+  open:false, phase:"preview", circuit:null, timeline:[], idx:0,
+  segEnd:0, paused:false, pausedLeft:0, handle:null, photo:null, beeped:{}
+};
+
+let wkAudio = null;
+function beep(freq, ms, vol){
+  // Created on the start tap so autoplay policy is satisfied.
+  try{
+    if (!wkAudio) wkAudio = new (window.AudioContext || window.webkitAudioContext)();
+    const o = wkAudio.createOscillator(), g = wkAudio.createGain();
+    o.type = "sine"; o.frequency.value = freq;
+    g.gain.value = vol == null ? 0.06 : vol;
+    o.connect(g); g.connect(wkAudio.destination);
+    o.start();
+    g.gain.exponentialRampToValueAtTime(0.0001, wkAudio.currentTime + ms/1000);
+    o.stop(wkAudio.currentTime + ms/1000);
+  }catch(e){ /* no audio is fine, the visuals carry it */ }
+}
+
+function openWorkout(){
+  wk.circuit = todaysCircuit();
+  wk.timeline = buildTimeline(wk.circuit);
+  wk.idx = 0; wk.phase = "preview"; wk.paused = false; wk.photo = null; wk.beeped = {};
+  wk.open = true;
+  document.getElementById("workoutOverlay").classList.add("show");
+  renderWorkout();
+}
+
+function quitWorkout(){
+  stopWorkoutTimer();
+  releaseWakeLock();
+  wk.open = false; wk.phase = "preview"; wk.photo = null;
+  document.getElementById("workoutOverlay").classList.remove("show");
+  hideConfetti();
+  renderMove();
+}
+
+function stopWorkoutTimer(){
+  if (wk.handle){ clearInterval(wk.handle); wk.handle = null; }
+}
+
+function startWorkout(){
+  beep(880, 120);
+  acquireWakeLock();
+  wk.phase = "running";
+  wk.idx = 0;
+  wk.beeped = {};
+  wk.segEnd = Date.now() + wk.timeline[0].seconds * 1000;
+  wk.paused = false;
+  stopWorkoutTimer();
+  wk.handle = setInterval(tickWorkout, 200);
+  renderWorkout();
+}
+
+function tickWorkout(){
+  if (!wk.open || wk.phase !== "running" || wk.paused) return;
+  const left = Math.max(0, Math.ceil((wk.segEnd - Date.now()) / 1000));
+
+  // three ticks then a higher tone on the change
+  if (left <= 3 && left > 0 && !wk.beeped[wk.idx + ":" + left]){
+    wk.beeped[wk.idx + ":" + left] = true;
+    beep(660, 80, 0.05);
+  }
+  if (left <= 0){
+    if (wk.idx >= wk.timeline.length - 1){ finishWorkout(); return; }
+    wk.idx++;
+    wk.beeped = {};
+    wk.segEnd = Date.now() + wk.timeline[wk.idx].seconds * 1000;
+    beep(wk.timeline[wk.idx].phase === "work" ? 990 : 520, 160);
+  }
+  paintWorkoutTimer();
+}
+
+function togglePauseWorkout(){
+  if (wk.paused){
+    wk.segEnd = Date.now() + wk.pausedLeft;
+    wk.paused = false;
+  } else {
+    wk.pausedLeft = Math.max(0, wk.segEnd - Date.now());
+    wk.paused = true;
+  }
+  renderWorkout();
+}
+
+function stepWorkout(dir){
+  const next = wk.idx + dir;
+  if (next < 0 || next >= wk.timeline.length) return;
+  wk.idx = next;
+  wk.beeped = {};
+  wk.segEnd = Date.now() + wk.timeline[wk.idx].seconds * 1000;
+  if (wk.paused) wk.pausedLeft = wk.timeline[wk.idx].seconds * 1000;
+  renderWorkout();
+}
+
+function finishWorkout(){
+  stopWorkoutTimer();
+  releaseWakeLock();
+  beep(1320, 400, 0.08);
+  wk.phase = "done";
+  renderWorkout();
+  fireConfetti(90);
+}
+
+/* ---- Spotify ----
+   An embed, not an integration. The iframe player needs no API key,
+   no OAuth and no client ID — the couple just saves a playlist link.
+   Full playback through Spotify's Web Playback SDK would require
+   OAuth *and* a Premium account on both sides, which is a lot to
+   demand before two people can do twenty squats.
+--------------------------------------------------------------- */
+const SPOTIFY_KINDS = "playlist|album|track|episode|show";
+function parseSpotify(url){
+  if (!url) return null;
+  const s = String(url).trim();
+  // spotify:playlist:ID — the "copy Spotify URI" form
+  let m = s.match(new RegExp(`spotify:(${SPOTIFY_KINDS}):([A-Za-z0-9]+)`, "i"));
+  if (m) return { type: m[1].toLowerCase(), id: m[2] };
+  // https://open.spotify.com/playlist/ID?si=… — what "copy link" actually
+  // gives you, and what people will paste. The optional segment absorbs the
+  // locale prefix Spotify adds in some regions (…/intl-de/playlist/ID).
+  m = s.match(new RegExp(`open\\.spotify\\.com/(?:[a-z]{2,}(?:-[a-z]{2,})?/)?(${SPOTIFY_KINDS})/([A-Za-z0-9]+)`, "i"));
+  if (m) return { type: m[1].toLowerCase(), id: m[2] };
+  return null;
+}
+function spotifyEmbedUrl(){
+  const p = parseSpotify(state.core?.workoutPlaylist);
+  return p ? `https://open.spotify.com/embed/${p.type}/${p.id}` : null;
+}
+async function saveWorkoutPlaylist(){
+  const el = document.getElementById("playlistInput");
+  const raw = el.value.trim();
+  if (raw && !parseSpotify(raw)){
+    showToast("That doesn't look like a Spotify link");
+    return;
+  }
+  try{
+    await updateCore(core => { core.workoutPlaylist = raw; });
+  }catch(e){ return; }
+  showToast(raw ? "Playlist saved for both of you" : "Playlist cleared");
+  renderMove();
+}
+
+/* ---- Confetti ----
+   Hand-rolled on a canvas: no library, nothing to load, and it can
+   read the app's own palette so it matches whichever theme is on.
+--------------------------------------------------------------- */
+let confettiHandle = null;
+function reducedMotion(){
+  try{ return window.matchMedia("(prefers-reduced-motion: reduce)").matches; }catch(e){ return false; }
+}
+function hideConfetti(){
+  if (confettiHandle){ cancelAnimationFrame(confettiHandle); confettiHandle = null; }
+  const c = document.getElementById("confettiCanvas");
+  if (c) c.classList.remove("show");
+}
+function fireConfetti(count){
+  const canvas = document.getElementById("confettiCanvas");
+  if (!canvas) return;
+  if (reducedMotion()) return;      // respect the setting, skip the party
+  const ctx = canvas.getContext("2d");
+  const dpr = Math.min(2, window.devicePixelRatio || 1);
+  canvas.width = window.innerWidth * dpr;
+  canvas.height = window.innerHeight * dpr;
+  canvas.style.width = window.innerWidth + "px";
+  canvas.style.height = window.innerHeight + "px";
+  ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+  canvas.classList.add("show");
+
+  const cs = getComputedStyle(document.documentElement);
+  const palette = ["--rose","--honey","--dusk","--good","--rose-deep"]
+    .map(v => cs.getPropertyValue(v).trim()).filter(Boolean);
+  const W = window.innerWidth, H = window.innerHeight;
+  const parts = [];
+  for (let i = 0; i < (count || 80); i++){
+    parts.push({
+      x: W/2 + (Math.random()-0.5) * W * 0.5,
+      y: H * 0.42 + (Math.random()-0.5) * 60,
+      vx: (Math.random()-0.5) * 9,
+      vy: -6 - Math.random() * 9,
+      w: 6 + Math.random() * 6,
+      h: 8 + Math.random() * 8,
+      rot: Math.random() * Math.PI,
+      vr: (Math.random()-0.5) * 0.3,
+      color: palette[i % palette.length],
+      life: 0
+    });
+  }
+  const started = Date.now();
+  if (confettiHandle) cancelAnimationFrame(confettiHandle);
+  (function frame(){
+    ctx.clearRect(0, 0, W, H);
+    let alive = 0;
+    for (const p of parts){
+      p.vy += 0.28;            // gravity
+      p.vx *= 0.995;           // drag
+      p.x += p.vx; p.y += p.vy; p.rot += p.vr; p.life++;
+      if (p.y < H + 40){
+        alive++;
+        ctx.save();
+        ctx.translate(p.x, p.y);
+        ctx.rotate(p.rot);
+        ctx.globalAlpha = Math.max(0, 1 - p.life / 190);
+        ctx.fillStyle = p.color;
+        ctx.fillRect(-p.w/2, -p.h/2, p.w, p.h);
+        ctx.restore();
+      }
+    }
+    if (alive && Date.now() - started < 4200){
+      confettiHandle = requestAnimationFrame(frame);
+    } else {
+      hideConfetti();
+    }
+  })();
+}
+
+/* ---- Finishing: photo + saving ---- */
+async function onWorkoutPhoto(evt){
+  const file = evt.target.files[0];
+  if (!file) return;
+  try{
+    wk.photo = await compressImage(file, 640, 0.62, false);
+  }catch(e){ showToast("Couldn't read that photo"); return; }
+  evt.target.value = "";
+  renderWorkout();
+}
+function clearWorkoutPhoto(){ wk.photo = null; renderWorkout(); }
+
+async function submitWorkout(){
+  const c = wk.circuit || todaysCircuit();
+  const rec = {
+    from: myKey(),
+    circuit: c.key,
+    name: c.name,
+    seconds: timelineSeconds(buildTimeline(c)),
+    photo: wk.photo || null,
+    ts: Date.now()
+  };
+  try{
+    await fb.addDoc(fb.collection(db, "spaces", state.code, "workouts"), rec);
+  }catch(e){
+    showToast("Couldn't save that — check your connection");
+    return;
+  }
+  wk.phase = "saved";
+  renderWorkout();
+  fireConfetti(140);
+  const myName = me()?.name || "Someone";
+  pushExternal("Circuit done 💪", `${myName} finished today's ${c.name} circuit.`, "muscle");
+  try{ await updateCore(core => {}); }catch(e){}   // nudge the streak
+}
+
+/* ---- Workout rendering ---- */
+function ringSvg(fraction){
+  const r = 84, circ = 2 * Math.PI * r;
+  const off = circ * (1 - Math.max(0, Math.min(1, fraction)));
+  return `<svg viewBox="0 0 190 190">
+    <circle class="track" cx="95" cy="95" r="${r}"></circle>
+    <circle class="prog" cx="95" cy="95" r="${r}" stroke-dasharray="${circ.toFixed(1)}" stroke-dashoffset="${off.toFixed(1)}"></circle>
+  </svg>`;
+}
+
+// The per-tick repaint touches only the numbers and the ring, so the
+// whole screen isn't rebuilt four times a second.
+function paintWorkoutTimer(){
+  if (wk.phase !== "running") return;
+  const seg = wk.timeline[wk.idx];
+  if (!seg) return;
+  const left = wk.paused
+    ? Math.ceil(wk.pausedLeft / 1000)
+    : Math.max(0, Math.ceil((wk.segEnd - Date.now()) / 1000));
+  const countEl = document.getElementById("wkCount");
+  if (countEl) countEl.textContent = left;
+  const ringEl = document.getElementById("wkRing");
+  if (ringEl) ringEl.innerHTML = ringSvg(left / seg.seconds);
+
+  const done = wk.timeline.slice(0, wk.idx).reduce((n,s) => n + s.seconds, 0) + (seg.seconds - left);
+  const total = timelineSeconds(wk.timeline);
+  const fill = document.getElementById("wkBarFill");
+  if (fill) fill.style.width = (done/total*100).toFixed(1) + "%";
+  const tot = document.getElementById("wkTotal");
+  if (tot) tot.textContent = `${fmtClock(Math.max(0, total - done))} left`;
+}
+
+function renderWorkout(){
+  const body = document.getElementById("wkBody");
+  const step = document.getElementById("wkStep");
+  if (!body) return;
+  const c = wk.circuit || todaysCircuit();
+  const embed = spotifyEmbedUrl();
+
+  if (wk.phase === "preview"){
+    step.textContent = `${c.focus} · 15 min`;
+    const tl = buildTimeline(c);
+    body.innerHTML = `
+      <div class="circuit-head">
+        <div class="circuit-badge">${c.emoji}</div>
+        <div>
+          <div class="circuit-name">${escapeHtml(c.name)}</div>
+          <div class="circuit-meta">${escapeHtml(c.focus)} · ${CIRCUIT_ROUNDS} rounds · ${CIRCUIT_WORK}s on, ${CIRCUIT_REST}s off</div>
+        </div>
+      </div>
+      <div style="font-size:13.5px; color:var(--ink-soft); line-height:1.55; margin-bottom:14px;">
+        No equipment, enough room for a towel. Start it at the same time and leave the call running — that's the whole point.
+      </div>
+      <div class="move-list">
+        ${c.moves.map((m,i) => `<div class="move-row"><span class="n">${i+1}</span><span class="nm"><b>${escapeHtml(m.name)}</b><br><span style="color:var(--ink-soft); font-size:12.5px;">${escapeHtml(m.cue)}</span></span></div>`).join("")}
+      </div>
+      <button class="btn btn-primary" onclick="startWorkout()">Start the circuit</button>
+      <div style="font-size:11.5px; color:var(--ink-faint); line-height:1.5; margin-top:12px; text-align:center;">
+        Swap or skip anything that hurts. Sore is fine, sharp is not.
+      </div>
+      ${embed ? `<div class="wk-spotify"><iframe src="${embed}" height="152" allow="encrypted-media; clipboard-write; picture-in-picture" loading="lazy"></iframe></div>` : ""}`;
+    return;
+  }
+
+  if (wk.phase === "running"){
+    const seg = wk.timeline[wk.idx];
+    const next = wk.timeline[wk.idx + 1];
+    step.textContent = `${wk.idx + 1} of ${wk.timeline.length}`;
+    body.innerHTML = `
+      <div class="wk-phase ${seg.phase}">${seg.phase === "work" ? `Round ${seg.round}` : seg.phase}</div>
+      <div class="wk-move">${escapeHtml(seg.name)}</div>
+      <div class="wk-cue">${escapeHtml(seg.cue || "")}</div>
+      <div class="wk-ring"><div id="wkRing">${ringSvg(1)}</div><div class="count" id="wkCount">${seg.seconds}</div></div>
+      <div class="wk-next">${next ? `Next: <b>${escapeHtml(next.name)}</b>` : "Last one — finish strong"}</div>
+      <div class="wk-controls">
+        <button class="wk-ctrl" onclick="stepWorkout(-1)" aria-label="Previous">‹</button>
+        <button class="wk-ctrl main" onclick="togglePauseWorkout()">${wk.paused ? "▶" : "❚❚"}</button>
+        <button class="wk-ctrl" onclick="stepWorkout(1)" aria-label="Skip">›</button>
+      </div>
+      <div class="wk-bar"><div class="wk-bar-fill" id="wkBarFill" style="width:0%"></div></div>
+      <div class="wk-total" id="wkTotal">&nbsp;</div>
+      ${embed ? `<div class="wk-spotify"><iframe src="${embed}" height="152" allow="encrypted-media; clipboard-write; picture-in-picture" loading="lazy"></iframe></div>` : ""}`;
+    paintWorkoutTimer();
+    return;
+  }
+
+  if (wk.phase === "done"){
+    step.textContent = "Finished";
+    body.innerHTML = `
+      <div class="wk-cheer pop-in">
+        <div class="big">That's ${escapeHtml(c.name)} done.</div>
+        <div class="sub">Fifteen minutes you both chose to spend the same way. Put a face to it.</div>
+      </div>
+      ${wk.photo
+        ? `<div class="wk-photo-frame float-up"><img src="${wk.photo}"><button onclick="clearWorkoutPhoto()">×</button></div>`
+        : `<label class="btn btn-soft" for="wkPhotoFile" style="display:flex;">📸 Take a photo</label>
+           <input type="file" id="wkPhotoFile" accept="image/*" capture="user" style="display:none;" onchange="onWorkoutPhoto(event)">
+           <div style="height:10px;"></div>`}
+      <button class="btn btn-primary" onclick="submitWorkout()">${wk.photo ? "Log it 🎉" : "Log it without a photo"}</button>
+      <div style="height:10px;"></div>
+      <button class="link-btn" style="margin:auto; display:block;" onclick="quitWorkout()">Not this time</button>`;
+    return;
+  }
+
+  if (wk.phase === "saved"){
+    step.textContent = "Logged";
+    const bothToday = didCircuitToday("a") && didCircuitToday("b");
+    body.innerHTML = `
+      <div class="wk-cheer pop-in">
+        <div class="big">${bothToday ? "Both of you. Same day." : "Nice work 🎉"}</div>
+        <div class="sub">${bothToday
+          ? `You and ${escapeHtml(them()?.name || "them")} both did ${escapeHtml(c.name)} today. That's the streak earned twice over.`
+          : `Logged. ${escapeHtml(them()?.name || "They")}'ll see it the moment they open the app.`}</div>
+      </div>
+      ${wk.photo ? `<div class="wk-photo-frame float-up"><img src="${wk.photo}"></div>` : ""}
+      <button class="btn btn-primary" onclick="quitWorkout()">Done</button>`;
+    return;
+  }
+}
+
+/* ---- Circuit card on the Move screen ---- */
+function didCircuitToday(role){
+  const tk = todayKey();
+  return (state.workouts || []).some(w => w.from === role && dateKeyFromTs(w.ts) === tk);
+}
+
+function renderCircuitCard(){
+  const el = document.getElementById("circuitBody");
+  if (!el || !state.core) return;
+  const c = todaysCircuit();
+  const mineToday = didCircuitToday(myKey());
+  const theirsToday = didCircuitToday(theirKey());
+  const theirName = them()?.name || "They";
+
+  let done = "";
+  if (mineToday && theirsToday){
+    done = `<div class="circuit-done"><span>🎉</span><div>You and <b>${escapeHtml(theirName)}</b> have both done today's circuit.</div></div>`;
+  } else if (mineToday){
+    done = `<div class="circuit-done"><span>✅</span><div>You've done today's. <b>${escapeHtml(theirName)}</b> hasn't yet.</div></div>`;
+  } else if (theirsToday){
+    done = `<div class="circuit-done"><span>👀</span><div><b>${escapeHtml(theirName)}</b> already did today's circuit.</div></div>`;
+  }
+
+  el.innerHTML = `
+    ${done}
+    <div class="circuit-head">
+      <div class="circuit-badge">${c.emoji}</div>
+      <div>
+        <div class="circuit-name">${escapeHtml(c.name)}</div>
+        <div class="circuit-meta">15 min · ${escapeHtml(c.focus)} · no kit</div>
+      </div>
+    </div>
+    <div style="font-size:13px; color:var(--ink-soft); line-height:1.5; margin-bottom:12px;">
+      ${c.moves.slice(0,3).map(m => escapeHtml(m.name)).join(" · ")} and ${c.moves.length - 3} more.
+    </div>
+    <button class="btn btn-primary btn-sm" style="margin:auto; display:flex;" onclick="openWorkout()">
+      ${mineToday ? "Do it again" : "Start today's circuit"}
+    </button>
+    <div style="height:14px;"></div>
+    <label class="field-label" style="margin-top:0;">Your workout playlist (optional)</label>
+    <input type="text" id="playlistInput" placeholder="Paste a Spotify link" value="${escapeHtml(state.core.workoutPlaylist || "")}">
+    <div style="height:8px;"></div>
+    <button class="btn btn-soft btn-sm" onclick="saveWorkoutPlaylist()">Save playlist</button>
+    <div style="font-size:11.5px; color:var(--ink-faint); line-height:1.5; margin-top:8px;">
+      Shared, so you both get the same music. It plays inside the workout screen.
+    </div>`;
+}
+
+function renderWorkoutHistory(){
+  const el = document.getElementById("workoutHistory");
+  if (!el) return;
+  const list = state.workouts || [];
+  if (!list.length){
+    el.innerHTML = `<div class="empty-state">Nothing yet. The first one is the hard one.</div>`;
+    return;
+  }
+  el.innerHTML = `<div class="wk-history">${list.slice(0, 20).map(w => {
+    const mine = w.from === myKey();
+    const c = CIRCUITS.find(x => x.key === w.circuit);
+    return `<div class="wk-thumb" title="${escapeHtml(w.name || "")}">
+      ${w.photo ? `<img src="${w.photo}" loading="lazy">` : `<div class="no-photo">${c ? c.emoji : "💪"}</div>`}
+      <span class="who-dot ${mine ? "me" : "them"}"></span>
+    </div>`;
+  }).join("")}</div>
+  <div style="font-size:11.5px; color:var(--ink-faint); margin-top:9px;">${list.length} circuit${list.length===1?"":"s"} between you.</div>`;
+}
+
 /* ---- Move: rendering ---- */
 function gapMeters(){
   const h = state.core?.homeCoords || {};
@@ -2946,6 +3642,9 @@ function renderRunList(){
 
 function renderMove(){
   if (!state.core) return;
+  const ae = document.activeElement;
+  if (!ae || ae.id !== "playlistInput") renderCircuitCard();
+  renderWorkoutHistory();
   renderGap();
   renderRunLive();
   renderRunBody();
@@ -3467,6 +4166,7 @@ function computeStats(){
     runs: (state.runs || []).length,
     runMeters: (core.moveTotals?.a || 0) + (core.moveTotals?.b || 0),
     runsTogether: (state.runs || []).filter(r => r.together).length,
+    circuits: (state.workouts || []).length,
     daysTogether: core.startDate ? daysBetween(new Date(core.startDate), new Date()) : null,
     topVibe
   };
@@ -3491,6 +4191,7 @@ function renderWrapped(){
       <div class="wrap-stat"><div class="n">${s.best}</div><div class="l">Best streak</div></div>
       <div class="wrap-stat"><div class="n">${fmtBigDist(s.runMeters)}</div><div class="l">${myUnits()} run</div></div>
       <div class="wrap-stat"><div class="n">${s.runsTogether}</div><div class="l">Runs together</div></div>
+      <div class="wrap-stat"><div class="n">${s.circuits}</div><div class="l">Circuits</div></div>
     </div>`;
 
   if (!isPremium()){
@@ -4105,8 +4806,9 @@ function activeToday(core, notes, role){
   const moody = core.mood && core.mood[role] && dateKeyFromTs(core.mood[role].ts)===tk;
   const vibed = core.vibe && core.vibe[role] && dateKeyFromTs(core.vibe[role].ts)===tk;
   const ran = (state.runs||[]).some(r => r.from===role && dateKeyFromTs(r.ts)===tk);
+  const trained = (state.workouts||[]).some(w => w.from===role && dateKeyFromTs(w.ts)===tk);
   const answered = core.prompt && core.prompt.date===tk && core.prompt.answers && core.prompt.answers[role];
-  return !!(pinged || noted || moody || vibed || ran || answered);
+  return !!(pinged || noted || moody || vibed || ran || trained || answered);
 }
 function recalcStreak(core, notes){
   core.streak = core.streak || { count:0, lastDate:"" };

@@ -32,7 +32,8 @@ shared Firebase Firestore document per couple, and free push via
   answer.
 - **Plans** — countdown to your next visit, a someday/bucket list, and
   **time capsules**: letters that stay sealed until a date you choose.
-- **Move** — a GPS run tracker, a **live synced run** (watch their
+- **Move** — a daily **metabolic circuit** you can both do in a flat
+  with no kit, a GPS run tracker, a **live synced run** (watch their
   distance climb next to yours while you're both out there), and
   **closing the distance**: the real great-circle gap between your two
   cities, chipped away by every kilometre you both run. Manual logging
@@ -232,6 +233,51 @@ a force-quit. So the app never guesses. It says "last had the app open
   offers **"leave it quietly"** — the note saves and is waiting when they
   wake, but their phone never buzzes. The notes composer shows the same
   warning up front, so the guard is never a surprise at send time.
+
+## Metabolic circuits
+
+A 15-minute bodyweight circuit, picked deterministically by the date so
+both partners open the app and see the same one without anything needing
+to sync. Four rotate: **Ember** (full body), **Tide** (legs and core),
+**Kindling** (upper and core) and **Spark** (cardio).
+
+Every circuit is the same shape, so the two of you always know what
+you're agreeing to: two warm-up moves, then 6 exercises x 2 rounds at
+40 seconds on / 20 seconds off, then two cool-down moves — 27 segments,
+14m40s. No equipment, and sized for the space beside a bed. Cues cover
+the apartment case ("step them out instead of jumping if you're
+upstairs") and the scaling case ("on your knees is a real push-up").
+
+The timer is full-screen with a countdown ring, the next move named
+ahead of time, pause, skip and step-back, an overall progress bar, and
+Web Audio beeps on the last three seconds of each segment. It holds a
+screen Wake Lock so the phone doesn't sleep mid-plank.
+
+Finishing offers a photo — front camera by default — and logging fires
+canvas confetti drawn in whatever theme is currently on. If both of you
+finish the same day the celebration says so, and the circuit counts
+toward the daily streak like anything else.
+
+### Spotify
+
+The workout screen embeds a shared playlist. This is an **embed, not an
+integration**: `open.spotify.com/embed/...` in an iframe needs no API
+key, no OAuth and no client ID, so there is nothing to set up and
+nothing to verify. Paste a link once and you both get the same music.
+
+Playback depth is Spotify's call, not ours — an embedded player behaves
+differently for a logged-in Premium listener than for an anonymous one,
+so treat full-track playback as something to confirm on your own
+account rather than something this app guarantees.
+
+Going further would mean the Web Playback SDK, which requires OAuth
+*and* a Premium subscription on both sides. Authorization Code with
+PKCE would keep it serverless, but demanding two Premium accounts
+before a couple can do twenty squats is a bad trade.
+
+Link parsing accepts everything people actually paste: `spotify:` URIs,
+`open.spotify.com` links with or without a scheme, `?si=` tracking
+params, and Spotify's regional `/intl-xx/` prefixes.
 
 ## Running: how it works, and why not Strava (yet)
 
