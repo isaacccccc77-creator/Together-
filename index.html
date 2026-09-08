@@ -38,9 +38,9 @@
      below the baseline and "108" reads as 1o8. Anywhere the display face is
      showing a number — clocks, counters, distances — force lining figures,
      and tabular ones so digits don't jitter as they tick. */
-  .stat .num, .sky-person .time, .wrap-stat .n, .gap-hero .apart,
+  .stat .num, .sky-person .time, .bento-tile .n, .gap-hero .apart,
   .run-side .dist, .run-readout .big, .run-secondary .v, .pocket-when .times,
-  .session-ring .time, .rec-timer, .code-display, .wrap-hero .big,
+  .session-ring .time, .rec-timer, .code-display,
   .visit-countdown, .voice-time{
     font-variant-numeric: lining-nums tabular-nums;
     font-feature-settings: "lnum" 1, "tnum" 1;
@@ -600,16 +600,6 @@
   .theme-swatch i{ flex:1; }
 
   /* ---------- Wrapped stats ---------- */
-  .wrap-grid{ display:grid; grid-template-columns:repeat(2,1fr); gap:10px; }
-  .wrap-stat{ background:var(--card); border:1px solid var(--line); border-radius:16px; padding:14px 12px; text-align:center; box-shadow:var(--shadow-sm); }
-  .wrap-stat .n{ font-family:var(--font-display); font-size:28px; line-height:1.1; }
-  .wrap-stat .l{ font-size:10.5px; color:var(--ink-soft); text-transform:uppercase; letter-spacing:0.06em; margin-top:4px; }
-  .wrap-hero{
-    background:linear-gradient(140deg, var(--rose-wash), var(--paper-soft));
-    border:1px solid var(--line); border-radius:18px; padding:18px; text-align:center; margin-bottom:12px;
-  }
-  .wrap-hero .big{ font-family:var(--font-display); font-size:34px; }
-  .wrap-hero .cap{ font-size:12.5px; color:var(--ink-soft); margin-top:4px; line-height:1.45; }
 
   /* ---------- Custom tap composer ---------- */
   .tap-btn.add-tap{ border-style:dashed; color:var(--ink-faint); }
@@ -684,6 +674,69 @@
   }
   .quiet-note .em{ font-size:15px; flex-shrink:0; }
   .quiet-note b{ color:var(--ink); }
+
+  /* ---------- Bento grid ----------
+     A 4-column track with tiles spanning 2 or 4. The uneven rhythm is
+     the point: a wall of identical squares reads as a spreadsheet,
+     while mixed spans give the eye somewhere to land first. */
+  .bento{ display:grid; grid-template-columns:repeat(4,1fr); gap:10px; }
+  .bento-tile{
+    grid-column:span 2;
+    background:var(--card); border:1px solid var(--line); border-radius:18px;
+    padding:15px 14px; box-shadow:var(--shadow-sm);
+    display:flex; flex-direction:column; justify-content:center;
+    transition:transform .18s ease, box-shadow .18s ease;
+  }
+  .bento-tile:hover{ transform:translateY(-3px); box-shadow:var(--shadow-md); }
+  .bento-tile.wide{ grid-column:span 4; }
+  .bento-tile.hero{
+    grid-column:span 4; text-align:center; padding:22px 18px;
+    background:linear-gradient(140deg, var(--rose-wash), var(--paper-soft));
+  }
+  .bento-tile.accent{ background:linear-gradient(140deg, var(--card), var(--paper-soft)); }
+  .bento-tile .n{
+    font-family:var(--font-display); font-size:27px; line-height:1.05; font-weight:600;
+    font-variant-numeric: lining-nums tabular-nums;
+  }
+  .bento-tile.hero .n{ font-size:44px; }
+  .bento-tile .l{
+    font-size:10.5px; color:var(--ink-soft); text-transform:uppercase;
+    letter-spacing:0.07em; font-weight:700; margin-top:5px;
+  }
+  .bento-tile.hero .l{ font-size:12.5px; text-transform:none; letter-spacing:0; font-weight:400; line-height:1.5; }
+  .bento-tile .em{ font-size:20px; margin-bottom:4px; }
+  .bento-row{ display:flex; align-items:center; gap:10px; }
+  .bento-row .n{ font-size:23px; }
+
+  /* ---------- Animated arrows ---------- */
+  .arrow-nudge{ display:inline-block; animation:nudgeX 1.7s ease-in-out infinite; }
+  @keyframes nudgeX{ 0%,100%{ transform:translateX(0); } 50%{ transform:translateX(5px); } }
+
+  .arrow-between{
+    display:inline-block; color:var(--ink-faint); margin:0 5px;
+    animation:nudgeX 2.2s ease-in-out infinite;
+  }
+
+  /* Two arrows crawling toward each other along the distance bar —
+     the whole feature in one gesture. */
+  .gap-arrows{ position:relative; height:16px; margin:-2px 0 6px; }
+  .gap-arrows span{
+    position:absolute; top:0; font-size:13px; color:var(--rose-deep); opacity:0.85;
+  }
+  .gap-arrows .a-l{ left:0; animation:creepRight 3.4s ease-in-out infinite; }
+  .gap-arrows .a-r{ right:0; animation:creepLeft 3.4s ease-in-out infinite; }
+  @keyframes creepRight{ 0%,100%{ transform:translateX(0); opacity:.45; } 50%{ transform:translateX(14px); opacity:1; } }
+  @keyframes creepLeft{ 0%,100%{ transform:translateX(0); opacity:.45; } 50%{ transform:translateX(-14px); opacity:1; } }
+
+  .scroll-hint{
+    text-align:center; font-size:18px; color:var(--ink-faint);
+    animation:bobDown 1.9s ease-in-out infinite; padding:2px 0 6px;
+  }
+  @keyframes bobDown{ 0%,100%{ transform:translateY(0); opacity:.5; } 50%{ transform:translateY(5px); opacity:1; } }
+
+  @media (prefers-reduced-motion: reduce){
+    .arrow-nudge, .arrow-between, .gap-arrows span, .scroll-hint{ animation:none; }
+  }
 
   /* ---------- Circuit card ---------- */
   .circuit-head{ display:flex; align-items:center; gap:12px; margin-bottom:12px; }
@@ -2450,7 +2503,7 @@ function renderPlanCard(){
         Notes, photos, voice, vibes, moods, the daily question and your streak are yours for good — free, no limits on any of it.
       </div>
       <div style="height:12px;"></div>
-      <button class="btn btn-primary btn-sm" onclick="openPaywall()">See what Forever adds</button>`;
+      <button class="btn btn-primary btn-sm" onclick="openPaywall()">See what Forever adds <span class="arrow-nudge">→</span></button>`;
   }
 }
 
@@ -2970,105 +3023,225 @@ async function maybeSaveHomeCoord(lat, lng){
    anything needing to sync.
    ========================================================== */
 
-const CIRCUIT_WORK = 40, CIRCUIT_REST = 20, CIRCUIT_ROUNDS = 2;
-
-const CIRCUITS = [
-  {
-    key:"ember", name:"Ember", emoji:"🔥", focus:"Full body",
-    warmup:[
-      { name:"March in place", seconds:45, cue:"Loose and easy. Roll your shoulders back." },
-      { name:"Hip openers", seconds:45, cue:"Big slow circles, one knee at a time." }
-    ],
-    moves:[
-      { name:"Squats", cue:"Weight in your heels, chest tall. Sit back, don't dip forward." },
-      { name:"Push-ups", cue:"On your knees is a real push-up. Hands under shoulders." },
-      { name:"Reverse lunges", cue:"Step back, not forward — kinder on the knees." },
-      { name:"Shoulder taps", cue:"High plank, feet wide. Stop the hips rocking." },
-      { name:"Glute bridges", cue:"Heels close, squeeze at the top, pause a beat." },
-      { name:"Mountain climbers", cue:"Quick knees. Slow them down if the hips bounce." }
-    ],
-    cooldown:[
-      { name:"Forward fold", seconds:45, cue:"Soft knees. Let your head hang heavy." },
-      { name:"Long breathing", seconds:45, cue:"In for four, out for six. Tell them you're done." }
-    ]
-  },
-  {
-    key:"tide", name:"Tide", emoji:"🌊", focus:"Legs & core",
-    warmup:[
-      { name:"Jog in place", seconds:45, cue:"Light feet. Quiet if there's someone below you." },
-      { name:"Leg swings", seconds:45, cue:"Hold a wall. Forward and back, then side to side." }
-    ],
-    moves:[
-      { name:"Squat pulses", cue:"Stay low, small bounces. Burn is the point." },
-      { name:"Side lunges", cue:"Push the hips back, keep the other leg straight." },
-      { name:"Sit-ups", cue:"Chin off your chest. Slow on the way down." },
-      { name:"Wall sit", cue:"Thighs parallel, back flat. Breathe through it." },
-      { name:"Calf raises", cue:"All the way up, all the way down. Pause at the top." },
-      { name:"Bicycle crunches", cue:"Opposite elbow to knee. Slower is harder." }
-    ],
-    cooldown:[
-      { name:"Quad & hamstring stretch", seconds:45, cue:"Thirty seconds a side, no bouncing." },
-      { name:"Child's pose", seconds:45, cue:"Knees wide, arms long, forehead down." }
-    ]
-  },
-  {
-    key:"kindling", name:"Kindling", emoji:"✨", focus:"Upper & core",
-    warmup:[
-      { name:"Shoulder rolls", seconds:45, cue:"Back, then forward. Undo the desk." },
-      { name:"Cat-cow", seconds:45, cue:"On all fours, arch and round with your breath." }
-    ],
-    moves:[
-      { name:"Incline push-ups", cue:"Hands on a desk, sofa or windowsill. Body in one line." },
-      { name:"Superman holds", cue:"Face down, lift chest and thighs. Look at the floor." },
-      { name:"Tricep dips", cue:"Edge of a sturdy chair. Elbows back, not out." },
-      { name:"Plank", cue:"Squeeze everything. Drop to your knees before your hips sag." },
-      { name:"Arm pulses", cue:"Arms out wide, tiny circles. It gets heavy fast." },
-      { name:"Dead bug", cue:"On your back, opposite arm and leg. Low back stays down." }
-    ],
-    cooldown:[
-      { name:"Chest opener", seconds:45, cue:"Hands behind you, lift and breathe wide." },
-      { name:"Neck rolls", seconds:45, cue:"Slow half circles. Never force it." }
-    ]
-  },
-  {
-    key:"spark", name:"Spark", emoji:"⚡", focus:"Cardio",
-    warmup:[
-      { name:"Step touch", seconds:45, cue:"Side to side, arms swinging. Wake it all up." },
-      { name:"Ankle rolls", seconds:45, cue:"Both directions. Don't skip these." }
-    ],
-    moves:[
-      { name:"Jumping jacks", cue:"Step them out instead of jumping if you're upstairs." },
-      { name:"High knees", cue:"Knees to hip height. Stay on the balls of your feet." },
-      { name:"Skaters", cue:"Bound side to side, land soft, reach across." },
-      { name:"Squat to reach", cue:"Down low, then stretch tall. Full range." },
-      { name:"Fast feet", cue:"Tiny quick steps, low stance. Ten seconds feels long." },
-      { name:"Shadow boxing", cue:"Rotate from the hips. Pick a rhythm and hold it." }
-    ],
-    cooldown:[
-      { name:"Walk it out", seconds:45, cue:"Keep moving until the heart rate drops." },
-      { name:"Long exhale", seconds:45, cue:"Out longer than in. That's the switch-off." }
-    ]
-  }
+/* ---- The exercise library ----
+   Everything here is bodyweight, needs no kit, and fits in the space
+   beside a bed. `cat` lets the generator balance a circuit instead of
+   handing you six core moves in a row; `impact` lets it build a
+   quiet version for anyone with neighbours below.
+------------------------------------------------------------------ */
+const EXERCISES = [
+  // lower
+  { name:"Squats",            cat:"lower",  impact:"low",  cue:"Weight in your heels, chest tall. Sit back, don't dip forward." },
+  { name:"Forward lunges",    cat:"lower",  impact:"low",  cue:"Step out, front knee over the ankle. Push back off the heel." },
+  { name:"Reverse lunges",    cat:"lower",  impact:"low",  cue:"Step back rather than forward — much kinder on the knees." },
+  { name:"Side lunges",       cat:"lower",  impact:"low",  cue:"Push the hips back, keep the trailing leg straight." },
+  { name:"Squat pulses",      cat:"lower",  impact:"low",  cue:"Stay low, small bounces. The burn is the whole point." },
+  { name:"Glute bridges",     cat:"lower",  impact:"low",  cue:"Heels close to you, squeeze at the top, pause a beat." },
+  { name:"Wall sit",          cat:"lower",  impact:"low",  cue:"Thighs parallel, back flat to the wall. Breathe through it." },
+  { name:"Calf raises",       cat:"lower",  impact:"low",  cue:"All the way up, all the way down. Pause at the top." },
+  // upper
+  { name:"Push ups",          cat:"upper",  impact:"low",  cue:"On your knees is a real push-up. Hands under shoulders." },
+  { name:"Incline push ups",  cat:"upper",  impact:"low",  cue:"Hands on a desk or windowsill. Body in one straight line." },
+  { name:"Tricep dips",       cat:"upper",  impact:"low",  cue:"Edge of a sturdy chair. Elbows point back, not out." },
+  { name:"Superman holds",    cat:"upper",  impact:"low",  cue:"Face down, lift chest and thighs. Eyes on the floor." },
+  { name:"Arm pulses",        cat:"upper",  impact:"low",  cue:"Arms out wide, tiny circles. It gets heavy fast." },
+  // core
+  { name:"Russian twists",    cat:"core",   impact:"low",  cue:"Lean back, chest open, rotate from the ribs not the arms." },
+  { name:"Flutter kicks",     cat:"core",   impact:"low",  cue:"Low back pressed down. Small, fast, controlled." },
+  { name:"Windmills",         cat:"core",   impact:"low",  cue:"Feet wide, one hand to the opposite foot. Slow and long." },
+  { name:"4 point shoulder tap", cat:"core", impact:"low", cue:"High plank, feet wide. Stop the hips rocking side to side." },
+  { name:"Plank",             cat:"core",   impact:"low",  cue:"Squeeze everything. Drop to your knees before the hips sag." },
+  { name:"Bicycle crunches",  cat:"core",   impact:"low",  cue:"Opposite elbow to knee. Slower is genuinely harder." },
+  { name:"Sit ups",           cat:"core",   impact:"low",  cue:"Chin off your chest. Slow on the way back down." },
+  { name:"Dead bug",          cat:"core",   impact:"low",  cue:"On your back, opposite arm and leg. Low back stays down." },
+  { name:"Bear hold",         cat:"core",   impact:"low",  cue:"On all fours, knees an inch off the floor. Don't hold your breath." },
+  { name:"Toe touches",       cat:"core",   impact:"low",  cue:"Legs up, reach for the toes. Lift with the stomach." },
+  // cardio
+  { name:"Jumping jacks",     cat:"cardio", impact:"high", cue:"Step them out instead of jumping if you're above someone." },
+  { name:"Jogging on the spot", cat:"cardio", impact:"low", cue:"Light feet, quiet landings. Settle into a rhythm." },
+  { name:"Mountain climbers", cat:"cardio", impact:"low",  cue:"Quick knees. Slow them down if the hips start bouncing." },
+  { name:"High knees",        cat:"cardio", impact:"high", cue:"Knees to hip height. Stay on the balls of your feet." },
+  { name:"Skaters",           cat:"cardio", impact:"high", cue:"Bound side to side, land soft, reach across your body." },
+  { name:"Fast feet",         cat:"cardio", impact:"low",  cue:"Tiny quick steps, low stance. Ten seconds feels long." },
+  { name:"Shadow boxing",     cat:"cardio", impact:"low",  cue:"Rotate from the hips. Pick a rhythm and hold it." },
+  // full body
+  { name:"Inchworms",         cat:"full",   impact:"low",  cue:"Walk the hands out to a plank, walk the feet in. No rush." },
+  { name:"Squat to reach",    cat:"full",   impact:"low",  cue:"Down low, then stretch tall. Use the whole range." },
+  { name:"Burpees",           cat:"full",   impact:"high", cue:"Step back instead of jumping and it's still a burpee." }
 ];
 
-function todaysCircuit(){
-  return CIRCUITS[Math.floor(Date.now()/86400000) % CIRCUITS.length];
+const WARMUPS = [
+  { name:"March in place",   seconds:45, cue:"Loose and easy. Roll your shoulders back as you go." },
+  { name:"Jogging on the spot", seconds:45, cue:"Light feet. Quiet if there's someone below you." },
+  { name:"Arm circles",      seconds:45, cue:"Backwards first, then forwards. Undo the desk." },
+  { name:"Hip openers",      seconds:45, cue:"Big slow circles, one knee at a time." },
+  { name:"Leg swings",       seconds:45, cue:"Hold a wall. Forward and back, then side to side." },
+  { name:"Cat-cow",          seconds:45, cue:"On all fours, arch and round in time with your breath." },
+  { name:"Step touch",       seconds:45, cue:"Side to side, arms swinging. Wake it all up." },
+  { name:"Ankle rolls",      seconds:45, cue:"Both directions. Don't skip these." }
+];
+
+const COOLDOWNS = [
+  { name:"Forward fold",     seconds:45, cue:"Soft knees. Let your head hang heavy." },
+  { name:"Quad & hamstring", seconds:45, cue:"Thirty seconds a side, and no bouncing." },
+  { name:"Child's pose",     seconds:45, cue:"Knees wide, arms long, forehead down." },
+  { name:"Chest opener",     seconds:45, cue:"Hands behind you, lift the chest, breathe wide." },
+  { name:"Figure four",      seconds:45, cue:"Ankle over knee, pull the thigh in. Both sides." },
+  { name:"Long exhale",      seconds:45, cue:"Out longer than in. That's the switch-off." },
+  { name:"Walk it out",      seconds:45, cue:"Keep moving until the heart rate settles." },
+  { name:"Neck rolls",       seconds:45, cue:"Slow half circles. Never force it." }
+];
+
+const REST_FLOW = [
+  { name:"Cat-cow",        seconds:60, cue:"Wake the spine up gently. Follow your breath." },
+  { name:"Child's pose",   seconds:60, cue:"Knees wide, forehead down, arms reaching." },
+  { name:"Figure four",    seconds:60, cue:"Thirty seconds a side. Hips take the week's load." },
+  { name:"Hamstring fold", seconds:60, cue:"Soft knees, heavy head. Nothing to prove." },
+  { name:"Chest opener",   seconds:60, cue:"Undo the hours you spent hunched at a screen." },
+  { name:"Long exhale",    seconds:60, cue:"In for four, out for six. Say goodnight if it's late." }
+];
+
+const CIRCUIT_NAMES = ["Ember","Tide","Kindling","Spark","Drift","Lantern","Harbour","Meadow","Compass","Thicket","Bellow","Nectar"];
+const CIRCUIT_EMOJI = ["🔥","🌊","✨","⚡","🍃","🏮","⚓","🌾","🧭","🌿","🎐","🍯"];
+
+// Six-slot shapes, so no circuit is all core or all legs.
+const CIRCUIT_PATTERNS = [
+  ["cardio","lower","core","upper","lower","cardio"],
+  ["lower","core","cardio","upper","core","cardio"],
+  ["cardio","upper","lower","core","cardio","core"],
+  ["full","lower","core","cardio","upper","core"],
+  ["lower","cardio","core","lower","upper","cardio"],
+  ["core","cardio","lower","upper","full","core"]
+];
+
+const INTENSITIES = [
+  { key:"steady", work:40, rest:20, rounds:2, label:"40s on · 20s off · 2 rounds" },
+  { key:"quick",  work:30, rest:15, rounds:3, label:"30s on · 15s off · 3 rounds" },
+  { key:"long",   work:45, rest:15, rounds:2, label:"45s on · 15s off · 2 rounds" }
+];
+
+const FOCUS_LABEL = { cardio:"Cardio", lower:"Legs", core:"Core", upper:"Upper body", full:"Full body" };
+
+/* Deterministic PRNG so both partners generate the identical circuit
+   from the date alone, with nothing to sync between them. */
+function mulberry32(a){
+  return function(){
+    a |= 0; a = a + 0x6D2B79F5 | 0;
+    let t = Math.imul(a ^ a >>> 15, 1 | a);
+    t = t + Math.imul(t ^ t >>> 7, 61 | t) ^ t;
+    return ((t ^ t >>> 14) >>> 0) / 4294967296;
+  };
+}
+function seededShuffle(arr, rnd){
+  const a = arr.slice();
+  for (let i = a.length - 1; i > 0; i--){
+    const j = Math.floor(rnd() * (i + 1));
+    [a[i], a[j]] = [a[j], a[i]];
+  }
+  return a;
 }
 
-// Flatten a circuit definition into the exact second-by-second sequence.
+// UTC day number: both partners flip to the new circuit at the same
+// instant regardless of time zone, which is the point of a shared day.
+function dayNumber(){ return Math.floor(Date.now() / 86400000); }
+
+/* Rest days are planned, not random. Every week gets exactly two, but
+   a free shuffle isn't good enough: independent weeks can put both
+   rests at the start of one and the end of the next, which measured out
+   at a 9-day unbroken streak and 3 rest days in a row.
+
+   So the pair is drawn from spacings that stay sensible — 2 to 4 days
+   apart, the first landing by midweek and the second from midweek on.
+   That bounds any run at 6 active days and 2 rest days, across weeks
+   as well as within them. Training hard seven days a week is how
+   people quit in a fortnight. */
+const REST_PAIRS = [
+  [0,3],[0,4],
+  [1,3],[1,4],[1,5],
+  [2,4],[2,5],[2,6],
+  [3,5],[3,6]
+];
+function restDaysForWeek(week){
+  const rnd = mulberry32(week * 7919 + 13);
+  return REST_PAIRS[Math.floor(rnd() * REST_PAIRS.length)];
+}
+function isRestDay(day){
+  const week = Math.floor(day / 7);
+  const idx = ((day % 7) + 7) % 7;
+  return restDaysForWeek(week).includes(idx);
+}
+
+function circuitForDay(day){
+  if (isRestDay(day)){
+    return {
+      rest: true,
+      key: `rest-${day}`,
+      name: "Rest day",
+      emoji: "🌙",
+      focus: "Mobility",
+      intensity: { label:"Six minutes, no pressure" },
+      warmup: [], moves: [], cooldown: [],
+      flow: REST_FLOW
+    };
+  }
+  const rnd = mulberry32(day * 2654435761 >>> 0);
+  const pattern = CIRCUIT_PATTERNS[Math.floor(rnd() * CIRCUIT_PATTERNS.length)];
+  const intensity = INTENSITIES[Math.floor(rnd() * INTENSITIES.length)];
+
+  // Fill each slot from its own category, never repeating a move.
+  const used = new Set();
+  const moves = pattern.map(cat => {
+    const pool = EXERCISES.filter(e => e.cat === cat && !used.has(e.name));
+    const pick = pool[Math.floor(rnd() * pool.length)]
+      || EXERCISES.filter(e => !used.has(e.name))[0];
+    used.add(pick.name);
+    return pick;
+  });
+
+  const warmup = seededShuffle(WARMUPS, rnd).slice(0, 2);
+  const cooldown = seededShuffle(COOLDOWNS, rnd).slice(0, 2);
+
+  // Name the circuit after whichever category it leans on most.
+  const tally = {};
+  moves.forEach(m => { tally[m.cat] = (tally[m.cat] || 0) + 1; });
+  const lead = Object.keys(tally).sort((x,y) => tally[y] - tally[x])[0];
+  const n = Math.floor(rnd() * CIRCUIT_NAMES.length);
+
+  return {
+    rest: false,
+    key: `d${day}`,
+    name: CIRCUIT_NAMES[n],
+    emoji: CIRCUIT_EMOJI[n],
+    focus: FOCUS_LABEL[lead] || "Full body",
+    intensity,
+    work: intensity.work, rest_s: intensity.rest, rounds: intensity.rounds,
+    warmup, moves, cooldown,
+    lowImpact: moves.every(m => m.impact === "low")
+  };
+}
+
+function todaysCircuit(){ return circuitForDay(dayNumber()); }
+
+// Flatten a circuit into the exact second-by-second sequence.
 function buildTimeline(c){
   const t = [];
+  if (c.rest){
+    c.flow.forEach(f => t.push({ ...f, phase:"cooldown" }));
+    return t;
+  }
   c.warmup.forEach(w => t.push({ ...w, phase:"warmup" }));
-  for (let r = 1; r <= CIRCUIT_ROUNDS; r++){
+  const rounds = c.rounds || 2, work = c.work || 40, rest = c.rest_s || 20;
+  for (let r = 1; r <= rounds; r++){
     c.moves.forEach((m, i) => {
-      t.push({ name:m.name, cue:m.cue, seconds:CIRCUIT_WORK, phase:"work", round:r });
-      const isLast = (r === CIRCUIT_ROUNDS && i === c.moves.length - 1);
-      if (!isLast) t.push({ name:"Rest", cue:"Shake it out. Breathe.", seconds:CIRCUIT_REST, phase:"rest", round:r });
+      t.push({ name:m.name, cue:m.cue, seconds:work, phase:"work", round:r });
+      const isLast = (r === rounds && i === c.moves.length - 1);
+      if (!isLast) t.push({ name:"Rest", cue:"Shake it out. Breathe.", seconds:rest, phase:"rest", round:r });
     });
   }
   c.cooldown.forEach(cd => t.push({ ...cd, phase:"cooldown" }));
   return t;
 }
+
 function timelineSeconds(t){ return t.reduce((n, s) => n + s.seconds, 0); }
 
 /* ---- The workout run ---- */
@@ -3306,6 +3479,8 @@ async function submitWorkout(){
     from: myKey(),
     circuit: c.key,
     name: c.name,
+    emoji: c.emoji,
+    rest: !!c.rest,
     seconds: timelineSeconds(buildTimeline(c)),
     photo: wk.photo || null,
     ts: Date.now()
@@ -3364,23 +3539,26 @@ function renderWorkout(){
   const embed = spotifyEmbedUrl();
 
   if (wk.phase === "preview"){
-    step.textContent = `${c.focus} · 15 min`;
-    const tl = buildTimeline(c);
+    const mins = Math.round(timelineSeconds(buildTimeline(c)) / 60);
+    step.textContent = `${c.focus} · ${mins} min`;
+    const items = c.rest ? c.flow : c.moves;
     body.innerHTML = `
       <div class="circuit-head">
         <div class="circuit-badge">${c.emoji}</div>
         <div>
           <div class="circuit-name">${escapeHtml(c.name)}</div>
-          <div class="circuit-meta">${escapeHtml(c.focus)} · ${CIRCUIT_ROUNDS} rounds · ${CIRCUIT_WORK}s on, ${CIRCUIT_REST}s off</div>
+          <div class="circuit-meta">${escapeHtml(c.focus)} · ${escapeHtml(c.intensity.label)}</div>
         </div>
       </div>
       <div style="font-size:13.5px; color:var(--ink-soft); line-height:1.55; margin-bottom:14px;">
-        No equipment, enough room for a towel. Start it at the same time and leave the call running — that's the whole point.
+        ${c.rest
+          ? "Today's a rest day — that's on purpose. Here's a slow six minutes if you want to move anyway. Doing nothing counts too."
+          : "No equipment, enough room for a towel. Start it at the same time and leave the call running — that's the whole point."}
       </div>
       <div class="move-list">
-        ${c.moves.map((m,i) => `<div class="move-row"><span class="n">${i+1}</span><span class="nm"><b>${escapeHtml(m.name)}</b><br><span style="color:var(--ink-soft); font-size:12.5px;">${escapeHtml(m.cue)}</span></span></div>`).join("")}
+        ${items.map((m,i) => `<div class="move-row"><span class="n">${i+1}</span><span class="nm"><b>${escapeHtml(m.name)}</b><br><span style="color:var(--ink-soft); font-size:12.5px;">${escapeHtml(m.cue)}</span></span></div>`).join("")}
       </div>
-      <button class="btn btn-primary" onclick="startWorkout()">Start the circuit</button>
+      <button class="btn btn-primary" onclick="startWorkout()">${c.rest ? "Start the stretch" : "Start the circuit"} <span class="arrow-nudge">→</span></button>
       <div style="font-size:11.5px; color:var(--ink-faint); line-height:1.5; margin-top:12px; text-align:center;">
         Swap or skip anything that hurts. Sore is fine, sharp is not.
       </div>
@@ -3414,8 +3592,10 @@ function renderWorkout(){
     step.textContent = "Finished";
     body.innerHTML = `
       <div class="wk-cheer pop-in">
-        <div class="big">That's ${escapeHtml(c.name)} done.</div>
-        <div class="sub">Fifteen minutes you both chose to spend the same way. Put a face to it.</div>
+        <div class="big">${c.rest ? "Stretched out." : `That's ${escapeHtml(c.name)} done.`}</div>
+        <div class="sub">${c.rest
+          ? "Gentle counts. Put a face to it anyway."
+          : "Minutes you both chose to spend the same way. Put a face to it."}</div>
       </div>
       ${wk.photo
         ? `<div class="wk-photo-frame float-up"><img src="${wk.photo}"><button onclick="clearWorkoutPhoto()">×</button></div>`
@@ -3460,27 +3640,30 @@ function renderCircuitCard(){
 
   let done = "";
   if (mineToday && theirsToday){
-    done = `<div class="circuit-done"><span>🎉</span><div>You and <b>${escapeHtml(theirName)}</b> have both done today's circuit.</div></div>`;
+    done = `<div class="circuit-done"><span>🎉</span><div>You and <b>${escapeHtml(theirName)}</b> have both moved today.</div></div>`;
   } else if (mineToday){
     done = `<div class="circuit-done"><span>✅</span><div>You've done today's. <b>${escapeHtml(theirName)}</b> hasn't yet.</div></div>`;
   } else if (theirsToday){
     done = `<div class="circuit-done"><span>👀</span><div><b>${escapeHtml(theirName)}</b> already did today's circuit.</div></div>`;
   }
 
+  const mins = Math.round(timelineSeconds(buildTimeline(c)) / 60);
   el.innerHTML = `
     ${done}
     <div class="circuit-head">
       <div class="circuit-badge">${c.emoji}</div>
       <div>
         <div class="circuit-name">${escapeHtml(c.name)}</div>
-        <div class="circuit-meta">15 min · ${escapeHtml(c.focus)} · no kit</div>
+        <div class="circuit-meta">${mins} min · ${escapeHtml(c.focus)}${c.rest ? "" : (c.lowImpact ? " · quiet" : " · no kit")}</div>
       </div>
     </div>
     <div style="font-size:13px; color:var(--ink-soft); line-height:1.5; margin-bottom:12px;">
-      ${c.moves.slice(0,3).map(m => escapeHtml(m.name)).join(" · ")} and ${c.moves.length - 3} more.
+      ${c.rest
+        ? "No circuit today — you've earned the gap. There's a slow stretch if you want one."
+        : `${escapeHtml(c.intensity.label)}. ${c.moves.slice(0,3).map(m => escapeHtml(m.name)).join(" · ")} and ${c.moves.length - 3} more.`}
     </div>
     <button class="btn btn-primary btn-sm" style="margin:auto; display:flex;" onclick="openWorkout()">
-      ${mineToday ? "Do it again" : "Start today's circuit"}
+      ${c.rest ? "Open the stretch" : (mineToday ? "Do it again" : "Start today's circuit")} <span class="arrow-nudge">→</span>
     </button>
     <div style="height:14px;"></div>
     <label class="field-label" style="margin-top:0;">Your workout playlist (optional)</label>
@@ -3502,9 +3685,8 @@ function renderWorkoutHistory(){
   }
   el.innerHTML = `<div class="wk-history">${list.slice(0, 20).map(w => {
     const mine = w.from === myKey();
-    const c = CIRCUITS.find(x => x.key === w.circuit);
     return `<div class="wk-thumb" title="${escapeHtml(w.name || "")}">
-      ${w.photo ? `<img src="${w.photo}" loading="lazy">` : `<div class="no-photo">${c ? c.emoji : "💪"}</div>`}
+      ${w.photo ? `<img src="${w.photo}" loading="lazy">` : `<div class="no-photo">${escapeHtml(w.emoji || "💪")}</div>`}
       <span class="who-dot ${mine ? "me" : "them"}"></span>
     </div>`;
   }).join("")}</div>
@@ -3542,6 +3724,7 @@ function renderGap(){
       <div class="apart-lab">between you</div>
     </div>
     <div class="gap-bar"><div class="gap-fill" style="width:${pct.toFixed(2)}%"></div></div>
+    <div class="gap-arrows"><span class="a-l">→</span><span class="a-r">←</span></div>
     <div class="gap-ends"><span>${escapeHtml(me()?.name || "You")}</span><span>${escapeHtml(them()?.name || "Them")}</span></div>
     <div class="gap-line">Together you've run <b>${fmtBigDist(done)} ${myUnits()}</b> toward each other — that's <b>${pct < 0.1 && done > 0 ? "&lt;0.1" : pct.toFixed(1)}%</b> of the way.</div>`;
 }
@@ -3596,7 +3779,7 @@ function renderRunBody(){
 
   el.innerHTML = `
     ${theirLive ? `<div class="gap-line" style="margin:0 0 12px;"><b>${escapeHtml(them()?.name || "They")}</b> is out running right now.</div>` : ""}
-    <button class="btn btn-primary" onclick="startRun()">${theirLive ? "Join them 🏃" : "Start a run 🏃"}</button>
+    <button class="btn btn-primary" onclick="startRun()">${theirLive ? "Join them 🏃" : "Start a run 🏃"} <span class="arrow-nudge">→</span></button>
     <div style="height:8px;"></div>
     <button class="btn btn-soft btn-sm" style="margin:auto;" onclick="inviteToRun()">Ask them to run too</button>`;
 }
@@ -4102,7 +4285,7 @@ function renderPockets(){
     <div class="pocket-when">
       <div class="day">${dayLabelIn(m.tz, p.start)}</div>
       <div class="times">${fmtTimeIn(m.tz, p.start)} – ${fmtTimeIn(m.tz, p.end)}</div>
-      <div class="theirs">${escapeHtml(t.name || "Them")}: ${fmtTimeIn(t.tz, p.start)} – ${fmtTimeIn(t.tz, p.end)}${crossDaySuffix(m.tz, t.tz, p.start)}</div>
+      <div class="theirs"><span class="arrow-between">↳</span>${escapeHtml(t.name || "Them")}: ${fmtTimeIn(t.tz, p.start)} – ${fmtTimeIn(t.tz, p.end)}${crossDaySuffix(m.tz, t.tz, p.start)}</div>
     </div>
     <span class="pocket-len">${fmtLenMin(p.end - p.start)}</span>
   </div>`).join("");
@@ -4180,26 +4363,37 @@ function openWrapped(){
 function renderWrapped(){
   const body = document.getElementById("wrappedBody");
   const s = computeStats();
-  const grid = `<div class="wrap-grid">
-      <div class="wrap-stat"><div class="n">${s.notes}</div><div class="l">Notes</div></div>
-      <div class="wrap-stat"><div class="n">${s.photos}</div><div class="l">Photos</div></div>
-      <div class="wrap-stat"><div class="n">${s.voiceNotes}</div><div class="l">Voice notes</div></div>
-      <div class="wrap-stat"><div class="n">${s.voiceMins}</div><div class="l">Minutes of voice</div></div>
-      <div class="wrap-stat"><div class="n">${s.taps}</div><div class="l">Love taps</div></div>
-      <div class="wrap-stat"><div class="n">${s.capsules}</div><div class="l">Capsules</div></div>
-      <div class="wrap-stat"><div class="n">${s.streak}</div><div class="l">Day streak</div></div>
-      <div class="wrap-stat"><div class="n">${s.best}</div><div class="l">Best streak</div></div>
-      <div class="wrap-stat"><div class="n">${fmtBigDist(s.runMeters)}</div><div class="l">${myUnits()} run</div></div>
-      <div class="wrap-stat"><div class="n">${s.runsTogether}</div><div class="l">Runs together</div></div>
-      <div class="wrap-stat"><div class="n">${s.circuits}</div><div class="l">Circuits</div></div>
+  const grid = `<div class="bento">
+      <div class="bento-tile accent"><div class="em">💌</div><div class="n">${s.notes}</div><div class="l">Notes</div></div>
+      <div class="bento-tile"><div class="em">📷</div><div class="n">${s.photos}</div><div class="l">Photos</div></div>
+      <div class="bento-tile wide accent">
+        <div class="bento-row">
+          <div style="flex:1"><div class="n">${s.voiceNotes}</div><div class="l">Voice notes</div></div>
+          <div style="flex:1"><div class="n">${s.voiceMins}</div><div class="l">Minutes heard</div></div>
+          <div style="flex:1"><div class="n">${s.taps}</div><div class="l">Love taps</div></div>
+        </div>
+      </div>
+      <div class="bento-tile"><div class="em">🔥</div><div class="n">${s.streak}</div><div class="l">Day streak</div></div>
+      <div class="bento-tile"><div class="em">🏔️</div><div class="n">${s.best}</div><div class="l">Best ever</div></div>
+      <div class="bento-tile wide">
+        <div class="bento-row">
+          <div style="flex:1"><div class="n">${fmtBigDist(s.runMeters)}</div><div class="l">${myUnits()} run</div></div>
+          <div style="flex:1"><div class="n">${s.runsTogether}</div><div class="l">Runs together</div></div>
+          <div style="flex:1"><div class="n">${s.circuits}</div><div class="l">Circuits</div></div>
+        </div>
+      </div>
+      <div class="bento-tile accent"><div class="em">✉️</div><div class="n">${s.capsules}</div><div class="l">Capsules</div></div>
+      <div class="bento-tile"><div class="em">📅</div><div class="n">${s.daysTogether !== null ? s.daysTogether.toLocaleString() : "—"}</div><div class="l">Days together</div></div>
     </div>`;
 
   if (!isPremium()){
     document.getElementById("wrappedSub").innerHTML = "Here's the shape of it — <b>Forever</b> fills in the numbers.";
     body.innerHTML = `
-      <div class="wrap-hero">
-        <div class="big">${s.words.toLocaleString()}</div>
-        <div class="cap">words written to each other so far — that one's on the house.</div>
+      <div class="bento" style="margin-bottom:14px;">
+        <div class="bento-tile hero">
+          <div class="n">${s.words.toLocaleString()}</div>
+          <div class="l">words written to each other so far — that one's on the house.</div>
+        </div>
       </div>
       <div class="locked-teaser">${grid}</div>
       <div class="locked-cta" style="margin-top:14px;">
@@ -4211,14 +4405,18 @@ function renderWrapped(){
 
   document.getElementById("wrappedSub").textContent = "Everything the two of you have put in here.";
   body.innerHTML = `
-    <div class="wrap-hero">
-      <div class="big">${s.words.toLocaleString()}</div>
-      <div class="cap">words written to each other${s.daysTogether !== null ? `, across ${s.daysTogether.toLocaleString()} days together` : ""}.</div>
+    <div class="bento" style="margin-bottom:10px;">
+      <div class="bento-tile hero">
+        <div class="n">${s.words.toLocaleString()}</div>
+        <div class="l">words written to each other${s.daysTogether !== null ? `, across ${s.daysTogether.toLocaleString()} days together` : ""}.</div>
+      </div>
     </div>
     ${grid}
-    ${s.topVibe ? `<div class="wrap-hero" style="margin-top:12px;">
-      <div class="big">${s.topVibe.emoji} ${s.topVibe.label}</div>
-      <div class="cap">the vibe you two land on most.</div>
+    ${s.topVibe ? `<div class="bento" style="margin-top:10px;">
+      <div class="bento-tile hero">
+        <div class="n">${s.topVibe.emoji} ${s.topVibe.label}</div>
+        <div class="l">the vibe you two land on most.</div>
+      </div>
     </div>` : ""}`;
 }
 

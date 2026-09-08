@@ -132,6 +132,24 @@ app-specific password and is CORS-blocked from a browser — and secret
 `.ics` subscription URLs are CORS-blocked too, so both remain
 file-import only.
 
+## Design system notes
+
+**Bento grids.** The "Us, so far" stats are laid out on a four-column
+bento: hero tiles spanning the full width, some tiles spanning two
+columns, some rows carrying three figures side by side. The uneven
+rhythm is the point — a wall of identical squares reads as a
+spreadsheet, while mixed spans give the eye somewhere to land first.
+
+**Animated arrows**, used where an arrow means something rather than as
+decoration:
+
+- Two arrows creep *toward each other* along the closing-the-distance
+  bar — the entire feature expressed in one gesture.
+- A nudging chevron on primary calls to action.
+- A turn arrow linking your side of a pocket to your partner's.
+
+All of them stop under `prefers-reduced-motion`.
+
 ## Typography
 
 - **Cormorant Garamond** for display — a high-contrast old-style serif,
@@ -236,27 +254,42 @@ a force-quit. So the app never guesses. It says "last had the app open
 
 ## Metabolic circuits
 
-A 15-minute bodyweight circuit, picked deterministically by the date so
-both partners open the app and see the same one without anything needing
-to sync. Four rotate: **Ember** (full body), **Tide** (legs and core),
-**Kindling** (upper and core) and **Spark** (cardio).
+Circuits are **generated per day**, not picked from a fixed list. A
+seeded PRNG keyed to the UTC day number means both partners produce the
+identical circuit from the date alone, with nothing to sync between
+them — and it flips for both at the same instant regardless of time
+zone.
 
-Every circuit is the same shape, so the two of you always know what
-you're agreeing to: two warm-up moves, then 6 exercises x 2 rounds at
-40 seconds on / 20 seconds off, then two cool-down moves — 27 segments,
-14m40s. No equipment, and sized for the space beside a bed. Cues cover
-the apartment case ("step them out instead of jumping if you're
-upstairs") and the scaling case ("on your knees is a real push-up").
+**The library** is 33 bodyweight exercises, all doable in the space
+beside a bed with no kit: squats, forward and reverse lunges, side
+lunges, squat pulses, glute bridges, wall sit, calf raises, push ups,
+incline push ups, tricep dips, superman holds, arm pulses, Russian
+twists, flutter kicks, windmills, 4 point shoulder taps, plank, bicycle
+crunches, sit ups, dead bug, bear hold, toe touches, jumping jacks,
+jogging on the spot, mountain climbers, high knees, skaters, fast feet,
+shadow boxing, inchworms, squat to reach and burpees. Each is tagged
+with a category and an impact level, so the generator can balance a
+circuit and mark the quiet ones for anyone with neighbours below.
 
-The timer is full-screen with a countdown ring, the next move named
-ahead of time, pause, skip and step-back, an overall progress bar, and
-Web Audio beeps on the last three seconds of each segment. It holds a
-screen Wake Lock so the phone doesn't sleep mid-plank.
+**Generation** fills a six-slot pattern (e.g.
+`cardio → lower → core → upper → lower → cardio`) drawn from six
+shapes, so you never get six core moves in a row. Moves never repeat
+within a circuit. Warm-up and cool-down are two each, also seeded.
+Intensity varies between 40s/20s × 2, 30s/15s × 3 and 45s/15s × 2, so
+sessions land between roughly 15 and 16 minutes.
 
-Finishing offers a photo — front camera by default — and logging fires
-canvas confetti drawn in whatever theme is currently on. If both of you
-finish the same day the celebration says so, and the circuit counts
-toward the daily streak like anything else.
+**Rest days are planned, not random.** Every week gets exactly two. A
+free shuffle was measured producing a **9-day unbroken active streak**
+and **3 rest days in a row**, because independent weeks can stack their
+rests at opposing edges. Rest pairs are now drawn from spacings 2–4
+days apart, the first landing by midweek and the second from midweek
+on, which bounds any run at **6 active days and 2 rest days** — verified
+across 156 consecutive weeks. A rest day isn't an empty card: it offers
+a six-minute mobility flow, and says plainly that doing nothing counts.
+
+Verified over a year of generated days: 260 active and 104 rest, zero
+repeated moves inside a circuit, every circuit carrying both cardio and
+core, all 33 exercises reached, and identical output on repeat calls.
 
 ### Spotify
 
