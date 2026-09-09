@@ -157,8 +157,10 @@ All of them stop under `prefers-reduced-motion`.
   fashion-magazine end.
 - **Jost** for the interface — a quiet geometric sans that stays out of
   the serif's way.
-- **Parisienne** for handwritten moments: the daily question and the
-  capsule envelopes.
+- **Parisienne** for handwritten moments — kept to the sealed capsule
+  envelopes alone, where a script reads as a letter. The daily question
+  used it too and was too loud for a line of interface copy; it is now
+  Cormorant's italic, which is the elegant version of the same intent.
 
 Two things this needed. Cormorant has a small x-height, so everything set
 in it is sized up about 12% to hold the same optical weight. It also
