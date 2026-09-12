@@ -30,8 +30,10 @@ shared Firebase Firestore document per couple, and free push via
   gallery view.
 - **Us** — daily mood + a rotating daily question for both of you to
   answer.
-- **Plans** — countdown to your next visit, a someday/bucket list, and
-  **time capsules**: letters that stay sealed until a date you choose.
+- **Plans** — countdown to your next visit, **the fund** (a shared pot
+  for the flight, with a weekly plan that re-plans itself), a
+  someday/bucket list, and **time capsules**: letters that stay sealed
+  until a date you choose.
 - **Move** — a daily **metabolic circuit** you can both do in a flat
   with no kit, a GPS run tracker, a **live synced run** (watch their
   distance climb next to yours while you're both out there), and
@@ -131,6 +133,38 @@ rather than guessed at. Only start and end times are stored.
 app-specific password and is CORS-blocked from a browser — and secret
 `.ics` subscription URLs are CORS-blocked too, so both remain
 file-import only.
+
+## The fund
+
+A shared pot for the thing that ends the distance. You set what it's
+for, a target, a currency and a date; both of you pay in; the app keeps
+the plan honest.
+
+The plan is arithmetic done carefully rather than a model:
+
+- **what's left**, and **how many weeks** remain
+- **per person, per week** to land on the date
+- **ahead or behind the line** you'd need to be on by now, with the
+  weekly figure already absorbing any shortfall rather than quietly
+  failing
+- **where your actual pace lands you**, which is often the more useful
+  number
+
+It re-plans on every payment. Crossing 25/50/75/100% fires confetti
+once — on the crossing, not on every payment — and notifies the other
+person. Paying in counts toward the daily streak.
+
+## Staying power
+
+Two changes aimed squarely at the app still being open in six months:
+
+- **120 daily questions**, up from 15. Fifteen repeated every fortnight,
+  which is roughly when a daily ritual starts feeling like a chore.
+- **Streak forgiveness.** A missed day used to send a 60-day streak to
+  zero, which is exactly the moment people stop opening an app like
+  this. A streak now survives one missed day, at most once a fortnight,
+  and the app says so out loud — "we covered yesterday for you" — because
+  a silent lie would be worse than the reset.
 
 ## Design system notes
 

@@ -684,6 +684,52 @@
   .quiet-note .em{ font-size:15px; flex-shrink:0; }
   .quiet-note b{ color:var(--ink); }
 
+  /* ---------- The fund ---------- */
+  .fund-hero{ text-align:center; padding:6px 0 2px; }
+  .fund-saved{
+    font-family:var(--font-display); font-weight:600; font-size:40px; line-height:1.05;
+    font-variant-numeric: lining-nums tabular-nums;
+  }
+  .fund-of{ font-size:12.5px; color:var(--ink-soft); margin-top:4px; }
+  .fund-of b{ color:var(--ink); }
+  .fund-bar{
+    position:relative; height:14px; border-radius:99px; margin:16px 0 6px;
+    background:var(--paper-soft); border:1px solid var(--line); overflow:hidden;
+  }
+  .fund-fill{
+    position:absolute; inset:0 auto 0 0; border-radius:99px;
+    background:linear-gradient(90deg, var(--rose), var(--honey));
+    transition:width 1s cubic-bezier(.22,.9,.3,1);
+  }
+  .fund-ticks{ position:absolute; inset:0; pointer-events:none; }
+  .fund-ticks i{ position:absolute; top:0; bottom:0; width:1px; background:var(--line); opacity:.9; }
+  .fund-marks{ display:flex; justify-content:space-between; font-size:10px; color:var(--ink-faint); font-weight:700; letter-spacing:0.05em; }
+  .fund-plan{
+    background:linear-gradient(140deg, var(--rose-wash), var(--paper-soft));
+    border:1px solid var(--line); border-radius:16px; padding:14px 15px; margin:14px 0 12px;
+  }
+  .fund-plan .lead{ font-family:var(--font-display); font-size:19px; font-weight:600; line-height:1.25; }
+  .fund-plan .sub{ font-size:12.5px; color:var(--ink-soft); line-height:1.5; margin-top:5px; }
+  .fund-pace{ display:flex; align-items:center; gap:7px; font-size:12.5px; line-height:1.5; margin-top:10px; }
+  .fund-pace.ahead{ color:var(--good); }
+  .fund-pace.behind{ color:var(--rose-deep); }
+  .fund-split{ display:flex; gap:10px; margin-bottom:12px; }
+  .fund-who{
+    flex:1; background:var(--paper-soft); border:1px solid var(--line);
+    border-radius:14px; padding:11px 10px; text-align:center;
+  }
+  .fund-who .amt{ font-family:var(--font-display); font-size:20px; font-weight:600; font-variant-numeric:lining-nums tabular-nums; }
+  .fund-who .who{ font-size:10.5px; color:var(--ink-soft); text-transform:uppercase; letter-spacing:0.06em; font-weight:700; margin-top:3px; }
+  .fund-log{ margin-top:4px; }
+  .fund-row{ display:flex; align-items:center; gap:10px; padding:9px 0; border-bottom:1px solid var(--line); font-size:13.5px; }
+  .fund-row:last-child{ border-bottom:none; }
+  .fund-row .f-amt{ font-family:var(--font-display); font-size:16px; font-weight:600; font-variant-numeric:lining-nums tabular-nums; }
+  .fund-row .f-who{ flex:1; color:var(--ink-soft); font-size:12.5px; }
+  .fund-row .f-del{ background:none; border:none; color:var(--ink-faint); font-size:15px; padding:2px 4px; }
+  @keyframes coinPop{ 0%{ transform:scale(.8); opacity:0; } 55%{ transform:scale(1.08); } 100%{ transform:scale(1); opacity:1; } }
+  .coin-pop{ animation:coinPop .55s cubic-bezier(.2,.9,.3,1.2) both; }
+  @media (prefers-reduced-motion: reduce){ .coin-pop{ animation:none; } .fund-fill{ transition:none; } }
+
   /* ---------- Bento grid ----------
      A 4-column track with tiles spanning 2 or 4. The uneven rhythm is
      the point: a wall of identical squares reads as a spreadsheet,
@@ -1154,6 +1200,11 @@
       </div>
 
       <div class="card">
+        <div class="card-title">The fund</div>
+        <div id="fundBody"></div>
+      </div>
+
+      <div class="card">
         <div class="card-title">Time capsules<span class="pro-pill" id="capsulePro" style="display:none;">Forever</span></div>
         <div style="font-size:13px; color:var(--ink-soft); line-height:1.5; margin-bottom:12px;">
           Write something they can't read yet. It stays sealed until the date you pick.
@@ -1532,6 +1583,10 @@ const THEMES = [
     } }
 ];
 
+/* Long-distance apps die when the daily thing goes stale. Fifteen
+   questions repeated every fortnight; this is a year's worth, weighted
+   toward the ones that actually open a conversation rather than the
+   ones that get a one-word answer. */
 const PROMPTS = [
   "What's one small thing that made you smile today?",
   "If we were in the same city right now, what would we be doing?",
@@ -1539,7 +1594,7 @@ const PROMPTS = [
   "What are you looking forward to this week?",
   "Describe your day in exactly five words.",
   "What's something you want to tell me but keep forgetting to?",
-  "What's your favorite memory of us so far?",
+  "What's your favourite memory of us so far?",
   "What do you need more of from me this week?",
   "What's a smell or taste that reminded you of home today?",
   "If you could send me one thing right now, what would it be?",
@@ -1547,7 +1602,112 @@ const PROMPTS = [
   "What does 'home' feel like to you right now?",
   "What's a tiny detail about me you miss the most today?",
   "What's the last thing that made you laugh out loud?",
-  "What's on your mind that you haven't said out loud yet?"
+  "What's on your mind that you haven't said out loud yet?",
+  "What's the best thing you ate this week?",
+  "Who did you talk to today that you enjoyed?",
+  "What's something you're worried about that you haven't mentioned?",
+  "What would your perfect Saturday here look like?",
+  "What's a habit you've picked up since we've been apart?",
+  "What did you do today that you'd never have done a year ago?",
+  "What's something you've changed your mind about recently?",
+  "Which part of the day do you miss me most?",
+  "What's a small win nobody else noticed?",
+  "What do you want our first hour together to look like?",
+  "What's something you're avoiding?",
+  "What's the kindest thing anyone did for you this week?",
+  "What are you reading, watching or listening to right now?",
+  "What's something you'd like us to be better at?",
+  "Which of our photos would you put on a wall?",
+  "What did you dream about recently?",
+  "What's stressing you that you could hand to me?",
+  "What's a place near you I'd love, and why?",
+  "What's something you learned this week?",
+  "What do you do when you miss me?",
+  "What's a small thing that's annoying you right now?",
+  "What are you proudest of me for?",
+  "What's the last thing you saved or screenshotted to show me?",
+  "What does a good day look like for you at the moment?",
+  "What's something we should do differently next time we're apart?",
+  "What's the most ordinary thing you miss about being together?",
+  "Who in your life should I know more about?",
+  "What's something you want to do alone before we're together again?",
+  "What's a question you wish I asked you more often?",
+  "What's the hardest part of this week been?",
+  "What's a tradition you'd like us to start?",
+  "What made you feel loved recently — from anyone?",
+  "What's on your mind at 2am lately?",
+  "Where do you want to be living in three years?",
+  "What's something small you'd like me to remember about today?",
+  "What's the last thing that genuinely surprised you?",
+  "What do you need me to understand right now?",
+  "What's a thing you're looking forward to that isn't about us?",
+  "What would make tomorrow easier for you?",
+  "What's a compliment you got that stuck with you?",
+  "What do you think I'd like about your week?",
+  "What's something you'd change about today?",
+  "What do you find yourself telling people about me?",
+  "What's a fear you have about the distance?",
+  "What's a fear you had about the distance that turned out fine?",
+  "What's your favourite thing about where you are right now?",
+  "What's your least favourite?",
+  "What's something you want to be true a year from now?",
+  "What did you put off today?",
+  "What's a smell that would take you straight back to us?",
+  "What's something you'd do if money weren't a factor?",
+  "What's a piece of advice you'd give us a year ago?",
+  "What's the best conversation you had this week?",
+  "What's a part of your routine you'd like me to picture?",
+  "What's something you need to say no to?",
+  "What's the nicest thing about being on your own right now?",
+  "What's the loneliest part?",
+  "What do you want more of in your life generally?",
+  "What's a small luxury worth the money to you?",
+  "What's something you're saving up for?",
+  "What did you notice today that most people wouldn't?",
+  "What's a version of yourself you're growing into?",
+  "What's a thing I do that you'd miss if I stopped?",
+  "What's an argument we've had that you think about?",
+  "What's something you forgive easily?",
+  "What's something you find hard to forgive?",
+  "Where should we go the first time we have a free week?",
+  "What's a meal you want to cook for me?",
+  "What's the last photo on your phone?",
+  "What's something that made you angry recently?",
+  "What's a thing you've been putting energy into?",
+  "What would you do with an unexpected free day?",
+  "What's a comfort you go to when you're low?",
+  "What's something about us you hope never changes?",
+  "What's something you hope does change?",
+  "Who do you miss besides me?",
+  "What's the best decision you made this month?",
+  "What's a thing you want to get better at?",
+  "What's a small thing I could do that would mean a lot?",
+  "What did you overthink today?",
+  "What's a story about your week I haven't heard?",
+  "What's something you're grateful for that's easy to overlook?",
+  "What do you think we're good at?",
+  "What's a plan you'd like to make concrete?",
+  "What's something you wish were easier?",
+  "What did you say yes to recently that you're glad about?",
+  "What's the weather doing, and how does it have you feeling?",
+  "What's a text you drafted and never sent?",
+  "What's something you want to ask me?",
+  "What's a memory of us that makes you laugh?",
+  "What's one that makes you emotional?",
+  "What's a small ritual that's keeping you going?",
+  "What would you like our next visit to include, no matter what?",
+  "What's something you've been curious about lately?",
+  "What's a way this distance has been good for you?",
+  "What do you need from tomorrow?",
+  "What's a thing you own that you'd save in a fire?",
+  "What's something you'd like to stop worrying about?",
+  "What made today different from yesterday?",
+  "What's a promise you'd like us to make?",
+  "What's the first thing you want to tell me when we next call?",
+  "What's a moment today you wish I'd been there for?",
+  "What's something you're doing just for yourself?",
+  "What are you leaving behind this year?",
+  "What are you carrying forward?"
 ];
 
 let state = {
@@ -1801,6 +1961,8 @@ function defaultCore(){
     homeCoords: {},  // rounded to ~11km — city-level, never an address
     busy: {},        // imported calendar blocks, per person
     busyMeta: {},
+    fund: null,      // { label, target, currency, deadline, createdAt }
+    fundLog: [],     // [{ id, from, amount, ts }]
     workoutPlaylist: ""   // shared Spotify link for the circuit screen
   };
 }
@@ -1827,14 +1989,27 @@ function requirePremium(context){
   return false;
 }
 
+/* Every change used to be a whole-document setDoc built from this device's
+   copy, so if both partners acted at the same moment the second write
+   silently erased the first — and this app actively encourages them to be
+   in the app together during an overlap window. The mutator now runs
+   against a fresh read inside a transaction, which Firestore re-runs on
+   conflict, so concurrent edits merge instead of clobbering. */
 async function updateCore(mutator){
+  if (!fb || !db || !state.code) throw new Error("not connected");
   const previous = state.core;
-  let core = state.core ? JSON.parse(JSON.stringify(state.core)) : defaultCore();
-  mutator(core);
-  recalcStreak(core, state.notes);
-  state.core = core;
+  const ref = fb.doc(db, "spaces", state.code);
   try{
-    await fb.setDoc(fb.doc(db, "spaces", state.code), core);
+    let applied = null;
+    await fb.runTransaction(db, async tx => {
+      const snap = await tx.get(ref);
+      const core = snap.exists() ? snap.data() : defaultCore();
+      mutator(core);
+      recalcStreak(core, state.notes);
+      tx.set(ref, core);
+      applied = core;
+    });
+    state.core = applied;
   }catch(e){
     state.core = previous;
     renderAll();
@@ -2069,6 +2244,12 @@ async function enterApp(){
 }
 
 function subscribeSpace(){
+  if (!fb || !db){
+    // Firebase never loaded (offline, blocked, bad config). Say so rather
+    // than throwing on null and leaving a blank screen.
+    showToast("Can't reach the database — you're seeing this offline");
+    return;
+  }
   if (unsubCore) unsubCore();
   if (unsubNotes) unsubNotes();
   if (unsubRuns) unsubRuns();
@@ -4359,6 +4540,9 @@ function computeStats(){
     runMeters: (core.moveTotals?.a || 0) + (core.moveTotals?.b || 0),
     runsTogether: (state.runs || []).filter(r => r.together).length,
     circuits: (state.workouts || []).length,
+    fundSaved: (core.fundLog || []).reduce((n,e) => n + (Number(e.amount)||0), 0),
+    fundCcy: core.fund?.currency || "GBP",
+    hasFund: !!core.fund,
     daysTogether: core.startDate ? daysBetween(new Date(core.startDate), new Date()) : null,
     topVibe
   };
@@ -4393,6 +4577,7 @@ function renderWrapped(){
       </div>
       <div class="bento-tile accent"><div class="em">✉️</div><div class="n">${s.capsules}</div><div class="l">Capsules</div></div>
       <div class="bento-tile"><div class="em">📅</div><div class="n">${s.daysTogether !== null ? s.daysTogether.toLocaleString() : "—"}</div><div class="l">Days together</div></div>
+      ${s.hasFund ? `<div class="bento-tile wide accent"><div class="em">✈️</div><div class="n">${fmtMoney(s.fundSaved, s.fundCcy)}</div><div class="l">Saved toward seeing each other</div></div>` : ""}
     </div>`;
 
   if (!isPremium()){
@@ -4498,7 +4683,10 @@ function renderStreak(){
   const s = state.core.streak || { count:0 };
   const bothToday = activeToday(state.core, state.notes, "a") && activeToday(state.core, state.notes, "b");
   if (s.count > 0){
-    el.innerHTML = `<span class="flame">🔥</span> <span><b>${s.count}</b> day${s.count===1?'':'s'} in a row${bothToday ? '' : ' — keep it going today'}</span>`;
+    const forgiven = s.graceDate === todayKey();
+    el.innerHTML = `<span class="flame">🔥</span> <span><b>${s.count}</b> day${s.count===1?'':'s'} in a row${
+      forgiven ? ' — we covered yesterday for you 🤍'
+               : (bothToday ? '' : ' — keep it going today')}</span>`;
   } else {
     el.innerHTML = `<span class="flame">🔥</span> <span>Ping, note, or check in to start a streak</span>`;
   }
@@ -4920,7 +5108,12 @@ function renderNotes(){
 }
 
 function escapeHtml(s){
-  return s.replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;");
+  // Quotes matter: several of these values land inside HTML attributes
+  // (value="…", title="…"), where an unescaped " ends the attribute early
+  // and anything after it is parsed as markup.
+  return String(s == null ? "" : s)
+    .replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;")
+    .replace(/"/g,"&quot;").replace(/'/g,"&#39;");
 }
 
 /* ---- Gallery ---- */
@@ -5014,20 +5207,51 @@ function activeToday(core, notes, role){
   const vibed = core.vibe && core.vibe[role] && dateKeyFromTs(core.vibe[role].ts)===tk;
   const ran = (state.runs||[]).some(r => r.from===role && dateKeyFromTs(r.ts)===tk);
   const trained = (state.workouts||[]).some(w => w.from===role && dateKeyFromTs(w.ts)===tk);
+  const saved = (core.fundLog||[]).some(e => e.from===role && dateKeyFromTs(e.ts)===tk);
   const answered = core.prompt && core.prompt.date===tk && core.prompt.answers && core.prompt.answers[role];
-  return !!(pinged || noted || moody || vibed || ran || trained || answered);
+  return !!(pinged || noted || moody || vibed || ran || trained || saved || answered);
 }
+/* Turn a dateKey ("2026-9-12") into a day number so gaps can be measured
+   rather than only "was it literally yesterday". */
+function keyToDayNum(k){
+  if (!k) return null;
+  const [y, m, d] = String(k).split("-").map(Number);
+  if (!y || !m || !d) return null;
+  return Math.round(Date.UTC(y, m - 1, d) / 86400000);
+}
+
+/* One missed day used to send a 60-day streak straight back to zero, which
+   is precisely the moment couples stop opening an app like this. A streak
+   now survives a single missed day, at most once a fortnight, and the app
+   says out loud that it covered you — a quiet lie would be worse than the
+   reset. */
+const STREAK_GRACE_COOLDOWN_DAYS = 14;
+
 function recalcStreak(core, notes){
-  core.streak = core.streak || { count:0, lastDate:"" };
+  core.streak = core.streak || { count:0, lastDate:"", best:0 };
   const bothToday = activeToday(core, notes, "a") && activeToday(core, notes, "b");
   const tk = todayKey();
   if (!bothToday) return;
   if (core.streak.lastDate === tk) return;
-  if (core.streak.lastDate === yesterdayKey()) core.streak.count += 1;
-  else core.streak.count = 1;
+
+  const today = keyToDayNum(tk);
+  const last = keyToDayNum(core.streak.lastDate);
+  const gap = (last === null || today === null) ? null : today - last;
+  const lastGrace = keyToDayNum(core.streak.graceDate);
+  const graceFree = lastGrace === null || (today - lastGrace) >= STREAK_GRACE_COOLDOWN_DAYS;
+
+  if (gap === 1){
+    core.streak.count += 1;
+  } else if (gap === 2 && graceFree && core.streak.count > 0){
+    core.streak.count += 1;
+    core.streak.graceDate = tk;     // spend the forgiveness
+  } else {
+    core.streak.count = 1;
+  }
   core.streak.lastDate = tk;
   core.streak.best = Math.max(core.streak.best || 0, core.streak.count);
 }
+
 
 function renderTogether(){
   if (!state.core) return;
@@ -5082,9 +5306,275 @@ async function answerPrompt(){
   renderTogether();
 }
 
+/* ==========================================================
+   THE FUND
+
+   A shared pot for the thing that ends the distance — usually a
+   flight. The plan is arithmetic done carefully rather than a
+   model: how much is left, how many weeks remain, what that is
+   per person per week, whether you're ahead or behind the line
+   you'd need to be on, and when you'll actually arrive at the
+   current rate. It re-plans every time either of you pays in,
+   so falling behind adjusts the weekly number instead of
+   quietly failing.
+   ========================================================== */
+
+const CURRENCIES = ["GBP","USD","EUR","SGD","AUD","CAD","NZD","JPY","INR","CHF","SEK","ZAR","HKD","MYR","PHP"];
+const FUND_MILESTONES = [25, 50, 75, 100];
+
+function fmtMoney(amount, ccy){
+  const c = ccy || state.core?.fund?.currency || "GBP";
+  try{
+    return new Intl.NumberFormat(undefined, {
+      style:"currency", currency:c,
+      minimumFractionDigits: Number.isInteger(amount) ? 0 : 2,
+      maximumFractionDigits: 2
+    }).format(amount);
+  }catch(e){ return `${c} ${amount.toFixed(2)}`; }
+}
+
+function fundTotals(){
+  const log = state.core?.fundLog || [];
+  const by = { a:0, b:0 };
+  log.forEach(e => { by[e.from] = (by[e.from] || 0) + (Number(e.amount) || 0); });
+  return { a: by.a, b: by.b, total: by.a + by.b };
+}
+
+// The whole plan in one object, so the UI never does its own arithmetic.
+function fundPlan(){
+  const f = state.core?.fund;
+  if (!f) return null;
+  const { total } = fundTotals();
+  const target = Number(f.target) || 0;
+  const remaining = Math.max(0, target - total);
+  const pct = target > 0 ? Math.min(100, (total / target) * 100) : 0;
+  const done = remaining <= 0;
+
+  const today = Math.floor(Date.now() / 86400000);
+  const deadlineDay = f.deadline ? keyToDayNum(f.deadline.replace(/-0?/g, "-").replace(/^(\d{4})-/, "$1-")) : null;
+  const dl = f.deadline ? Math.round(Date.parse(f.deadline + "T12:00:00Z") / 86400000) : null;
+  const daysLeft = dl === null ? null : dl - today;
+  const started = f.createdAt ? Math.floor(f.createdAt / 86400000) : today;
+  const elapsed = Math.max(0, today - started);
+
+  let weeksLeft = null, perWeekEach = null;
+  if (daysLeft !== null){
+    weeksLeft = Math.max(1, Math.ceil(daysLeft / 7));
+    perWeekEach = remaining / weeksLeft / 2;
+  }
+
+  // Where you'd need to be by now to land on the deadline.
+  let onTrackBy = null, delta = null;
+  if (dl !== null && dl > started){
+    const frac = Math.max(0, Math.min(1, (today - started) / (dl - started)));
+    onTrackBy = target * frac;
+    delta = total - onTrackBy;
+  }
+
+  // Where the current pace actually gets you.
+  let projectedDay = null;
+  if (!done && total > 0 && elapsed >= 3){
+    const perDay = total / elapsed;
+    if (perDay > 0) projectedDay = today + Math.ceil(remaining / perDay);
+  }
+
+  return {
+    target, total, remaining, pct, done,
+    daysLeft, weeksLeft, perWeekEach, onTrackBy, delta, projectedDay,
+    overdue: daysLeft !== null && daysLeft < 0 && !done
+  };
+}
+
+function dayNumToDate(n){ return new Date(n * 86400000); }
+
+async function createFund(){
+  const label = document.getElementById("fundLabel").value.trim();
+  const target = parseFloat(document.getElementById("fundTarget").value);
+  const currency = document.getElementById("fundCcy").value;
+  const deadline = document.getElementById("fundDeadline").value;
+  if (!label){ showToast("What are you saving for?"); return; }
+  if (!isFinite(target) || target <= 0){ showToast("Add a target amount"); return; }
+  if (!deadline){ showToast("Pick a date to hit it by"); return; }
+  if (deadline <= isoToday()){ showToast("Pick a date in the future"); return; }
+  try{
+    await updateCore(core => {
+      core.fund = { label, target, currency, deadline, createdAt: Date.now() };
+      core.fundLog = [];
+    });
+  }catch(e){ return; }
+  showToast("Fund started 💛");
+  const myName = me()?.name || "Your partner";
+  pushExternal("A fund to close the gap 💛", `${myName} started saving for ${label}.`, "money_with_wings");
+  renderPlans();
+}
+
+async function addFundDeposit(){
+  const el = document.getElementById("fundAmount");
+  const amount = parseFloat(el.value);
+  if (!isFinite(amount) || amount <= 0){ showToast("How much did you put in?"); return; }
+
+  const before = fundPlan();
+  try{
+    await updateCore(core => {
+      core.fundLog = core.fundLog || [];
+      core.fundLog.push({ id:String(Date.now()), from:myKey(), amount, ts:Date.now() });
+      if (core.fundLog.length > 300) core.fundLog = core.fundLog.slice(-300);
+    });
+  }catch(e){ return; }
+  el.value = "";
+  const after = fundPlan();
+
+  // Celebrate only when a quarter is actually crossed, not on every payment.
+  const crossed = FUND_MILESTONES.filter(m => before && after && before.pct < m && after.pct >= m);
+  if (crossed.length){
+    const top = Math.max(...crossed);
+    fireConfetti(top === 100 ? 160 : 90);
+    showToast(top === 100 ? "You made it. 🎉" : `${top}% of the way there 🎉`);
+    const myName = me()?.name || "Your partner";
+    pushExternal(top === 100 ? "Fund complete 🎉" : `${top}% saved 🎉`,
+      `${myName} just took you past ${top}% of ${state.core.fund.label}.`, "tada");
+  } else {
+    showToast(`${fmtMoney(amount)} in`);
+  }
+  renderPlans();
+}
+
+async function removeFundDeposit(id){
+  try{
+    await updateCore(core => { core.fundLog = (core.fundLog||[]).filter(e => e.id !== id); });
+  }catch(e){ return; }
+  renderPlans();
+}
+
+async function clearFund(){
+  if (!confirm("Close this fund? The goal and every payment in it go for good.")) return;
+  try{
+    await updateCore(core => { core.fund = null; core.fundLog = []; });
+  }catch(e){ return; }
+  renderPlans();
+}
+
+function renderFund(){
+  const el = document.getElementById("fundBody");
+  if (!el || !state.core) return;
+  const f = state.core.fund;
+
+  if (!f){
+    el.innerHTML = `
+      <div style="font-size:13px; color:var(--ink-soft); line-height:1.55; margin-bottom:14px;">
+        Put a number on the thing that ends the distance — a flight, a deposit, a week off. We'll work out what it takes each week and keep score for both of you.
+      </div>
+      <label class="field-label">What you're saving for</label>
+      <input type="text" id="fundLabel" placeholder="e.g. Jamie's flight home at Christmas" maxlength="60">
+      <div class="btn-row" style="margin-top:14px;">
+        <div style="flex:2;">
+          <label class="field-label" style="margin-top:0;">Target</label>
+          <input type="text" id="fundTarget" inputmode="decimal" placeholder="850">
+        </div>
+        <div style="flex:1;">
+          <label class="field-label" style="margin-top:0;">Currency</label>
+          <select id="fundCcy">${CURRENCIES.map(c => `<option value="${c}"${c==="GBP"?" selected":""}>${c}</option>`).join("")}</select>
+        </div>
+      </div>
+      <label class="field-label">Hit it by</label>
+      <input type="date" id="fundDeadline">
+      <div style="height:14px;"></div>
+      <button class="btn btn-primary btn-sm" style="margin:auto; display:flex;" onclick="createFund()">Start the fund <span class="arrow-nudge">→</span></button>`;
+    return;
+  }
+
+  const p = fundPlan();
+  const t = fundTotals();
+  const myName = me()?.name || "You";
+  const theirName = them()?.name || "Them";
+
+  let lead, sub;
+  if (p.done){
+    lead = "You got there.";
+    sub = `${escapeHtml(f.label)} is fully funded. Book it.`;
+  } else if (p.overdue){
+    lead = `${fmtMoney(p.remaining, f.currency)} still to go`;
+    sub = `The date you set has passed. Pick a new one, or keep chipping at it — nothing here is lost.`;
+  } else {
+    lead = `${fmtMoney(Math.ceil(p.perWeekEach), f.currency)} each, each week`;
+    sub = `for the next ${p.weeksLeft} week${p.weeksLeft===1?'':'s'} gets you to ${fmtMoney(p.target, f.currency)} by ${new Date(f.deadline + "T12:00:00Z").toLocaleDateString(undefined,{ day:"numeric", month:"long" })}.`;
+  }
+
+  let pace = "";
+  if (!p.done && p.delta !== null){
+    const ahead = p.delta >= 0;
+    const amt = fmtMoney(Math.abs(Math.round(p.delta)), f.currency);
+    pace = `<div class="fund-pace ${ahead ? "ahead" : "behind"}">
+      <span>${ahead ? "▲" : "▼"}</span>
+      <span>${ahead
+        ? `You're <b>${amt}</b> ahead of where you need to be.`
+        : `You're <b>${amt}</b> behind the line — the weekly figure above already accounts for it.`}</span>
+    </div>`;
+  }
+
+  let projection = "";
+  if (!p.done && p.projectedDay){
+    const d = dayNumToDate(p.projectedDay);
+    const beatsDeadline = p.daysLeft !== null && p.projectedDay <= Math.round(Date.parse(f.deadline + "T12:00:00Z")/86400000);
+    projection = `<div style="font-size:12px; color:var(--ink-faint); line-height:1.5; margin-top:8px;">
+      At the pace you've actually been going, you'd get there around <b>${d.toLocaleDateString(undefined,{ day:"numeric", month:"long", year:"numeric" })}</b>${beatsDeadline ? " — early." : "."}
+    </div>`;
+  }
+
+  const log = (state.core.fundLog || []).slice().sort((x,y) => y.ts - x.ts).slice(0, 8);
+
+  el.innerHTML = `
+    <div class="fund-hero">
+      <div class="fund-saved coin-pop">${fmtMoney(t.total, f.currency)}</div>
+      <div class="fund-of">of <b>${fmtMoney(p.target, f.currency)}</b> for ${escapeHtml(f.label)}</div>
+    </div>
+    <div class="fund-bar">
+      <div class="fund-fill" style="width:${p.pct.toFixed(1)}%"></div>
+      <div class="fund-ticks"><i style="left:25%"></i><i style="left:50%"></i><i style="left:75%"></i></div>
+    </div>
+    <div class="fund-marks"><span>0</span><span>25</span><span>50</span><span>75</span><span>100%</span></div>
+
+    <div class="fund-plan">
+      <div class="lead">${lead}</div>
+      <div class="sub">${sub}</div>
+      ${pace}
+      ${projection}
+    </div>
+
+    <div class="fund-split">
+      <div class="fund-who"><div class="amt">${fmtMoney(t.a, f.currency)}</div><div class="who">${escapeHtml(state.role === "a" ? myName : theirName)}</div></div>
+      <div class="fund-who"><div class="amt">${fmtMoney(t.b, f.currency)}</div><div class="who">${escapeHtml(state.role === "a" ? theirName : myName)}</div></div>
+    </div>
+
+    <div class="btn-row">
+      <div style="flex:2;">
+        <label class="field-label" style="margin-top:0;">Add to the pot</label>
+        <input type="text" id="fundAmount" inputmode="decimal" placeholder="25">
+      </div>
+      <div style="flex:1; display:flex; align-items:flex-end;">
+        <button class="btn btn-primary btn-sm" style="width:100%;" onclick="addFundDeposit()">Pay in</button>
+      </div>
+    </div>
+
+    ${log.length ? `<div class="fund-log">${log.map(e => {
+      const mine = e.from === myKey();
+      return `<div class="fund-row">
+        <span class="f-amt">${fmtMoney(Number(e.amount), f.currency)}</span>
+        <span class="f-who">${escapeHtml(mine ? "You" : theirName)} · ${new Date(e.ts).toLocaleDateString(undefined,{ day:"numeric", month:"short" })}</span>
+        ${mine ? `<button class="f-del" onclick="removeFundDeposit('${e.id}')" aria-label="Remove">×</button>` : ""}
+      </div>`;
+    }).join("")}</div>` : `<div class="empty-state" style="padding:16px 0;">Nothing in yet. Even a fiver starts it.</div>`}
+
+    <div style="height:8px;"></div>
+    <button class="link-btn" style="margin:auto; display:block;" onclick="clearFund()">Close this fund</button>`;
+}
+
 /* ---- Plans ---- */
 function renderPlans(){
   if (!state.core) return;
+  const ae = document.activeElement;
+  const typingInFund = ae && ["fundLabel","fundTarget","fundCcy","fundDeadline","fundAmount"].includes(ae.id);
+  if (!typingInFund) renderFund();
   renderCapsules();
   document.getElementById("nextVisitInput").value = state.core.nextVisit || "";
   const nv = state.core.nextVisit;
