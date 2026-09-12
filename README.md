@@ -150,6 +150,12 @@ The plan is arithmetic done carefully rather than a model:
 - **where your actual pace lands you**, which is often the more useful
   number
 
+The gauge is a semicircular arc given `pathLength="100"`, so the dash
+maths is just the percentage. It sweeps up from zero on every render, a
+plane rides the leading edge, the figure counts up rather than snapping,
+and the arc picks up a soft glow past 75%. All of it stills under
+`prefers-reduced-motion`.
+
 It re-plans on every payment. Crossing 25/50/75/100% fires confetti
 once — on the crossing, not on every payment — and notifies the other
 person. Paying in counts toward the daily streak.
@@ -165,6 +171,23 @@ Two changes aimed squarely at the app still being open in six months:
   this. A streak now survives one missed day, at most once a fortnight,
   and the app says so out loud — "we covered yesterday for you" — because
   a silent lie would be worse than the reset.
+
+## Desktop
+
+Below 940px this is a phone app in a 460px column, which is correct.
+Above it, that same column stranded in the middle of a 1400px screen is
+just a tall ribbon of cards — so the shell becomes a two-pane layout:
+the bottom tab bar unfolds into a left rail, and the card stack flows
+into columns. Screen headings and segmented controls use
+`column-span: all` so each screen still reads top-down.
+
+Two notes from building it. Three columns looked wrong: CSS columns
+balance by height and cannot split a card, so one very tall card
+stranded a near-empty first column beside it. Two columns with a wider
+measure balances far better for cards of uneven height. And a screen's
+hero card (`.card.span-all`) runs full width above the columns, with its
+*contents* capped at a readable 640px so a full-bleed card doesn't
+stretch its own text to 1200px.
 
 ## Design system notes
 

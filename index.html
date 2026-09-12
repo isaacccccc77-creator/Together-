@@ -684,26 +684,59 @@
   .quiet-note .em{ font-size:15px; flex-shrink:0; }
   .quiet-note b{ color:var(--ink); }
 
+  /* ---------- Collapsible composer ----------
+     Three always-open form fields for a capsule you write once a month
+     were dominating the Plans screen. The list stays; the form folds. */
+  .fold-btn{
+    display:flex; align-items:center; justify-content:space-between; gap:10px;
+    width:100%; background:var(--paper-soft); border:1px solid var(--line);
+    border-radius:14px; padding:12px 14px; font-size:13.5px; font-weight:600;
+    color:var(--ink); text-align:left;
+    transition:border-color .15s ease, transform .15s ease, box-shadow .15s ease;
+  }
+  .fold-btn:hover{ border-color:var(--rose); transform:translateY(-1px); box-shadow:var(--shadow-sm); }
+  .fold-btn .chev{ color:var(--ink-faint); font-size:15px; transition:transform .25s ease; }
+  .fold-btn.open .chev{ transform:rotate(180deg); }
+  .fold-body{ display:none; padding-top:6px; }
+  .fold-body.open{ display:block; animation:foldIn .28s ease both; }
+  @keyframes foldIn{ from{ opacity:0; transform:translateY(-6px); } to{ opacity:1; transform:none; } }
+  @media (prefers-reduced-motion: reduce){ .fold-body.open{ animation:none; } }
+
   /* ---------- The fund ---------- */
-  .fund-hero{ text-align:center; padding:6px 0 2px; }
+  .fund-gauge{ position:relative; width:100%; max-width:300px; margin:2px auto 0; }
+  .fund-gauge svg{ display:block; width:100%; overflow:visible; }
+  .gauge-track{ fill:none; stroke:var(--paper-soft); stroke-width:15; stroke-linecap:round; }
+  .gauge-rail{ fill:none; stroke:var(--line); stroke-width:1; opacity:.7; }
+  .gauge-fill{
+    fill:none; stroke:url(#fundGrad); stroke-width:15; stroke-linecap:round;
+    transition:stroke-dashoffset 1.3s cubic-bezier(.19,1,.22,1);
+  }
+  .gauge-tick{ stroke:var(--ink-faint); stroke-width:1.5; opacity:.45; }
+  .gauge-marker{ transition:transform 1.3s cubic-bezier(.19,1,.22,1); }
+  .gauge-marker text{ font-size:17px; }
+  .gauge-centre{
+    position:absolute; left:0; right:0; bottom:2px; text-align:center; pointer-events:none;
+  }
   .fund-saved{
-    font-family:var(--font-display); font-weight:600; font-size:40px; line-height:1.05;
+    font-family:var(--font-display); font-weight:600; font-size:38px; line-height:1;
     font-variant-numeric: lining-nums tabular-nums;
   }
-  .fund-of{ font-size:12.5px; color:var(--ink-soft); margin-top:4px; }
+  .fund-of{ font-size:12px; color:var(--ink-soft); margin-top:5px; line-height:1.45; }
   .fund-of b{ color:var(--ink); }
-  .fund-bar{
-    position:relative; height:14px; border-radius:99px; margin:16px 0 6px;
-    background:var(--paper-soft); border:1px solid var(--line); overflow:hidden;
+  .gauge-ends{
+    display:flex; justify-content:space-between;
+    font-size:10px; color:var(--ink-faint); font-weight:700; letter-spacing:0.06em;
+    margin:-2px 4px 0;
   }
-  .fund-fill{
-    position:absolute; inset:0 auto 0 0; border-radius:99px;
-    background:linear-gradient(90deg, var(--rose), var(--honey));
-    transition:width 1s cubic-bezier(.22,.9,.3,1);
+  @keyframes gaugeGlow{
+    0%,100%{ filter:drop-shadow(0 0 0 rgba(0,0,0,0)); }
+    50%{ filter:drop-shadow(0 0 7px color-mix(in srgb, var(--honey) 60%, transparent)); }
   }
-  .fund-ticks{ position:absolute; inset:0; pointer-events:none; }
-  .fund-ticks i{ position:absolute; top:0; bottom:0; width:1px; background:var(--line); opacity:.9; }
-  .fund-marks{ display:flex; justify-content:space-between; font-size:10px; color:var(--ink-faint); font-weight:700; letter-spacing:0.05em; }
+  .fund-gauge.near .gauge-fill{ animation:gaugeGlow 2.6s ease-in-out infinite; }
+  @media (prefers-reduced-motion: reduce){
+    .gauge-fill, .gauge-marker{ transition:none; }
+    .fund-gauge.near .gauge-fill{ animation:none; }
+  }
   .fund-plan{
     background:linear-gradient(140deg, var(--rose-wash), var(--paper-soft));
     border:1px solid var(--line); border-radius:16px; padding:14px 15px; margin:14px 0 12px;
@@ -953,6 +986,72 @@
     color:var(--rose-deep); background:var(--rose-wash); padding:2px 6px; border-radius:99px; margin-left:6px;
   }
 
+  /* ==========================================================
+     DESKTOP
+     Below 940px this is a phone app in a 460px column, which is
+     right. Above it, that column stranded in the middle of a
+     1400px screen is just a tall ribbon of cards — so the whole
+     shell becomes a two-pane layout: the tab bar unfolds into a
+     left rail, and the card stack flows into two columns.
+     Headings span both so each screen still reads top-down.
+     ========================================================== */
+  @media (min-width: 940px){
+    body{ align-items:flex-start; }
+    #app{
+      max-width:1180px;
+      display:grid;
+      grid-template-columns:224px minmax(0,1fr);
+      grid-template-rows:auto 1fr;
+      grid-template-areas:
+        "brand top"
+        "nav   main";
+      column-gap:32px;
+      padding:0 32px 56px;
+    }
+    .topbar{ grid-area:top; padding:32px 0 18px; }
+    #mainApp{ grid-area:main; min-width:0; display:block; }
+
+    /* onboarding is a form, not a dashboard — keep it a narrow column */
+    #onboardScreen, #setupGate{ grid-area:1 / 1 / -1 / -1; max-width:460px; margin:0 auto; }
+
+    .navbar{
+      grid-area:nav; position:sticky; top:32px; align-self:start;
+      flex-direction:column; gap:3px;
+      background:transparent; border-top:none;
+      width:auto; max-width:none; margin:0; padding:0;
+    }
+    .nav-btn{
+      flex-direction:row; justify-content:flex-start; gap:13px;
+      padding:12px 15px; border-radius:14px;
+    }
+    .nav-btn:hover{ transform:none; background:var(--paper-soft); }
+    .nav-btn svg{ width:19px; height:19px; }
+    .nav-btn .lab{ font-size:14px; letter-spacing:0.01em; }
+    .nav-btn.active{ background:var(--card); box-shadow:var(--shadow-sm); }
+    .nav-dot{ top:10px; right:auto; left:26px; }
+
+    /* the card stack becomes two flowing columns */
+    .screen{ padding:0 0 24px; columns:2; column-gap:22px; }
+    .card, .stat-row, .note, .capsule, .pocket, .run-item, .bento{
+      break-inside:avoid;
+    }
+    .card, .stat-row{ margin-bottom:22px; }
+    /* anything that titles a screen or switches it stays full width */
+    .eyebrow, h1.page-title, .streak-pill, .seg-control, .card.span-all{ column-span:all; }
+    h1.page-title{ font-size:36px; margin-bottom:22px; }
+
+    /* A full-bleed hero card is right; its contents stretched to 1200px
+       are not. Keep the reading measure comfortable inside it. */
+    .card.span-all > div:not(.card-title){ max-width:640px; margin-inline:auto; }
+    .sheet{ max-width:540px; }
+    .toast{ bottom:32px; }
+    .wk-overlay{ padding-top:40px; }
+  }
+
+  @media (min-width: 1320px){
+    #app{ max-width:1240px; grid-template-columns:240px minmax(0,1fr); }
+  }
+
   /* ---------- Lightbox ---------- */
   .lightbox{
     position:fixed; inset:0; background:rgba(30,26,42,0.94); z-index:100;
@@ -1188,46 +1287,53 @@
       <div class="eyebrow">Looking ahead</div>
       <h1 class="page-title">What we're counting toward.</h1>
 
-      <div class="card">
-        <div class="card-title">Next time together</div>
-        <label class="field-label">Date</label>
-        <input type="date" id="nextVisitInput" onchange="saveNextVisit()">
-        <div style="height:6px;"></div>
-        <div class="stat" style="margin-top:10px;">
-          <div class="num" id="visitCountdown">&mdash;</div>
-          <div class="label">days to go</div>
-        </div>
-      </div>
-
-      <div class="card">
+      <div class="card span-all">
         <div class="card-title">The fund</div>
         <div id="fundBody"></div>
       </div>
 
       <div class="card">
-        <div class="card-title">Time capsules<span class="pro-pill" id="capsulePro" style="display:none;">Forever</span></div>
-        <div style="font-size:13px; color:var(--ink-soft); line-height:1.5; margin-bottom:12px;">
-          Write something they can't read yet. It stays sealed until the date you pick.
+        <div class="card-title">Next time together</div>
+        <div style="display:flex; align-items:center; gap:14px;">
+          <div style="text-align:center; flex-shrink:0; min-width:78px;">
+            <div class="num visit-countdown" id="visitCountdown" style="font-family:var(--font-display); font-size:34px; font-weight:600; line-height:1;">&mdash;</div>
+            <div class="label" style="font-size:10px; color:var(--ink-soft); text-transform:uppercase; letter-spacing:0.07em; font-weight:700; margin-top:3px;">days to go</div>
+          </div>
+          <input type="date" id="nextVisitInput" onchange="saveNextVisit()" style="flex:1;">
         </div>
-        <label class="field-label">A line to show on the sealed envelope</label>
-        <input type="text" id="capsuleTitle" placeholder="e.g. Open when you land ✈️" maxlength="60">
-        <label class="field-label">What's inside</label>
-        <textarea id="capsuleBody" placeholder="Say the thing you want them to read later..." maxlength="1200"></textarea>
-        <label class="field-label">Unlocks on</label>
-        <input type="date" id="capsuleDate">
-        <div style="height:12px;"></div>
-        <button class="btn btn-soft btn-sm" onclick="addCapsule()">Seal it</button>
+      </div>
+
+      <div class="card">
+        <div class="card-title">Time capsules<span class="pro-pill" id="capsulePro" style="display:none;">Forever</span></div>
+        <button class="fold-btn" id="capsuleFoldBtn" onclick="toggleFold('capsuleFold')">
+          <span>✉️ Write one they can't read yet</span><span class="chev">⌄</span>
+        </button>
+        <div class="fold-body" id="capsuleFold">
+          <label class="field-label">A line to show on the sealed envelope</label>
+          <input type="text" id="capsuleTitle" placeholder="e.g. Open when you land ✈️" maxlength="60">
+          <label class="field-label">What's inside</label>
+          <textarea id="capsuleBody" placeholder="Say the thing you want them to read later..." maxlength="1200"></textarea>
+          <label class="field-label">Unlocks on</label>
+          <input type="date" id="capsuleDate">
+          <div style="height:12px;"></div>
+          <button class="btn btn-soft btn-sm" onclick="addCapsule()">Seal it</button>
+        </div>
         <div id="capsuleList" style="margin-top:14px;"></div>
       </div>
 
       <div class="card">
         <div class="card-title">Someday list</div>
-        <div class="compose">
-          <input type="text" id="bucketInput" placeholder="Add something to look forward to...">
+        <button class="fold-btn" onclick="toggleFold('bucketFold')">
+          <span>✨ Add something to look forward to</span><span class="chev">⌄</span>
+        </button>
+        <div class="fold-body" id="bucketFold">
+          <div class="compose" style="margin-top:10px;">
+            <input type="text" id="bucketInput" placeholder="Drive the coast together...">
+          </div>
+          <div style="height:10px;"></div>
+          <button class="btn btn-soft btn-sm" onclick="addBucket()">Add</button>
         </div>
-        <div style="height:10px;"></div>
-        <button class="btn btn-soft btn-sm" onclick="addBucket()">Add</button>
-        <div id="bucketList" style="margin-top:8px;"></div>
+        <div id="bucketList" style="margin-top:10px;"></div>
       </div>
     </div>
 
@@ -5454,6 +5560,71 @@ async function clearFund(){
   renderPlans();
 }
 
+/* A semicircular gauge: the arc fills as the pot does, a plane rides the
+   leading edge, and the number counts up rather than snapping. The arc is
+   given pathLength="100" so the dash maths is just the percentage. */
+const GAUGE = { R:88, CX:110, CY:104 };
+
+function gaugePoint(pct){
+  const a = Math.PI * (1 - Math.max(0, Math.min(100, pct)) / 100);
+  return { x: GAUGE.CX + GAUGE.R * Math.cos(a), y: GAUGE.CY - GAUGE.R * Math.sin(a) };
+}
+
+function fundGaugeSvg(pct){
+  const { R, CX, CY } = GAUGE;
+  const arc = `M ${CX - R} ${CY} A ${R} ${R} 0 0 1 ${CX + R} ${CY}`;
+  const ticks = [25, 50, 75].map(t => {
+    const a = Math.PI * (1 - t / 100);
+    const inner = R - 11, outer = R + 11;
+    return `<line class="gauge-tick"
+      x1="${(CX + inner*Math.cos(a)).toFixed(1)}" y1="${(CY - inner*Math.sin(a)).toFixed(1)}"
+      x2="${(CX + outer*Math.cos(a)).toFixed(1)}" y2="${(CY - outer*Math.sin(a)).toFixed(1)}"/>`;
+  }).join("");
+  const p = gaugePoint(0);   // start collapsed; the real value animates in
+  return `<svg viewBox="0 0 220 126" role="img" aria-label="${pct.toFixed(0)}% saved">
+    <defs>
+      <linearGradient id="fundGrad" gradientUnits="userSpaceOnUse" x1="22" y1="0" x2="198" y2="0">
+        <stop offset="0%" stop-color="var(--rose)"/>
+        <stop offset="100%" stop-color="var(--honey)"/>
+      </linearGradient>
+    </defs>
+    <path class="gauge-track" d="${arc}"/>
+    ${ticks}
+    <path class="gauge-fill" id="gaugeFill" d="${arc}" pathLength="100"
+          stroke-dasharray="100" stroke-dashoffset="100"/>
+    <g class="gauge-marker" id="gaugeMarker" transform="translate(${p.x.toFixed(1)},${p.y.toFixed(1)})">
+      <circle r="13" fill="var(--card)" stroke="var(--line)"/>
+      <text text-anchor="middle" dominant-baseline="central" y="1">✈️</text>
+    </g>
+  </svg>`;
+}
+
+// Drive the arc and the plane to the real value on the next frame, so the
+// CSS transition has something to animate from.
+function animateGauge(pct){
+  requestAnimationFrame(() => {
+    const fill = document.getElementById("gaugeFill");
+    const marker = document.getElementById("gaugeMarker");
+    if (!fill || !marker) return;
+    fill.setAttribute("stroke-dashoffset", String(100 - Math.max(0, Math.min(100, pct))));
+    const p = gaugePoint(pct);
+    marker.setAttribute("transform", `translate(${p.x.toFixed(1)},${p.y.toFixed(1)})`);
+  });
+}
+
+let lastFundShown = 0;
+function animateMoney(el, from, to, ccy){
+  if (!el) return;
+  if (reducedMotion() || from === to){ el.textContent = fmtMoney(to, ccy); return; }
+  const start = performance.now(), dur = 1100;
+  (function step(now){
+    const t = Math.min(1, (now - start) / dur);
+    const eased = 1 - Math.pow(1 - t, 3);
+    el.textContent = fmtMoney(Math.round(from + (to - from) * eased), ccy);
+    if (t < 1) requestAnimationFrame(step);
+  })(start);
+}
+
 function renderFund(){
   const el = document.getElementById("fundBody");
   if (!el || !state.core) return;
@@ -5524,15 +5695,14 @@ function renderFund(){
   const log = (state.core.fundLog || []).slice().sort((x,y) => y.ts - x.ts).slice(0, 8);
 
   el.innerHTML = `
-    <div class="fund-hero">
-      <div class="fund-saved coin-pop">${fmtMoney(t.total, f.currency)}</div>
-      <div class="fund-of">of <b>${fmtMoney(p.target, f.currency)}</b> for ${escapeHtml(f.label)}</div>
+    <div class="fund-gauge ${p.pct >= 75 ? "near" : ""}">
+      ${fundGaugeSvg(p.pct)}
+      <div class="gauge-centre">
+        <div class="fund-saved" id="fundSavedNum">${fmtMoney(t.total, f.currency)}</div>
+        <div class="fund-of">of <b>${fmtMoney(p.target, f.currency)}</b> · ${escapeHtml(f.label)}</div>
+      </div>
     </div>
-    <div class="fund-bar">
-      <div class="fund-fill" style="width:${p.pct.toFixed(1)}%"></div>
-      <div class="fund-ticks"><i style="left:25%"></i><i style="left:50%"></i><i style="left:75%"></i></div>
-    </div>
-    <div class="fund-marks"><span>0</span><span>25</span><span>50</span><span>75</span><span>100%</span></div>
+    <div class="gauge-ends"><span>0</span><span>${p.pct.toFixed(0)}%</span><span>100</span></div>
 
     <div class="fund-plan">
       <div class="lead">${lead}</div>
@@ -5567,9 +5737,21 @@ function renderFund(){
 
     <div style="height:8px;"></div>
     <button class="link-btn" style="margin:auto; display:block;" onclick="clearFund()">Close this fund</button>`;
+
+  animateGauge(p.pct);
+  animateMoney(document.getElementById("fundSavedNum"), lastFundShown, t.total, f.currency);
+  lastFundShown = t.total;
 }
 
 /* ---- Plans ---- */
+function toggleFold(id){
+  const body = document.getElementById(id);
+  if (!body) return;
+  const open = body.classList.toggle("open");
+  const btn = body.previousElementSibling;
+  if (btn && btn.classList.contains("fold-btn")) btn.classList.toggle("open", open);
+}
+
 function renderPlans(){
   if (!state.core) return;
   const ae = document.activeElement;
