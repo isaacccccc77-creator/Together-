@@ -132,13 +132,15 @@
     padding:18px;
     margin-bottom:14px;
     box-shadow:var(--shadow-sm);
-    transition:transform .18s ease, box-shadow .18s ease;
+    transition:box-shadow .18s ease;
   }
-  .card:hover{
-    transform:translateY(-3px);
-    box-shadow:var(--shadow-md);
-  }
-  .card:active{ transform:translateY(0); box-shadow:var(--shadow-sm); }
+  /* Cards used to lift 3px on hover. A container is not a button: on
+     desktop the cursor crosses several of them just getting somewhere, so
+     each pass set one moving and the page read as jittery. Worse, a lift
+     vacates the strip under the cursor, which can drop :hover, drop the
+     lift, regain :hover — a loop that reads as the card jumping. Feedback
+     is now light and geometric-free: the shadow deepens, nothing moves. */
+  .card:hover{ box-shadow:var(--shadow-md); }
   .card-title{
     font-family:var(--font-display);
     font-size:20px;
@@ -229,7 +231,7 @@
     box-shadow:var(--shadow-sm);
     transition:transform .18s ease, box-shadow .18s ease;
   }
-  .stat:hover{ transform:translateY(-3px); box-shadow:var(--shadow-md); }
+  .stat:hover{ box-shadow:var(--shadow-md); }
   .stat .num{ font-family:var(--font-display); font-size:32px; }
   .stat .label{ font-size:11px; color:var(--ink-soft); text-transform:uppercase; letter-spacing:0.06em; margin-top:2px; }
 
@@ -259,7 +261,7 @@
     box-shadow:var(--shadow-sm);
     transition:transform .18s ease, box-shadow .18s ease;
   }
-  .note:hover{ transform:translateY(-2px); box-shadow:var(--shadow-md); }
+  .note:hover{ box-shadow:var(--shadow-md); }
   .note.me{ border-color:var(--rose-wash); }
   .note-meta{ display:flex; justify-content:space-between; margin-bottom:6px; }
   .note-who{ font-size:11px; font-weight:700; text-transform:uppercase; letter-spacing:0.05em; color:var(--rose-deep); }
@@ -639,7 +641,7 @@
     margin-bottom:10px; background:var(--card); box-shadow:var(--shadow-sm);
     transition:transform .18s ease, box-shadow .18s ease;
   }
-  .pocket:hover{ transform:translateY(-2px); box-shadow:var(--shadow-md); }
+  .pocket:hover{ box-shadow:var(--shadow-md); border-color:var(--rose-wash); }
   .pocket-when{ flex:1; min-width:0; }
   .pocket-when .day{ font-size:10.5px; text-transform:uppercase; letter-spacing:0.08em; color:var(--ink-soft); font-weight:700; }
   .pocket-when .times{ font-family:var(--font-display); font-size:19px; margin-top:2px; }
@@ -763,6 +765,21 @@
   .coin-pop{ animation:coinPop .55s cubic-bezier(.2,.9,.3,1.2) both; }
   @media (prefers-reduced-motion: reduce){ .coin-pop{ animation:none; } .fund-fill{ transition:none; } }
 
+  /* A control that lifts on hover vacates the few pixels under the cursor,
+     which can drop :hover and start it oscillating. This invisible strip
+     sits in the margin directly beneath each one and moves with it, so the
+     pointer stays inside while it rises. It never overlaps content, so it
+     can't intercept a click. */
+  .btn, .mood-chip, .vibe-chip, .tap-btn, .theme-opt, .price-opt,
+  .night-btn, .fold-btn, .wk-ctrl, .code-pill, .nav-btn, .gallery-thumb{
+    position:relative;
+  }
+  .btn::after, .mood-chip::after, .vibe-chip::after, .tap-btn::after,
+  .theme-opt::after, .price-opt::after, .night-btn::after, .fold-btn::after,
+  .wk-ctrl::after, .code-pill::after, .nav-btn::after{
+    content:""; position:absolute; left:0; right:0; top:100%; height:4px;
+  }
+
   /* ---------- Bento grid ----------
      A 4-column track with tiles spanning 2 or 4. The uneven rhythm is
      the point: a wall of identical squares reads as a spreadsheet,
@@ -775,7 +792,7 @@
     display:flex; flex-direction:column; justify-content:center;
     transition:transform .18s ease, box-shadow .18s ease;
   }
-  .bento-tile:hover{ transform:translateY(-3px); box-shadow:var(--shadow-md); }
+  .bento-tile:hover{ box-shadow:var(--shadow-md); }
   .bento-tile.wide{ grid-column:span 4; }
   .bento-tile.hero{
     grid-column:span 4; text-align:center; padding:22px 18px;
