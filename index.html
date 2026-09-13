@@ -357,6 +357,12 @@
   }
   .notif-row{ display:flex; align-items:center; justify-content:space-between; gap:12px; }
   .notif-status{ font-size:12px; color:var(--ink-soft); margin-top:4px; }
+  .notif-steps{ margin:12px 0 4px; padding-left:20px; font-size:13px; line-height:1.75; color:var(--ink); }
+  .notif-steps li{ margin-bottom:2px; }
+  .notif-link{ color:var(--rose-deep); text-underline-offset:2px; }
+  .notif-topic{ margin-top:12px; padding:12px; border-radius:14px; background:var(--paper-soft); border:1px solid var(--line); }
+  .notif-topic.muted{ background:transparent; }
+  .notif-topic-label{ font-size:11px; letter-spacing:.08em; text-transform:uppercase; color:var(--ink-soft); margin-bottom:7px; }
 
   /* ---------- Streak ---------- */
   .streak-pill{
@@ -1498,14 +1504,32 @@
 
       <div class="card">
         <div class="card-title">Phone notifications, even when closed</div>
-        <div class="notif-status">1. Install the free <b>ntfy</b> app (App Store / Play Store).<br>
-        2. Tap the + button in ntfy and subscribe to this exact topic:</div>
-        <div class="code-display" id="ntfyTopicDisplay" style="font-size:16px; word-break:break-all;">···</div>
-        <div class="btn-row">
-          <button class="btn btn-ghost btn-sm" onclick="copyTopic()">Copy topic</button>
-          <button class="btn btn-ghost btn-sm" onclick="testPush()">Send test</button>
+        <div class="notif-status">Free, no account, works on both iPhone and Android. Three minutes, once.</div>
+
+        <ol class="notif-steps">
+          <li>Install the free <b>ntfy</b> app — <a class="notif-link" href="https://apps.apple.com/app/ntfy/id1625396347" target="_blank" rel="noopener">App&nbsp;Store</a> or <a class="notif-link" href="https://play.google.com/store/apps/details?id=io.heckel.ntfy" target="_blank" rel="noopener">Play&nbsp;Store</a>.</li>
+          <li>Open ntfy, tap <b>+</b>, and subscribe to <b>your own</b> topic below.</li>
+          <li>Tap <b>Buzz my phone</b> to prove it landed.</li>
+        </ol>
+
+        <div class="notif-topic">
+          <div class="notif-topic-label">Yours — subscribe to this one <span id="ntfyMineWho"></span></div>
+          <div class="code-display" id="ntfyTopicDisplay" style="font-size:15px; word-break:break-all;">···</div>
+          <div class="btn-row">
+            <button class="btn btn-soft btn-sm" onclick="copyTopic()">Copy</button>
+            <button class="btn btn-soft btn-sm" onclick="testPush()">Buzz my phone</button>
+          </div>
         </div>
-        <div class="notif-status" style="margin-top:10px;">Do this on both phones, using the same topic. After that, pings and notes will buzz your phone even with the app fully closed. Keep this topic private — it's not encrypted, just hard to guess.</div>
+
+        <div class="notif-topic muted">
+          <div class="notif-topic-label">Theirs — <span id="ntfyTheirWho">their</span> phone, on their device</div>
+          <div class="code-display" id="ntfyTheirDisplay" style="font-size:15px; word-break:break-all; opacity:.75;">···</div>
+          <div class="btn-row">
+            <button class="btn btn-ghost btn-sm" onclick="copyTheirTopic()">Copy theirs</button>
+          </div>
+        </div>
+
+        <div class="notif-status" style="margin-top:12px;">You each subscribe to your <b>own</b> topic — that's what stops your own taps buzzing you back. Keep both private: ntfy topics aren't encrypted, just very hard to guess.</div>
       </div>
 
       <div class="card">
@@ -1887,22 +1911,53 @@ function renderNotifStatus(){
   else el.textContent = "Off";
 }
 
+/* A short double-buzz. Android/Chrome honours this; iOS Safari has no
+   vibration API at all and ignores it silently, which is the correct
+   fallback — the ntfy app handles the buzz on iPhone. */
+function buzz(pattern){
+  // Deliberately not gated on prefers-reduced-motion: that setting is about
+  // visual animation, and the buzz is the notification itself.
+  try{ navigator.vibrate?.(pattern || [18, 60, 18]); }catch(e){}
+}
+
 function fireNotification(title, body){
+  buzz();
   if (notifSupported() && Notification.permission === "granted"){
     try{ new Notification(title, { body }); }catch(e){}
   }
 }
 
-async function pushExternal(title, body, tags){
-  const topic = state.core?.ntfyTopic;
-  if (!topic) return;
+/* Each person subscribes to their OWN topic, so sending never buzzes the sender.
+   core.ntfyTopic is the shared base; the role letter is appended to it. */
+function topicBase(){ return state.core?.ntfyTopic || ""; }
+function topicFor(role){ const b = topicBase(); return b ? `${b}-${role}` : ""; }
+function myTopic(){ return state.role ? topicFor(myKey()) : ""; }
+function theirTopic(){ return state.role ? topicFor(theirKey()) : ""; }
+
+/* Publish through ntfy's JSON API rather than its headers. HTTP header values
+   are ISO-8859-1 only, so a title like "Goodnight 🌙" makes fetch() throw before
+   anything leaves the browser. The JSON body is UTF-8 and takes emoji fine.
+   No Content-Type is set on purpose: that keeps it a simple request with no
+   CORS preflight, and ntfy parses the body either way. */
+async function pushTo(topic, title, body, tags){
+  if (!topic) return false;
   try{
-    await fetch(`https://ntfy.sh/${topic}`, {
+    const res = await fetch("https://ntfy.sh/", {
       method: "POST",
-      headers: { "Title": title, "Tags": tags || "heart" },
-      body: body
+      body: JSON.stringify({
+        topic: topic,
+        title: String(title || ""),
+        message: String(body || ""),
+        tags: [tags || "heart"]
+      })
     });
-  }catch(e){ /* best effort — offline or blocked, ignore */ }
+    return res.ok;
+  }catch(e){ return false; }
+}
+
+// Buzz the other person. Never yourself.
+async function pushExternal(title, body, tags){
+  return pushTo(theirTopic(), title, body, tags);
 }
 
 function checkForNew(){
@@ -2212,7 +2267,7 @@ async function createSpace(){
   }
   if (!code){ showToast("Couldn't find a free code just now — try again"); return; }
 
-  const tail = randomInts(8, CODE_CHARS.length).map(i => CODE_CHARS[i]).join("").toLowerCase();
+  const tail = randomInts(14, CODE_CHARS.length).map(i => CODE_CHARS[i]).join("").toLowerCase();
   const core = defaultCore();
   core.a = { name, tz, wake:8, sleep:23, uid: myUid() };
   core.ntfyTopic = `us-apart-${tail}`;
@@ -5836,16 +5891,44 @@ async function delBucket(id){
 }
 
 /* ---- Settings ---- */
-function copyTopic(){
-  const topic = state.core?.ntfyTopic;
-  if (!topic) return;
-  navigator.clipboard?.writeText(topic).catch(()=>{});
-  showToast("Topic copied");
+async function copyToClipboard(text){
+  try{ await navigator.clipboard.writeText(text); return true; }
+  catch(e){
+    // clipboard API needs a secure context and can be refused; fall back
+    try{
+      const ta = document.createElement("textarea");
+      ta.value = text;
+      ta.style.cssText = "position:fixed;opacity:0;";
+      document.body.appendChild(ta); ta.select();
+      const ok = document.execCommand("copy");
+      ta.remove();
+      return ok;
+    }catch(e2){ return false; }
+  }
 }
+
+function copyTopic(){
+  const t = myTopic();
+  if (!t){ showToast("No topic yet"); return; }
+  copyToClipboard(t).then(ok => showToast(ok ? "Your topic copied" : "Couldn't copy — long-press to select it"));
+}
+function copyTheirTopic(){
+  const t = theirTopic();
+  if (!t){ showToast("No topic yet"); return; }
+  copyToClipboard(t).then(ok => showToast(ok ? "Their topic copied" : "Couldn't copy — long-press to select it"));
+}
+
+/* Sends to YOUR topic, so it proves your own subscription without
+   bothering them. Reports what actually happened. */
 async function testPush(){
-  if (!state.core?.ntfyTopic){ showToast("No topic yet"); return; }
-  await pushExternal("Test 👋", "If you see this, phone notifications are working.", "wave");
-  showToast("Test sent");
+  const t = myTopic();
+  if (!t){ showToast("No topic yet"); return; }
+  buzz([25, 70, 25]);
+  showToast("Sending…");
+  const ok = await pushTo(t, "It works 👋", "That's your phone connected. You'll get their taps and notes here even with the app closed.", "wave");
+  showToast(ok
+    ? "Sent — check your phone's lock screen"
+    : "Couldn't reach ntfy. Check your connection, then try again.");
 }
 
 function renderSettings(){
@@ -5861,7 +5944,12 @@ function renderSettings(){
   document.getElementById("settingsWorkEnd").value = meNow?.workEnd ?? 17;
   document.getElementById("wrappedPro").style.display = isPremium() ? "none" : "inline-flex";
   renderNotifStatus();
-  document.getElementById("ntfyTopicDisplay").textContent = state.core.ntfyTopic || "Not set yet";
+  const myT = myTopic(), theirT = theirTopic();
+  document.getElementById("ntfyTopicDisplay").textContent = myT || "Not set yet";
+  document.getElementById("ntfyTheirDisplay").textContent = theirT || "Not set yet";
+  const myNm = me()?.name, theirNm = them()?.name;
+  document.getElementById("ntfyMineWho").textContent = myNm ? `(${myNm})` : "";
+  document.getElementById("ntfyTheirWho").textContent = theirNm ? `${theirNm}'s` : "their";
   const m = me();
   document.getElementById("settingsName").value = m?.name || "";
   document.getElementById("settingsTz").value = m?.tz || "";

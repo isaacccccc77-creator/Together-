@@ -441,10 +441,54 @@ bots/scanners from reading every couple's data once Firestore's default
 from reading your notes, photos, or voice memos — don't share invite codes
 publicly.
 
+## Notifications
+
+Two independent layers, both free, no account and no billing anywhere.
+
+**1. In-app popups** (Settings → Notifications). Standard `Notification`
+API. Only fires while the tab is actually open, and on iOS Safari it
+doesn't exist at all until the page is installed to the home screen — so
+this is a nice-to-have, not the real channel.
+
+**2. Phone push via ntfy** (Settings → Phone notifications). This is the
+one that matters: it buzzes the other phone with the app fully closed.
+Each partner installs the free [ntfy](https://ntfy.sh) app and subscribes
+to **their own** topic.
+
+`core.ntfyTopic` holds a shared random base (14 chars, ~28^14 ≈ 5e20
+combinations). The role letter is appended to it, giving `<base>-a` and
+`<base>-b`. `pushExternal()` always publishes to the *partner's* topic, so
+sending never buzzes the sender. "Buzz my phone" in Settings publishes to
+your *own* topic, so each person can prove their own subscription without
+bothering the other.
+
+Publishing goes through ntfy's **JSON API** (`POST https://ntfy.sh/` with
+`{topic, title, message, tags}`), not its `Title`/`Tags` headers. This is
+load-bearing: HTTP header values are ISO-8859-1 only, so a title like
+`"Goodnight 🌙"` makes `fetch()` throw `String contains non ISO-8859-1
+code point` before the request ever leaves the browser. Every push title
+in this app contains an emoji, so the header form failed silently for all
+of them. No `Content-Type` is set on purpose — that keeps it a CORS
+"simple request" with no preflight, and ntfy parses the body regardless.
+
+Incoming pings and notes also call `navigator.vibrate()` for a short
+double-buzz. That's Android-only; iOS Safari has no vibration API and
+ignores it, which is correct, because on iPhone the ntfy app does the
+buzzing. It is deliberately **not** gated on `prefers-reduced-motion` —
+that setting is about visual animation, and here the buzz *is* the
+notification.
+
+ntfy topics are unauthenticated: anyone who knows a topic can read its
+messages and publish to it. They're long and random rather than secret,
+so treat them like the invite code — don't post them publicly.
+
 ## Known limits
 
 - Firestore documents cap at 1MiB; a very long voice note can fail to
   save (the app now shows an error toast instead of silently dropping it,
   but consider moving large media to Firebase Storage if you extend this).
 - Not yet installable as a PWA (no manifest/service worker) — phone push
-  only works through the ntfy app, not a native install.
+  only works through the ntfy app, not a native install. This is also why
+  in-app popups do nothing on iOS Safari.
+- ntfy topics are unencrypted and unauthenticated. Guessing one is
+  infeasible, but anyone you show it to can publish to it.
