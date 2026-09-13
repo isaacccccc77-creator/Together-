@@ -303,7 +303,7 @@ a force-quit. So the app never guesses. It says "last had the app open
   active again inside your own waking hours, so nobody stays "asleep" for
   days after forgetting.
 - **Inferred quiet hours, with zero tracking.** Both partners already set
-  their wake/sleep hours in Settings, so "it's 2:04 AM for Jamie" needs
+  their wake/sleep hours in Settings, so "it's 2:04 AM for Anne" needs
   no monitoring at all.
 - **The quiet-hours guard.** Try to send a love tap while they're asleep
   or outside their waking hours and the app stops you. For notes it
