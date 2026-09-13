@@ -1054,7 +1054,11 @@
     }
     .card, .stat-row{ margin-bottom:22px; }
     /* anything that titles a screen or switches it stays full width */
-    .eyebrow, h1.page-title, .streak-pill, .seg-control, .card.span-all{ column-span:all; }
+    .eyebrow, h1.page-title, .page-head, .seg-control, .card.span-all{ column-span:all; }
+    /* heading and streak share one line, so the pill stops floating alone */
+    .page-head{ display:flex; align-items:baseline; justify-content:space-between; gap:22px; flex-wrap:wrap; }
+    .page-head h1.page-title{ margin-bottom:0; }
+    .page-head .streak-pill{ margin-bottom:0; }
     h1.page-title{ font-size:36px; margin-bottom:22px; }
 
     /* A full-bleed hero card is right; its contents stretched to 1200px
@@ -1146,8 +1150,10 @@
     <!-- HOME -->
     <div class="screen" id="screen-home">
       <div class="eyebrow" id="homeDate">Today</div>
-      <h1 class="page-title">Same sky, different hour.</h1>
-      <div class="streak-pill" id="streakPill"><span class="flame">🔥</span> <span>Start today's streak</span></div>
+      <div class="page-head">
+        <h1 class="page-title">Same sky, different hour.</h1>
+        <div class="streak-pill" id="streakPill"><span class="flame">🔥</span> <span>Start today's streak</span></div>
+      </div>
 
       <div class="card sky-wrap">
         <div class="sky-bar" id="skyBar">
