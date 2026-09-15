@@ -363,6 +363,18 @@
   .notif-topic{ margin-top:12px; padding:12px; border-radius:14px; background:var(--paper-soft); border:1px solid var(--line); }
   .notif-topic.muted{ background:transparent; }
   .notif-topic-label{ font-size:11px; letter-spacing:.08em; text-transform:uppercase; color:var(--ink-soft); margin-bottom:7px; }
+  .diag{ margin-top:14px; }
+  .diag:empty{ display:none; }
+  .diag-row{ display:flex; justify-content:space-between; gap:12px; font-size:12px;
+             padding:6px 0; border-bottom:1px solid var(--line); }
+  .diag-k{ color:var(--ink-soft); flex:0 0 auto; }
+  .diag-v{ font-family:ui-monospace,SFMono-Regular,Menlo,monospace; font-size:11px;
+           text-align:right; word-break:break-all; }
+  .diag-v.good{ color:var(--good); }
+  .diag-v.bad{ color:var(--rose-deep); }
+  .diag-hint{ font-size:12px; line-height:1.7; color:var(--ink-soft); margin-top:10px; }
+  .build-stamp{ text-align:center; font-size:11px; color:var(--ink-faint); margin-top:18px;
+                font-variant-numeric: lining-nums tabular-nums; }
 
   /* ---------- Streak ---------- */
   .streak-pill{
@@ -1530,6 +1542,8 @@
         </div>
 
         <div class="notif-status" style="margin-top:12px;">You each subscribe to your <b>own</b> topic — that's what stops your own taps buzzing you back. Keep both private: ntfy topics aren't encrypted, just very hard to guess.</div>
+
+        <div class="diag" id="notifDiag"></div>
       </div>
 
       <div class="card">
@@ -1539,6 +1553,7 @@
       </div>
 
       <button class="link-btn" onclick="leaveSpace()">Leave this space</button>
+      <div class="build-stamp" id="buildStamp"></div>
     </div>
   </div>
 
@@ -1939,10 +1954,13 @@ function theirTopic(){ return state.role ? topicFor(theirKey()) : ""; }
    anything leaves the browser. The JSON body is UTF-8 and takes emoji fine.
    No Content-Type is set on purpose: that keeps it a simple request with no
    CORS preflight, and ntfy parses the body either way. */
-async function pushTo(topic, title, body, tags){
-  if (!topic) return false;
+let lastPushResult = null;
+
+async function pushDetailed(topic, title, body, tags){
+  if (!topic) return { ok:false, why:"no-topic", detail:"This space has no notification topic yet." };
+  let res;
   try{
-    const res = await fetch("https://ntfy.sh/", {
+    res = await fetch("https://ntfy.sh/", {
       method: "POST",
       body: JSON.stringify({
         topic: topic,
@@ -1951,8 +1969,21 @@ async function pushTo(topic, title, body, tags){
         tags: [tags || "heart"]
       })
     });
-    return res.ok;
-  }catch(e){ return false; }
+  }catch(e){
+    // fetch only throws for network-level failures: offline, DNS, blocked,
+    // or a CORS rejection. The message is deliberately vague in browsers.
+    return { ok:false, why:"network",
+             detail:"Couldn't reach ntfy.sh at all — no connection, or something on this network is blocking it." };
+  }
+  if (res.ok) return { ok:true, why:"sent", status:res.status };
+  let textBody = "";
+  try{ textBody = (await res.text()).slice(0, 200); }catch(e){}
+  return { ok:false, why:"rejected", status:res.status,
+           detail:`ntfy.sh refused it (HTTP ${res.status}). ${textBody}`.trim() };
+}
+
+async function pushTo(topic, title, body, tags){
+  return (await pushDetailed(topic, title, body, tags)).ok;
 }
 
 // Buzz the other person. Never yourself.
@@ -2039,6 +2070,10 @@ const CODE_NOUN = [
   "VALLEY","WILLOW","MEADOWS","SUNSET"
 ];
 // base32 minus 0/O/1/I/L, which people mix up when reading a code aloud
+/* Bump this whenever you deploy. It is shown in Settings so you can tell at a
+   glance whether the file on the server is the one you think it is. */
+const APP_BUILD = "2026.09.15-notify-2";
+
 const CODE_CHARS = "23456789ABCDEFGHJKMNPQRSTUVWXYZ";
 const CODE_TAIL = 4;
 
@@ -5925,10 +5960,59 @@ async function testPush(){
   if (!t){ showToast("No topic yet"); return; }
   buzz([25, 70, 25]);
   showToast("Sending…");
-  const ok = await pushTo(t, "It works 👋", "That's your phone connected. You'll get their taps and notes here even with the app closed.", "wave");
-  showToast(ok
-    ? "Sent — check your phone's lock screen"
-    : "Couldn't reach ntfy. Check your connection, then try again.");
+  const r = await pushDetailed(t, "It works 👋", "That's your phone connected. You'll get their taps and notes here even with the app closed.", "wave");
+  lastPushResult = r;
+  showToast(r.ok ? "Sent — check your phone's lock screen" : r.detail);
+  renderDiagnostics(r);
+}
+
+/* When the test doesn't land, there are four links in the chain and only
+   one of them is this app. This tells you which one broke instead of
+   leaving you to guess. */
+function renderDiagnostics(result){
+  const el = document.getElementById("notifDiag");
+  if (!el) return;
+  const t = myTopic();
+  const rows = [];
+
+  rows.push(["Build", APP_BUILD, true]);
+  rows.push(["Publishing to", t || "— none —", !!t]);
+
+  if (!result){
+    el.innerHTML = `<div class="diag-hint">Tap <b>Buzz my phone</b> and this will fill in.</div>`;
+    return;
+  }
+
+  if (result.ok){
+    rows.push(["ntfy.sh accepted it", `yes (HTTP ${result.status})`, true]);
+  } else if (result.why === "network"){
+    rows.push(["ntfy.sh accepted it", "never reached it", false]);
+  } else {
+    rows.push(["ntfy.sh accepted it", `no — HTTP ${result.status}`, false]);
+  }
+
+  const html = rows.map(([k, v, good]) =>
+    `<div class="diag-row"><span class="diag-k">${escapeHtml(k)}</span>
+     <span class="diag-v ${good ? "good" : "bad"}">${escapeHtml(String(v))}</span></div>`).join("");
+
+  let verdict;
+  if (result.ok){
+    verdict = `<div class="diag-hint"><b>The message left this app and ntfy.sh took it.</b>
+      If your phone stayed silent, the problem is on the phone, not here:
+      <br>1. Open the link below in a browser — if the message is listed there, sending works and it's the ntfy app.
+      <br>2. In ntfy, check you subscribed to <b>exactly</b> the topic above (they're case-sensitive, and the <b>-${escapeHtml(myKey())}</b> on the end matters).
+      <br>3. Check ntfy has notification permission in your phone's settings, and isn't being battery-optimised to death.
+      <br>4. On iPhone, ntfy needs to have been opened at least once and left signed in.
+      <br><a class="notif-link" href="https://ntfy.sh/${encodeURIComponent(t)}" target="_blank" rel="noopener">Open ntfy.sh/${escapeHtml(t)} →</a></div>`;
+  } else if (result.why === "network"){
+    verdict = `<div class="diag-hint"><b>Nothing left this device.</b> Either you're offline, or
+      a network is blocking ntfy.sh — corporate wifi, a school network, a VPN or an
+      ad-blocker will all do this. Try again on mobile data with any blocker off.</div>`;
+  } else {
+    verdict = `<div class="diag-hint"><b>ntfy.sh rejected the message.</b> ${escapeHtml(result.detail || "")}</div>`;
+  }
+
+  el.innerHTML = html + verdict;
 }
 
 function renderSettings(){
@@ -5950,6 +6034,9 @@ function renderSettings(){
   const myNm = me()?.name, theirNm = them()?.name;
   document.getElementById("ntfyMineWho").textContent = myNm ? `(${myNm})` : "";
   document.getElementById("ntfyTheirWho").textContent = theirNm ? `${theirNm}'s` : "their";
+  renderDiagnostics(lastPushResult);
+  const bs = document.getElementById("buildStamp");
+  if (bs) bs.textContent = `Build ${APP_BUILD}`;
   const m = me();
   document.getElementById("settingsName").value = m?.name || "";
   document.getElementById("settingsTz").value = m?.tz || "";
